@@ -43,8 +43,6 @@ export default {
   },
   async updateProfile({ name, about }: { name: string, about: string }): Promise<Response>{
     var formdata = new FormData();
-    console.log({ name, about });
-    
     formdata.append("name", name);
     formdata.append("about", about);
 

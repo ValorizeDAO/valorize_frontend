@@ -164,13 +164,11 @@ export default defineComponent({
       } as RequestInit;
 
       const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/register", requestOptions)
-      console.log({ response })
       if (response.status === 409) {
         status.value = requestStatuses[2];
       } else if (response.status === 201) {
         status.value = requestStatuses[4];
         const result = (await response.json() as User | { error: string })
-        console.log({ result })
         store.commit("authUser/setUser", result);
         await router.push({ path: "/edit-profile" });
       } else {
