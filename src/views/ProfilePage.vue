@@ -32,7 +32,13 @@ export default defineComponent({
   name: 'ProfilePage',
   components: { ImageContainer, TokenInfoComponent },
   setup() {
-    const { username } = useRoute().params
+    const { usernameParam } = useRoute().params
+    let username
+    if (typeof username == "object") {
+      username = usernameParam[0] as string
+    } else {
+      username = usernameParam as string
+    }
     return {
       ...composeUserInfo(username),
       username
