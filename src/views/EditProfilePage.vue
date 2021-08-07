@@ -245,7 +245,7 @@
 <script lang="ts">
 import { ref, defineComponent, computed } from "vue";
 import auth from "../services/authentication";
-import { User } from "../models/user";
+import { User } from "../models/User";
 import ethApi, { TokenResponse } from "../services/ethApi";
 import { useStore } from "vuex";
 import SvgLoader from "../components/SvgLoader.vue";

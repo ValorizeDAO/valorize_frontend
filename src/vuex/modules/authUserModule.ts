@@ -1,5 +1,5 @@
 import { ActionContext } from "vuex"
-import { User, emptyUser } from "../../models/user"
+import { User, emptyUser } from "../../models/User"
 import auth from "../../services/authentication"
 import backendImageFilePathService from "../../services/backendImageService"
 
