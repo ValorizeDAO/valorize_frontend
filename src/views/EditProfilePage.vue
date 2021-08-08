@@ -112,7 +112,7 @@
       "
     >
       <h2 class="text-3xl font-black mb-6">Your Token</h2>
-      <TokenInfoComponent v-if="user.has_deployed_token" :username="user.username" />
+      <TokenInfoComponent v-if="user.hasDeployedToken" :username="user.username" />
       <div v-else>
       <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
       ( not yet deployed )
