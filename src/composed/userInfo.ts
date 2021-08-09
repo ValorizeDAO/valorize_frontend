@@ -24,6 +24,7 @@ export default function composeUserInfo(username: string) {
       .then((result) => {
         userInfo.value = result
         userInfo.value.avatar = result.avatar ? result.avatar : "/default_avatar.jpg"
+        tokenInfo.value = result.token
       })
       .catch((error) => console.log(error))
   })

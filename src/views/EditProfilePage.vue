@@ -1,148 +1,165 @@
 
 <template>
   <div id="edit-profile-page" class="grid grid-cols-12 gap-8 min-h-screen">
-    <div id="left-pane" class="md:col-span-7 pl-16 pt-4 h-full">
+    <div id="left-pane" class="col-span-12 md:col-span-7 p-16 pt-4 h-full">
       <div class="">
-        <div class="">
-          <h1 class="text-3xl font-black mb-6">Your Profile</h1>
-          <h2 class="text-2xl font-black">{{ user.username }}</h2>
-        </div>
-        <div class="col-span-2">
-          <div class="relative mt-6 -ml-2">
-            <ImageContainer>
-              <div v-if="pictureStatus === 'INIT'">
-                <img
-                  :src="user.avatar"
-                  alt="avatar"
-                  class="h-52 w-52 object-cover"
-                />
-              </div>
-              <div v-else>
-                <img
-                  :src="
-                    profileImage === ''
-                      ? '/src/assets/img/default_avatar.png'
-                      : profileImage
-                  "
-                  class="h-52 w-52 object-cover"
-                />
-              </div>
-            </ImageContainer>
+        <div class="flex justify-between">
+          <div class="">
+            <h1 class="text-3xl font-black mb-6">Your Profile</h1>
+            <h2 class="text-2xl font-black">{{ user.username }}</h2>
           </div>
-          <transform name="fade">
-            <div v-if="pictureStatus === 'INIT'">
-              <button
-                @click="changeProfile"
-                class="btn w-48 my-4 bg-purple-100"
+          <router-link :to="'/u/' + user.username" class="btn h-12 pt-1">
+            See Public Profile</router-link
+          >
+        </div>
+        <div class="grid lg:grid-cols-6 md:gap-12">
+          <div class="col-span-2">
+            <div class="relative mt-6 -ml-2">
+              <ImageContainer>
+                <div v-if="pictureStatus === 'INIT'">
+                  <img
+                    :src="user.avatar"
+                    alt="avatar"
+                    class="h-52 w-52 object-cover"
+                  />
+                </div>
+                <div v-else>
+                  <img
+                    :src="
+                      profileImage === ''
+                        ? '/src/assets/img/default_avatar.png'
+                        : profileImage
+                    "
+                    class="h-52 w-52 object-cover"
+                  />
+                </div>
+              </ImageContainer>
+            </div>
+            <transform name="fade">
+              <div v-if="pictureStatus === 'INIT'">
+                <button
+                  @click="changeProfile"
+                  class="btn max-w-48 my-4 bg-purple-100"
+                >
+                  Change Picture
+                </button>
+              </div>
+              <div
+                class="flex justify-around"
+                v-else-if="
+                  pictureStatus == 'PREVIEW' || pictureStatus == 'ERROR'
+                "
               >
-                Change Picture
-              </button>
-            </div>
-            <div
-              class="flex justify-around"
-              v-else-if="pictureStatus == 'PREVIEW' || pictureStatus == 'ERROR'"
-            >
-              <button
-                @click="sendPhoto"
-                class="btn w-48 my-4 bg-purple-100 mr-4"
-              >
-                Save
-              </button>
-              <button @click="resetPhoto" class="btn w-48 my-4 bg-purple-100">
-                Cancel
-              </button>
-            </div>
-            <div v-if="pictureStatus == 'ERROR'">
-              <span class="text-red-700 text-sm">
-                There was an error changing your photo. Try again or contact us.
-              </span>
-            </div>
-            <input
-              @change="changePic"
-              type="file"
-              name="picture"
-              id="picture-upload"
-              class="sr-only"
-              ref="pictureFormUpload"
-            />
-          </transform>
-          <!-- <ul class="flex justify-between">
+                <button
+                  @click="sendPhoto"
+                  class="btn w-48 my-4 bg-purple-100 mr-4"
+                >
+                  Save
+                </button>
+                <button @click="resetPhoto" class="btn w-48 my-4 bg-purple-100">
+                  Cancel
+                </button>
+              </div>
+              <div v-if="pictureStatus == 'ERROR'">
+                <span class="text-red-700 text-sm">
+                  There was an error changing your photo. Try again or contact
+                  us.
+                </span>
+              </div>
+              <input
+                @change="changePic"
+                type="file"
+                name="picture"
+                id="picture-upload"
+                class="sr-only"
+                ref="pictureFormUpload"
+              />
+            </transform>
+            <!-- <ul class="flex justify-between">
             <li class="font-black mr-3 text-lg col-span-1">Followers</li>
             <li class="font-black text-lg col-span-1">Investors</li>
           </ul> -->
-        </div>
-        <div class="col-span-4 pr-8">
-          <form @submit.prevent="updateProfile">
-            <label>
-              <p class="font-black mb-4">Your Name</p>
-              <input
-                name="name"
-                type="text"
-                v-model="fullName"
-                placeholder="e.g. John Doe"
-                class="bg-purple-50 border-black border-b-2 w-full"
-              />
-            </label>
-            <label>
-              <p class="font-black mt-8">Your Bio</p>
-              <textarea
-                name="about"
-                type="textarea"
-                cols="50"
-                rows="10"
-                v-model="about"
-                placeholder="Something about yourself"
-                class="block bg-purple-50 border-black border-b-2 w-full h-60"
-              />
-            </label>
-            <button class="btn w-48 my-4 bg-purple-100">Update Info</button>
-          </form>
+          </div>
+          <div class="col-span-4 pr-8 pt-8">
+            <form @submit.prevent="updateProfile">
+              <label>
+                <p class="font-black mb-4">Your Name</p>
+                <input
+                  name="name"
+                  type="text"
+                  v-model="fullName"
+                  placeholder="e.g. John Doe"
+                  class="bg-purple-50 border-black border-b-2 w-full"
+                />
+              </label>
+              <label>
+                <p class="font-black mt-8">Your Bio</p>
+                <textarea
+                  name="about"
+                  type="textarea"
+                  cols="50"
+                  rows="10"
+                  v-model="about"
+                  placeholder="Something about yourself"
+                  class="block bg-purple-50 border-black border-b-2 w-full h-36"
+                />
+              </label>
+              <div class="text-center">
+                <button class="btn w-48 mt-24 bg-purple-100 mx-auto">Update Info</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
     <div
       id="right-pane"
       class="
+        col-span-12
         md:col-span-5
-        p-4
-        pr-16
+        p-16
+        md:p-4
+        md:pr-16
         border-l-2 border-black
         h-full
-        bg-paper-light
+        md:bg-paper-light
       "
     >
       <h2 class="text-3xl font-black mb-6">Your Token</h2>
-      <TokenInfoComponent v-if="user.hasDeployedToken" :username="user.username" />
+      <TokenInfoComponent
+        v-if="user.hasDeployedToken"
+        :username="user.username"
+      />
       <div v-else>
-      <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
-      ( not yet deployed )
-      <label>
-        <p class="font-black mb-4">Token Name</p>
-        <input
-          type="text"
-          name="tokenName"
-          id="token-name"
-          v-model="tokenName"
-          class="bg-paper-light border-black border-b-2 w-full"
-        />
-      </label>
-      <label>
-        <p class="font-black my-4">Token Symbol</p>
-        <input
-          type="text"
-          name="tokenSymbol"
-          id="token-tiker"
-          v-model="tokenSymbol"
-          placeholder="e.g TKN"
-          class="bg-paper-light border-black border-b-2 w-full"
-        />
-      </label>
-      <div class="text-center">
-        <p class="my-8">(Get 1000 of this token by deploying the contract)</p>
-        <button @click="openModal" class="btn w-48 my-4 bg-paper-darker">
-          Test Deploy {{ tokenSymbol }}
-        </button>
-      </div>
+        <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
+        ( not yet deployed )
+        <label>
+          <p class="font-black mb-4">Token Name</p>
+          <input
+            type="text"
+            name="tokenName"
+            id="token-name"
+            v-model="tokenName"
+            class="bg-paper-light border-black border-b-2 w-full"
+          />
+        </label>
+        <label>
+          <p class="font-black my-4">Token Symbol</p>
+          <input
+            type="text"
+            name="tokenSymbol"
+            id="token-tiker"
+            v-model="tokenSymbol"
+            placeholder="e.g TKN"
+            class="bg-paper-light border-black border-b-2 w-full"
+          />
+        </label>
+        <div class="text-center">
+          <p class="my-8">(Get 1000 of this token by deploying the contract)</p>
+          <button @click="openModal" class="btn w-48 my-4 bg-paper-darker">
+            Test Deploy {{ tokenSymbol }}
+          </button>
+        </div>
       </div>
       <div
         @click.stop="openModal"
@@ -196,8 +213,10 @@
                 <h1 class="text-2xl">
                   Deploy <span class="font-black mb-12">{{ tokenName }}</span>
                 </h1>
-                <p class="my-4 max-w-sm mx-auto">Coin will be on the Ropsten Ethereum test network, you will have a chance to confirm details
-                  there</p>
+                <p class="my-4 max-w-sm mx-auto">
+                  Coin will be on the Ropsten Ethereum test network, you will
+                  have a chance to confirm details there
+                </p>
                 <button
                   @click="deployToTestNet"
                   class="btn w-48 mt-4 bg-purple-50"
@@ -219,19 +238,18 @@
                 </h1>
                 <p class="my-6">
                   <a
-                      class="font-black underline text-center text-lg"
-                      :href="
-                    'https://ropsten.etherscan.io/tx/' +
-                    tokenTestnetTx
-                  "
-                      target="_blank"
+                    class="font-black underline text-center text-lg"
+                    :href="'https://ropsten.etherscan.io/tx/' + tokenTestnetTx"
+                    target="_blank"
                   >
                     Confirm details
                   </a>
                 </p>
                 <p>(Might take a minute to Deploy)</p>
                 <a :href="checkoutLink">
-                  <div class="btn w-1/2 mx-auto bg-purple-100 mt-12">Deploy on Ethereum for $10</div>
+                  <div class="btn w-1/2 mx-auto bg-purple-100 mt-12">
+                    Deploy on Ethereum for $10
+                  </div>
                 </a>
               </div>
             </transition>
@@ -267,7 +285,7 @@ function composeProfileInfo() {
   const store = useStore();
   const fullName = ref(store.state.authUser.user.name);
   const about = ref(store.state.authUser.user.about);
-  const hasToken = store.getters["authUser/hasToken"]
+  const hasToken = store.getters["authUser/hasToken"];
 
   const profileUpdateStatuses = [
     "INIT",
@@ -296,7 +314,7 @@ function composeProfileInfo() {
     fullName,
     about,
     profileUpdateStatus,
-    hasToken
+    hasToken,
   };
 }
 function composeUpdateImage() {
@@ -305,30 +323,30 @@ function composeUpdateImage() {
   const profileImage = ref(store.state.authUser.user.avatar);
   const pictureStatuses = ["INIT", "PREVIEW", "UPLOADING", "ERROR"];
   const pictureStatus = ref<string>(pictureStatuses[0]);
-  const imageToUpload = ref<File>(new File([], ""))
+  const imageToUpload = ref<File>(new File([], ""));
   function changeProfile() {
     (pictureFormUpload.value as unknown as HTMLInputElement).click();
   }
   function changePic(e: Event) {
     if (e.target) {
-      const inputElement = e.target as HTMLInputElement
-      const files = inputElement.files
+      const inputElement = e.target as HTMLInputElement;
+      const files = inputElement.files;
       pictureStatus.value = pictureStatuses[1];
       if (!files) {
-        return
+        return;
       }
-      const fileReader = new FileReader()
-      fileReader.addEventListener('load', (e) => {
-        profileImage.value = URL.createObjectURL(files[0])
-        imageToUpload.value = files[0]
-      })
-      fileReader.readAsArrayBuffer(files[0])
+      const fileReader = new FileReader();
+      fileReader.addEventListener("load", (e) => {
+        profileImage.value = URL.createObjectURL(files[0]);
+        imageToUpload.value = files[0];
+      });
+      fileReader.readAsArrayBuffer(files[0]);
     }
   }
 
   async function sendPhoto() {
     pictureStatus.value = pictureStatuses[2];
-    const uploadRequest = await auth.uploadPicture(imageToUpload.value)
+    const uploadRequest = await auth.uploadPicture(imageToUpload.value);
     if (uploadRequest.status == 200) {
       pictureStatus.value = pictureStatuses[0];
       const responseJson = await ((await uploadRequest.json()) as Promise<{
@@ -366,9 +384,11 @@ function composeDeployToken() {
   const tokenDeployStatus = ref(tokenDeployStatuses[0]);
   const tokenTestnetTx = ref("");
   const checkoutLink = computed(() => {
-    const encodedName = encodeURIComponent(tokenName.value)
-    const encodedSymbol = encodeURIComponent(tokenSymbol.value)
-    return `${import.meta.env.VITE_BACKEND_URL}/create-checkout-session?tokenName=${encodedName}&tokenSymbol=${encodedSymbol}`
+    const encodedName = encodeURIComponent(tokenName.value);
+    const encodedSymbol = encodeURIComponent(tokenSymbol.value);
+    return `${
+      import.meta.env.VITE_BACKEND_URL
+    }/create-checkout-session?tokenName=${encodedName}&tokenSymbol=${encodedSymbol}`;
   });
   async function deployToTestNet() {
     tokenDeployStatus.value = tokenDeployStatuses[1];
