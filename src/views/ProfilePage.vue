@@ -20,8 +20,8 @@
         </p>
         </div>
         <div v-else>
-          <div v-if="loggedInUserInfo.username === username">
-            <h2 class="text-2xl font-black mt-12 mb-6">Looks like not you have not deployed your token yet</h2>
+          <div v-if="state.loggedInUserInfo.username === username">
+            <h2 class="text-2xl font-black mt-12 mb-6">Looks like you have not deployed your token yet</h2>
             <p>If you have just deployed your token, please check in a few minutes</p>
           </div>
           <div v-else>
@@ -33,19 +33,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, reactive, onUnmounted, ref, Ref } from "vue";
 import { useRoute } from 'vue-router';
 import composeUserInfo from "../composed/userInfo"
 import ImageContainer from "../components/ImageContainer.vue";
 import TokenInfoComponent from "../components/TokenInfoComponent.vue"
 import { useStore } from "vuex";
+import { User } from "../models/User"
+import store from "../vuex/store"
 export default defineComponent({
   name: 'ProfilePage',
   components: { ImageContainer, TokenInfoComponent },
   setup() {
     const store = useStore()
     const router = useRoute()
-    const loggedInUserInfo = store.getters["authUser/user"]
+    const state = reactive({
+      loggedInUserInfo: useVuex<User>(() => store.getters["authUser/user"])
+    })
     const { username } = router.params
     let usernameString
     if (typeof username == "object") {
@@ -56,8 +60,21 @@ export default defineComponent({
     return {
       ...composeUserInfo(usernameString),
       username,
-      loggedInUserInfo
+      state
     }
   }
 })
+function useVuex<T> (getState: () => T): Ref<T> {
+  const data = ref<T>(getState()) as Ref<T>
+  const unwatch = store.watch<T>(
+    getState,
+    (newVal: T) => {
+      data.value = newVal
+    }
+  )
+  onUnmounted(() => {
+    unwatch()
+  })
+  return data
+}
 </script>
