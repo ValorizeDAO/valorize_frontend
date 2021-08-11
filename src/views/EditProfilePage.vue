@@ -1,16 +1,18 @@
 
 <template>
-  <div id="edit-profile-page" class="grid grid-cols-12 gap-8 min-h-screen">
-    <div id="left-pane" class="col-span-12 md:col-span-7 p-16 pt-4 h-full">
+  <div id="edit-profile-page" class="grid grid-cols-12 gap-8 min-h-screen px-8 md:p-0">
+    <div id="left-pane" class="col-span-12 md:col-span-7 md:pl-16 lg:pr-16 pt-4 h-full">
       <div class="">
         <div class="flex justify-between">
           <div class="">
             <h1 class="text-3xl font-black mb-6">Your Profile</h1>
             <h2 class="text-2xl font-black">{{ user.username }}</h2>
           </div>
-          <router-link :to="'/u/' + user.username" class="btn h-12 pt-1">
-            See Public Profile</router-link
-          >
+          <div>
+            <router-link :to="'/u/' + user.username" class="btn min-h-12 pt-1">
+              See Public Profile</router-link
+            >
+          </div>
         </div>
         <div class="grid lg:grid-cols-6 md:gap-12">
           <div class="col-span-2">
