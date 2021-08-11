@@ -1,19 +1,21 @@
 
 <template>
-  <div id="edit-profile-page" class="grid grid-cols-12 gap-8 min-h-screen">
-    <div id="left-pane" class="col-span-12 md:col-span-7 p-16 pt-4 h-full">
+  <div id="edit-profile-page" class="grid grid-cols-12 gap-8 min-h-screen px-8 md:p-0">
+    <div id="left-pane" class="col-span-12 md:col-span-7 md:pl-16 xl:pr-16 pt-4 h-full">
       <div class="">
         <div class="flex justify-between">
           <div class="">
             <h1 class="text-3xl font-black mb-6">Your Profile</h1>
             <h2 class="text-2xl font-black">{{ user.username }}</h2>
           </div>
-          <router-link :to="'/u/' + user.username" class="btn h-12 pt-1">
-            See Public Profile</router-link
-          >
+          <div>
+            <router-link :to="'/u/' + user.username" class="btn min-h-12 pt-1">
+              See Public Profile</router-link
+            >
+          </div>
         </div>
-        <div class="grid lg:grid-cols-6 md:gap-12">
-          <div class="col-span-2">
+        <div class="grid lg:grid-cols-9 md:gap-6">
+          <div class="col-span-4">
             <div class="relative mt-6 -ml-2">
               <ImageContainer>
                 <div v-if="pictureStatus === 'INIT'">
@@ -80,7 +82,7 @@
             <li class="font-black text-lg col-span-1">Investors</li>
           </ul> -->
           </div>
-          <div class="col-span-4 pr-8 pt-8">
+          <div class="col-span-5 pt-8">
             <form @submit.prevent="updateProfile">
               <label>
                 <p class="font-black mb-4">Your Name</p>
@@ -156,7 +158,7 @@
         </label>
         <div class="text-center">
           <p class="my-8">(Get 1000 of this token by deploying the contract)</p>
-          <button @click="openModal" class="btn w-48 my-4 bg-paper-darker">
+          <button @click="onTestDeployButtonPress" class="btn w-48 my-4 bg-paper-darker">
             Test Deploy {{ tokenSymbol }}
           </button>
         </div>
@@ -213,10 +215,6 @@
                 <h1 class="text-2xl">
                   Deploy <span class="font-black mb-12">{{ tokenName }}</span>
                 </h1>
-                <p class="my-4 max-w-sm mx-auto">
-                  Coin will be on the Ropsten Ethereum test network, you will
-                  have a chance to confirm details there
-                </p>
                 <button
                   @click="deployToTestNet"
                   class="btn w-48 mt-4 bg-purple-50"
@@ -224,11 +222,18 @@
                   Test Deploy {{ tokenSymbol }}
                 </button>
               </div>
-              <SvgLoader
-                class="text-center mx-auto"
-                v-else-if="tokenDeployStatus === 'DEPLOYING'"
-                fill="#"
-              ></SvgLoader>
+              <div
+                  v-else-if="tokenDeployStatus === 'DEPLOYING'"
+              >
+                <p class="my-4 max-w-sm mx-auto">
+                  Coin will be on the Ropsten Ethereum test network, you will
+                  have a chance to confirm details there
+                </p>
+                <SvgLoader
+                    class="text-center mx-auto"
+                    fill="#"
+                ></SvgLoader>
+              </div>
               <div
                 v-else-if="tokenDeployStatus === 'SUCCESS'"
                 class="text-center my-6"
@@ -390,6 +395,12 @@ function composeDeployToken() {
       import.meta.env.VITE_BACKEND_URL
     }/create-checkout-session?tokenName=${encodedName}&tokenSymbol=${encodedSymbol}`;
   });
+  function onTestDeployButtonPress() {
+    if(tokenDeployStatus.value === "INIT") {
+      deployToTestNet()
+    }
+    openModal()
+  }
   async function deployToTestNet() {
     tokenDeployStatus.value = tokenDeployStatuses[1];
     const apiResponse = await ethApi.deployTokenToTestNet({
@@ -404,7 +415,7 @@ function composeDeployToken() {
       tokenDeployStatus.value = tokenDeployStatuses[3];
     }
   }
-  function openModal(e: Event) {
+  function openModal() {
     modalIsOpen.value = !modalIsOpen.value;
   }
   return {
@@ -416,6 +427,7 @@ function composeDeployToken() {
     tokenDeployStatus,
     tokenTestnetTx,
     checkoutLink,
+    onTestDeployButtonPress
   };
 }
 </script>
