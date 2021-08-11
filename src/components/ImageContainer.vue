@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="absolute transform translate-x-2 -translate-y-2 overflow-hidden">
+      class="absolute transform translate-x-2 -translate-y-2">
       <slot> </slot>
     </div>
     <img
