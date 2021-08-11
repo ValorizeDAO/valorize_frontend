@@ -16,11 +16,15 @@
         <button v-else @click.prevent="showImage=true" class="btn bg-burple-100 mb-4 w-48">Show QR Code</button>
       </transition>
     </div>
-    <div id="coin-data" class="flex justify-between flex-wrap">
-    <div><h3 class="text-xl font-black">Price Per Coin: {{ tokenPrice }} </h3></div>
-    <div><h3 class="text-xl font-black">Total Supply: {{ tokenCap }} </h3></div>
-    <div><h3 class="text-xl font-black">USD locked in <strong>{{tokenInfo.symbol}}</strong>: $ {{ tokenEthBalance * ethPrice }}</h3></div>
-  </div>
+    <div id="coin-data" v-if="tokenStatus === 'SUCCESS'" class="flex justify-between flex-wrap">
+      <div><h3 class="text-xl font-black">Price Per Coin: {{ tokenPrice }} </h3></div>
+      <div><h3 class="text-xl font-black">Total Supply: {{ tokenCap }} </h3></div>
+      <div><h3 class="text-xl font-black">USD locked in <strong>{{tokenInfo.symbol}}</strong>: $ {{ tokenEthBalance * ethPrice }}</h3></div>
+    </div>
+      <div v-else-if="tokenStatus === 'FAIL'">
+        <h3 class="text-xl font-black">Token is not deployed yet. If you just deployed it, check the address on
+          EtherScan</h3>
+      </div>
   </div>
 </template>
 
