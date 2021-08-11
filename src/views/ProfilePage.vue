@@ -20,7 +20,7 @@
         </p>
         </div>
         <div v-else>
-          <div v-if="state.loggedInUserInfo.username === username">
+          <div v-if="authUser.username === username">
             <h2 class="text-2xl font-black mt-12 mb-6">Looks like you have not deployed your token yet</h2>
             <p>If you have just deployed your token, please check in a few minutes</p>
           </div>
@@ -60,7 +60,7 @@ export default defineComponent({
     return {
       ...composeUserInfo(usernameString),
       username,
-      state
+      authUser: state.loggedInUserInfo
     }
   }
 })
