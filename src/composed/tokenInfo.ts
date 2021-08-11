@@ -41,5 +41,6 @@ export default function composeTokenInfo(username: string) {
     tokenCap,
     tokenEthBalance,
     ethPrice,
+    tokenStatus
   }
 }
