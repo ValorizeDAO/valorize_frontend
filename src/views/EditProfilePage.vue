@@ -1,14 +1,14 @@
 
 <template>
-  <div id="edit-profile-page" class="grid grid-cols-12 gap-8 min-h-screen px-8 md:p-0">
+  <div id="edit-profile-page" class="md:grid grid-cols-12 gap-8 min-h-screen px-8 md:p-0">
     <div id="left-pane" class="col-span-12 md:col-span-7 md:pl-16 xl:pr-16 pt-4 h-full">
       <div class="">
-        <div class="flex justify-between">
+        <div class="sm:flex justify-between flex-wrap">
           <div class="">
-            <h1 class="text-3xl font-black mb-6">Your Profile</h1>
-            <h2 class="text-2xl font-black">{{ user.username }}</h2>
+            <h1 class="text-3xl font-black sm:mb-6">Your Profile</h1>
+            <h2 class="text-2xl font-black mb-4 sm:mb-0">{{ user.username }}</h2>
           </div>
-          <div>
+          <div class="my-8">
             <router-link :to="'/u/' + user.username" class="btn min-h-12 pt-1">
               See Public Profile</router-link
             >
@@ -119,15 +119,15 @@
       class="
         col-span-12
         md:col-span-5
-        p-16
-        md:p-4
-        md:pr-16
-        border-l-2 border-black
+        pr-4
+        md:px-16
+        md:pt-4
+        md:border-l-2 border-black
         h-full
         md:bg-paper-light
       "
     >
-      <h2 class="text-3xl font-black mb-6">Your Token</h2>
+      <h2 class="text-3xl font-black mb-6 mt-24 sm:mt-0">Your Token</h2>
       <TokenInfoComponent
         v-if="user.hasDeployedToken"
         :username="user.username"
@@ -136,7 +136,7 @@
         <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
         ( not yet deployed )
         <label>
-          <p class="font-black mb-4">Token Name</p>
+          <p class="font-black mb-4 mt-8">Token Name</p>
           <input
             type="text"
             name="tokenName"
@@ -183,7 +183,7 @@
         <div
           id="modal-body"
           @click.stop
-          class="bg-paper-light w-9/12 h-80 mx-auto px-10"
+          class="bg-paper-light w-full sm:w-9/12 mx-auto px-10 sm:-mt-48"
         >
           <div class="flex w-full justify-end">
             <button
@@ -229,10 +229,12 @@
                   Coin will be on the Ropsten Ethereum test network, you will
                   have a chance to confirm details there
                 </p>
-                <SvgLoader
-                    class="text-center mx-auto"
-                    fill="#"
-                ></SvgLoader>
+                <div class="h-24 w-24">
+                  <SvgLoader
+                      class="text-center mx-auto"
+                      fill="#"
+                  ></SvgLoader>
+                </div>
               </div>
               <div
                 v-else-if="tokenDeployStatus === 'SUCCESS'"
@@ -242,17 +244,26 @@
                   Woo! You can now review the test version of {{ tokenName }}!
                 </h1>
                 <p class="my-6">
-                  <a
+                  Here is the launching transaction:<br> <a
                     class="font-black underline text-center text-lg"
                     :href="'https://ropsten.etherscan.io/tx/' + tokenTestnetTx"
                     target="_blank"
                   >
-                    Confirm details
+                    {{ tokenTestnetTx.substr(0, 15) }}...
                   </a>
                 </p>
-                <p>(Might take a minute to Deploy)</p>
+                <p>And this is the deployed test contract:<br> <a
+                    class="font-black underline text-center text-lg"
+                    :href="'https://ropsten.etherscan.io/address/' + tokenTestnetAddress"
+                    target="_blank"
+                >
+                  {{ tokenTestnetAddress.substr(0, 15) }}...
+                </a><br>(Takes a minute to appear)</p>
+                <p class="mt-12 lg:w-2/5 mb-4 mx-auto">The links above are on the ropsten test network, a playground to verify how your tokens will work once
+                  they are live on the main ethereum network (Mainnet).
+                </p>
                 <a :href="checkoutLink">
-                  <div class="btn w-1/2 mx-auto bg-purple-100 mt-12">
+                  <div class="btn md:2/3 lg:w-1/3 mx-auto bg-purple-100 mb-12">
                     Deploy on Ethereum for $10
                   </div>
                 </a>
@@ -388,6 +399,7 @@ function composeDeployToken() {
   const tokenDeployStatuses = ["INIT", "DEPLOYING", "SUCCESS", "ERROR"];
   const tokenDeployStatus = ref(tokenDeployStatuses[0]);
   const tokenTestnetTx = ref("");
+  const tokenTestnetAddress = ref("");
   const checkoutLink = computed(() => {
     const encodedName = encodeURIComponent(tokenName.value);
     const encodedSymbol = encodeURIComponent(tokenSymbol.value);
@@ -411,6 +423,7 @@ function composeDeployToken() {
       tokenDeployStatus.value = tokenDeployStatuses[2];
       const responseJson = await (apiResponse.json() as Promise<TokenResponse>);
       tokenTestnetTx.value = responseJson.tx;
+      tokenTestnetAddress.value = responseJson.address;
     } else {
       tokenDeployStatus.value = tokenDeployStatuses[3];
     }
@@ -426,6 +439,7 @@ function composeDeployToken() {
     openModal,
     tokenDeployStatus,
     tokenTestnetTx,
+    tokenTestnetAddress,
     checkoutLink,
     onTestDeployButtonPress
   };
