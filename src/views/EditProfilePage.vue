@@ -229,12 +229,10 @@
                   Coin will be on the Ropsten Ethereum test network, you will
                   have a chance to confirm details there
                 </p>
-                <div class="h-24 w-24">
                   <SvgLoader
-                      class="text-center mx-auto"
+                      class="text-center mx-auto h-24"
                       fill="#"
                   ></SvgLoader>
-                </div>
               </div>
               <div
                 v-else-if="tokenDeployStatus === 'SUCCESS'"
