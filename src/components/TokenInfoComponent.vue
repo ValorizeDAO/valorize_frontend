@@ -29,9 +29,9 @@
           <input v-model="ethToCheck" @input="debounceListener" step=".00001" type="number" class="bg-transparent border-b-2 border-black">
           <button @click="ethToCheck += .00001">+</button>
         </div>
-        <button @click="checkEth(ethToCheck)" class="btn bg-purple-100 my-8">Calculate {{ tokenInfo.symbol }} Price</button>
+        <button @click="checkEth" class="btn bg-purple-100 my-8">Calculate {{ tokenInfo.symbol }} Price</button>
         <div>
-          Amount of {{ tokenInfo.symbol }} to be received for {{ debouncedValue }} Eth
+          Amount of {{ tokenInfo.symbol }} to be received for {{ ethToCheck }} Eth
           <br><strong>{{ amountToBeReceivedFromStakingEth }}</strong> {{ amountToBeReceivedFromStakingEth === '' ? '' : tokenInfo.symbol }}
         </div>
       </div>
@@ -55,9 +55,10 @@ export default defineComponent({
   components: { ImageContainer },
   setup: (props) => {
     const amountToBeReceivedFromStakingEth = ref<string>("")
-    async function checkEth(ethToCheck: Ref<string>) {
+    const ethToCheck = ref<number>(0)
+    async function checkEth() {
       const formdata = new FormData();
-      formdata.append("etherToCheck", (parseFloat(ethToCheck.value) * Math.pow(10, 18)).toString());
+      formdata.append("etherToCheck", (ethToCheck.value * Math.pow(10, 18)).toString());
 
       const requestOptions = {
         method: "POST",
@@ -72,6 +73,7 @@ export default defineComponent({
     return {
       amountToBeReceivedFromStakingEth,
       checkEth,
+      ethToCheck,
       ...composeTokenInfo(props.username),
       ...composeUserInfo(props.username),
       ...composeDebounced(300, checkEth)
