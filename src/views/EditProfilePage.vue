@@ -208,9 +208,7 @@
             <transition name="fade" mode="out-in">
               <div
                 class="text-center"
-                v-if="
-                  tokenDeployStatus === 'INIT' || tokenDeployStatus === 'ERROR'
-                "
+                v-if="tokenDeployStatus === 'INIT'"
               >
                 <h1 class="text-2xl">
                   Deploy <span class="font-black mb-12">{{ tokenName }}</span>
@@ -218,6 +216,16 @@
                 <button
                   @click="deployToTestNet"
                   class="btn w-48 mt-4 bg-purple-50"
+                >
+                  Test Deploy {{ tokenSymbol }}
+                </button>
+              </div>
+              <div v-else-if="tokenDeployStatus === 'ERROR'" class="text-center mb-12">
+                <h2 class="font-black text-xl">Error Deploying {{ tokenName }}</h2>
+                <p class="mt-6">Try again: </p>
+                <button
+                    @click="deployToTestNet"
+                    class="btn w-48 mt-4 bg-purple-50"
                 >
                   Test Deploy {{ tokenSymbol }}
                 </button>
@@ -366,9 +374,11 @@ function composeUpdateImage() {
       const responseJson = await ((await uploadRequest.json()) as Promise<{
         image: string;
       }>);
+      const newImageUrl = responseJson.image + "?" + new Date().getTime()
+      profileImage.value = newImageUrl
       store.commit(
         "authUser/setUserPicture",
-        responseJson.image + "?" + new Date().getTime()
+        newImageUrl
       );
     } else {
       pictureStatus.value = pictureStatuses[3];
