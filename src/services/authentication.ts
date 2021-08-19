@@ -1,4 +1,4 @@
-import { User, emptyUser } from "../models/user"
+import { User, emptyUser } from "../models/User"
 
 export default {
   async isLoggedIn(): Promise<{ isLoggedIn: boolean, user: User }> {
@@ -43,8 +43,6 @@ export default {
   },
   async updateProfile({ name, about }: { name: string, about: string }): Promise<Response>{
     var formdata = new FormData();
-    console.log({ name, about });
-    
     formdata.append("name", name);
     formdata.append("about", about);
 

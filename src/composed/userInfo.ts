@@ -1,6 +1,5 @@
 import { onMounted, ref } from "vue"
 import { useStore } from "vuex"
-import backendImageFilePathService from "../services/backendImageService"
 import { User, emptyUser } from "../models/User"
 import {Token} from "../models/Token";
 
@@ -24,8 +23,7 @@ export default function composeUserInfo(username: string) {
       })
       .then((result) => {
         userInfo.value = result
-        userInfo.value.avatar = backendImageFilePathService(result.avatar)
-        console.log(userInfo)
+        userInfo.value.avatar = result.avatar ? result.avatar : "/default_avatar.jpg"
         tokenInfo.value = result.token
       })
       .catch((error) => console.log(error))

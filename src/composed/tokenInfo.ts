@@ -1,8 +1,8 @@
 import { computed, onMounted, ref } from "vue"
 
 export default function composeTokenInfo(username: string) {
-  const userStatuses = ["INIT", "LOADING", "SUCCESS", "FAIL"]
-  const userStatus = ref<string>(userStatuses[0])
+  const tokenStatuses = ["INIT", "LOADING", "SUCCESS", "FAIL"]
+  const tokenStatus = ref<string>(tokenStatuses[0])
   const tokenCap = ref<number>(0)
   const tokenEthBalance = ref<number>(0)
   const ethPrice = ref<number>(0.0)
@@ -13,9 +13,10 @@ export default function composeTokenInfo(username: string) {
     fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/" + username + "/token")
       .then((response) => {
         if (response.status !== 200) {
-          userStatus.value = userStatuses[3]
+          tokenStatus.value = tokenStatuses[3]
           return
         }
+        tokenStatus.value = tokenStatuses[2]
         return response.json()
       })
       .then((result) => {
@@ -26,7 +27,7 @@ export default function composeTokenInfo(username: string) {
     fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/utils/price")
       .then((response) => {
         if (response.status !== 200) {
-          userStatus.value = userStatuses[3]
+          tokenStatus.value = tokenStatuses[3]
           return
         }
         return response.json()
@@ -41,5 +42,6 @@ export default function composeTokenInfo(username: string) {
     tokenCap,
     tokenEthBalance,
     ethPrice,
+    tokenStatus,
   }
 }

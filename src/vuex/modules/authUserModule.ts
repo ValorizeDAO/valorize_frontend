@@ -1,7 +1,6 @@
 import { ActionContext } from "vuex"
-import { User, emptyUser } from "../../models/user"
+import { User, emptyUser } from "../../models/User"
 import auth from "../../services/authentication"
-import backendImageFilePathService from "../../services/backendImageService"
 
 export default {
   namespaced: true,
@@ -36,10 +35,10 @@ export default {
       state.authenticated = true // assumes setUser is only called by logging in
       state.checkingAuth = false
       state.user = payload
-      state.user.avatar = backendImageFilePathService(state.user.avatar)
+      state.user.avatar = state.user.avatar || "/assets/img/default_avatar.png"
     },
     setUserPicture(state: UserState, payload: string) {
-      state.user.avatar = backendImageFilePathService(payload)
+      state.user.avatar = payload
     },
     logout(state: UserState) {
       state.authenticated = false

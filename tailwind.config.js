@@ -6,6 +6,11 @@ module.exports = {
       fontFamily: {
         sans: ["Inter", "Helvetica", "sans-serif"],
       },
+      screens: {
+        "md+": "896px",
+        "lg+": "1152px",
+        "xl+": "1440px",
+      },
       colors: {
         purple: {
           50: "#DAD1E9",

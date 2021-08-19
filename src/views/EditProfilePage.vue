@@ -1,148 +1,167 @@
 
 <template>
-  <div id="edit-profile-page" class="grid grid-cols-12 gap-8 min-h-screen">
-    <div id="left-pane" class="md:col-span-7 pl-16 pt-4 h-full">
+  <div id="edit-profile-page" class="md:grid grid-cols-12 gap-8 min-h-screen px-8 md:p-0">
+    <div id="left-pane" class="col-span-12 md:col-span-7 md:pl-16 xl:pr-16 pt-4 h-full">
       <div class="">
-        <div class="">
-          <h1 class="text-3xl font-black mb-6">Your Profile</h1>
-          <h2 class="text-2xl font-black">{{ user.username }}</h2>
-        </div>
-        <div class="col-span-2">
-          <div class="relative mt-6 -ml-2">
-            <ImageContainer>
-              <div v-if="pictureStatus === 'INIT'">
-                <img
-                  :src="user.avatar"
-                  alt="avatar"
-                  class="h-52 w-52 object-cover"
-                />
-              </div>
-              <div v-else>
-                <img
-                  :src="
-                    profileImage === ''
-                      ? '/src/assets/img/default_avatar.png'
-                      : profileImage
-                  "
-                  class="h-52 w-52 object-cover"
-                />
-              </div>
-            </ImageContainer>
+        <div class="sm:flex justify-between flex-wrap">
+          <div class="">
+            <h1 class="text-3xl font-black sm:mb-6">Your Profile</h1>
+            <h2 class="text-2xl font-black mb-4 sm:mb-0">{{ user.username }}</h2>
           </div>
-          <transform name="fade">
-            <div v-if="pictureStatus === 'INIT'">
-              <button
-                @click="changeProfile"
-                class="btn w-48 my-4 bg-purple-100"
-              >
-                Change Picture
-              </button>
-            </div>
-            <div
-              class="flex justify-around"
-              v-else-if="pictureStatus == 'PREVIEW' || pictureStatus == 'ERROR'"
+          <div class="my-8">
+            <router-link :to="'/u/' + user.username" class="btn min-h-12 pt-1">
+              See Public Profile</router-link
             >
-              <button
-                @click="sendPhoto"
-                class="btn w-48 my-4 bg-purple-100 mr-4"
+          </div>
+        </div>
+        <div class="grid lg:grid-cols-9 md:gap-6">
+          <div class="col-span-4">
+            <div class="relative mt-6 -ml-2">
+              <ImageContainer>
+                <div v-if="pictureStatus === 'INIT'">
+                  <img
+                    :src="user.avatar"
+                    alt="avatar"
+                    class="h-52 w-52 object-cover"
+                  />
+                </div>
+                <div v-else>
+                  <img
+                    :src="
+                      profileImage === ''
+                        ? '/src/assets/img/default_avatar.png'
+                        : profileImage
+                    "
+                    class="h-52 w-52 object-cover"
+                  />
+                </div>
+              </ImageContainer>
+            </div>
+            <transform name="fade">
+              <div v-if="pictureStatus === 'INIT'">
+                <button
+                  @click="changeProfile"
+                  class="btn max-w-48 my-4 bg-purple-100"
+                >
+                  Change Picture
+                </button>
+              </div>
+              <div
+                class="flex justify-around"
+                v-else-if="
+                  pictureStatus == 'PREVIEW' || pictureStatus == 'ERROR'
+                "
               >
-                Save
-              </button>
-              <button @click="resetPhoto" class="btn w-48 my-4 bg-purple-100">
-                Cancel
-              </button>
-            </div>
-            <div v-if="pictureStatus == 'ERROR'">
-              <span class="text-red-700 text-sm">
-                There was an error changing your photo. Try again or contact us.
-              </span>
-            </div>
-            <input
-              @change="changePic"
-              type="file"
-              name="picture"
-              id="picture-upload"
-              class="sr-only"
-              ref="pictureFormUpload"
-            />
-          </transform>
-          <!-- <ul class="flex justify-between">
+                <button
+                  @click="sendPhoto"
+                  class="btn w-48 my-4 bg-purple-100 mr-4"
+                >
+                  Save
+                </button>
+                <button @click="resetPhoto" class="btn w-48 my-4 bg-purple-100">
+                  Cancel
+                </button>
+              </div>
+              <div v-if="pictureStatus == 'ERROR'">
+                <span class="text-red-700 text-sm">
+                  There was an error changing your photo. Try again or contact
+                  us.
+                </span>
+              </div>
+              <input
+                @change="changePic"
+                type="file"
+                name="picture"
+                id="picture-upload"
+                class="sr-only"
+                ref="pictureFormUpload"
+              />
+            </transform>
+            <!-- <ul class="flex justify-between">
             <li class="font-black mr-3 text-lg col-span-1">Followers</li>
             <li class="font-black text-lg col-span-1">Investors</li>
           </ul> -->
-        </div>
-        <div class="col-span-4 pr-8">
-          <form @submit.prevent="updateProfile">
-            <label>
-              <p class="font-black mb-4">Your Name</p>
-              <input
-                name="name"
-                type="text"
-                v-model="fullName"
-                placeholder="e.g. John Doe"
-                class="bg-purple-50 border-black border-b-2 w-full"
-              />
-            </label>
-            <label>
-              <p class="font-black mt-8">Your Bio</p>
-              <textarea
-                name="about"
-                type="textarea"
-                cols="50"
-                rows="10"
-                v-model="about"
-                placeholder="Something about yourself"
-                class="block bg-purple-50 border-black border-b-2 w-full h-60"
-              />
-            </label>
-            <button class="btn w-48 my-4 bg-purple-100">Update Info</button>
-          </form>
+          </div>
+          <div class="col-span-5 pt-8">
+            <form @submit.prevent="updateProfile">
+              <label>
+                <p class="font-black mb-4">Your Name</p>
+                <input
+                  name="name"
+                  type="text"
+                  v-model="fullName"
+                  placeholder="e.g. John Doe"
+                  class="bg-purple-50 border-black border-b-2 w-full"
+                />
+              </label>
+              <label>
+                <p class="font-black mt-8">Your Bio</p>
+                <textarea
+                  name="about"
+                  type="textarea"
+                  cols="50"
+                  rows="10"
+                  v-model="about"
+                  placeholder="Something about yourself"
+                  class="block bg-purple-50 border-black border-b-2 w-full h-36"
+                />
+              </label>
+              <div class="text-center">
+                <button class="btn w-48 mt-24 bg-purple-100 mx-auto">Update Info</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
     <div
       id="right-pane"
       class="
+        col-span-12
         md:col-span-5
-        p-4
-        pr-16
-        border-l-2 border-black
+        pr-4
+        md:px-16
+        md:pt-4
+        md:border-l-2 border-black
         h-full
-        bg-paper-light
+        md:bg-paper-light
       "
     >
-      <h2 class="text-3xl font-black mb-6">Your Token</h2>
-      <TokenInfoComponent v-if="user.has_deployed_token" :username="user.username" />
+      <h2 class="text-3xl font-black mb-6 mt-24 sm:mt-0">Your Token</h2>
+      <TokenInfoComponent
+        v-if="user.hasDeployedToken"
+        :username="user.username"
+      />
       <div v-else>
-      <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
-      ( not yet deployed )
-      <label>
-        <p class="font-black mb-4">Token Name</p>
-        <input
-          type="text"
-          name="tokenName"
-          id="token-name"
-          v-model="tokenName"
-          class="bg-paper-light border-black border-b-2 w-full"
-        />
-      </label>
-      <label>
-        <p class="font-black my-4">Token Symbol</p>
-        <input
-          type="text"
-          name="tokenSymbol"
-          id="token-tiker"
-          v-model="tokenSymbol"
-          placeholder="e.g TKN"
-          class="bg-paper-light border-black border-b-2 w-full"
-        />
-      </label>
-      <div class="text-center">
-        <p class="my-8">(Get 1000 of this token by deploying the contract)</p>
-        <button @click="openModal" class="btn w-48 my-4 bg-paper-darker">
-          Test Deploy {{ tokenSymbol }}
-        </button>
-      </div>
+        <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
+        ( not yet deployed )
+        <label>
+          <p class="font-black mb-4 mt-8">Token Name</p>
+          <input
+            type="text"
+            name="tokenName"
+            id="token-name"
+            v-model="tokenName"
+            class="bg-paper-light border-black border-b-2 w-full"
+          />
+        </label>
+        <label>
+          <p class="font-black my-4">Token Symbol</p>
+          <input
+            type="text"
+            name="tokenSymbol"
+            id="token-tiker"
+            v-model="tokenSymbol"
+            placeholder="e.g TKN"
+            class="bg-paper-light border-black border-b-2 w-full"
+          />
+        </label>
+        <div class="text-center">
+          <p class="my-8">(Get 1000 of this token by deploying the contract)</p>
+          <button @click="onTestDeployButtonPress" class="btn w-48 my-4 bg-paper-darker">
+            Test Deploy {{ tokenSymbol }}
+          </button>
+        </div>
       </div>
       <div
         @click.stop="openModal"
@@ -164,7 +183,7 @@
         <div
           id="modal-body"
           @click.stop
-          class="bg-paper-light w-9/12 h-80 mx-auto px-10"
+          class="bg-paper-light w-full sm:w-9/12 mx-auto px-10 sm:-mt-48"
         >
           <div class="flex w-full justify-end">
             <button
@@ -189,15 +208,11 @@
             <transition name="fade" mode="out-in">
               <div
                 class="text-center"
-                v-if="
-                  tokenDeployStatus === 'INIT' || tokenDeployStatus === 'ERROR'
-                "
+                v-if="tokenDeployStatus === 'INIT'"
               >
                 <h1 class="text-2xl">
                   Deploy <span class="font-black mb-12">{{ tokenName }}</span>
                 </h1>
-                <p class="my-4 max-w-sm mx-auto">Coin will be on the Ropsten Ethereum test network, you will have a chance to confirm details
-                  there</p>
                 <button
                   @click="deployToTestNet"
                   class="btn w-48 mt-4 bg-purple-50"
@@ -205,11 +220,28 @@
                   Test Deploy {{ tokenSymbol }}
                 </button>
               </div>
-              <SvgLoader
-                class="text-center mx-auto"
-                v-else-if="tokenDeployStatus === 'DEPLOYING'"
-                fill="#"
-              ></SvgLoader>
+              <div v-else-if="tokenDeployStatus === 'ERROR'" class="text-center mb-12">
+                <h2 class="font-black text-xl">Error Deploying {{ tokenName }}</h2>
+                <p class="mt-6">Try again: </p>
+                <button
+                    @click="deployToTestNet"
+                    class="btn w-48 mt-4 bg-purple-50"
+                >
+                  Test Deploy {{ tokenSymbol }}
+                </button>
+              </div>
+              <div
+                  v-else-if="tokenDeployStatus === 'DEPLOYING'"
+              >
+                <p class="my-4 max-w-sm mx-auto">
+                  Coin will be on the Ropsten Ethereum test network, you will
+                  have a chance to confirm details there
+                </p>
+                  <SvgLoader
+                      class="text-center mx-auto h-24"
+                      fill="#"
+                  ></SvgLoader>
+              </div>
               <div
                 v-else-if="tokenDeployStatus === 'SUCCESS'"
                 class="text-center my-6"
@@ -218,20 +250,28 @@
                   Woo! You can now review the test version of {{ tokenName }}!
                 </h1>
                 <p class="my-6">
-                  <a
-                      class="font-black underline text-center text-lg"
-                      :href="
-                    'https://ropsten.etherscan.io/tx/' +
-                    tokenTestnetTx
-                  "
-                      target="_blank"
+                  Here is the launching transaction:<br> <a
+                    class="font-black underline text-center text-lg"
+                    :href="'https://ropsten.etherscan.io/tx/' + tokenTestnetTx"
+                    target="_blank"
                   >
-                    Confirm details
+                    {{ tokenTestnetTx.substr(0, 15) }}...
                   </a>
                 </p>
-                <p>(Might take a minute to Deploy)</p>
+                <p>And this is the deployed test contract:<br> <a
+                    class="font-black underline text-center text-lg"
+                    :href="'https://ropsten.etherscan.io/address/' + tokenTestnetAddress"
+                    target="_blank"
+                >
+                  {{ tokenTestnetAddress.substr(0, 15) }}...
+                </a><br>(Takes a minute to appear)</p>
+                <p class="mt-12 lg:w-2/5 mb-4 mx-auto">The links above are on the ropsten test network, a playground to verify how your tokens will work once
+                  they are live on the main ethereum network (Mainnet).
+                </p>
                 <a :href="checkoutLink">
-                  <div class="btn w-1/2 mx-auto bg-purple-100 mt-12">Deploy on Ethereum for $10</div>
+                  <div class="btn md:2/3 lg:w-1/3 mx-auto bg-purple-100 mb-12">
+                    Deploy on Ethereum for $10
+                  </div>
                 </a>
               </div>
             </transition>
@@ -245,7 +285,7 @@
 <script lang="ts">
 import { ref, defineComponent, computed } from "vue";
 import auth from "../services/authentication";
-import { User } from "../models/user";
+import { User } from "../models/User";
 import ethApi, { TokenResponse } from "../services/ethApi";
 import { useStore } from "vuex";
 import SvgLoader from "../components/SvgLoader.vue";
@@ -267,7 +307,7 @@ function composeProfileInfo() {
   const store = useStore();
   const fullName = ref(store.state.authUser.user.name);
   const about = ref(store.state.authUser.user.about);
-  const hasToken = store.getters["authUser/hasToken"]
+  const hasToken = store.getters["authUser/hasToken"];
 
   const profileUpdateStatuses = [
     "INIT",
@@ -296,7 +336,7 @@ function composeProfileInfo() {
     fullName,
     about,
     profileUpdateStatus,
-    hasToken
+    hasToken,
   };
 }
 function composeUpdateImage() {
@@ -305,38 +345,40 @@ function composeUpdateImage() {
   const profileImage = ref(store.state.authUser.user.avatar);
   const pictureStatuses = ["INIT", "PREVIEW", "UPLOADING", "ERROR"];
   const pictureStatus = ref<string>(pictureStatuses[0]);
-  const imageToUpload = ref<File>(new File([], ""))
+  const imageToUpload = ref<File>(new File([], ""));
   function changeProfile() {
     (pictureFormUpload.value as unknown as HTMLInputElement).click();
   }
   function changePic(e: Event) {
     if (e.target) {
-      const inputElement = e.target as HTMLInputElement
-      const files = inputElement.files
+      const inputElement = e.target as HTMLInputElement;
+      const files = inputElement.files;
       pictureStatus.value = pictureStatuses[1];
       if (!files) {
-        return
+        return;
       }
-      const fileReader = new FileReader()
-      fileReader.addEventListener('load', (e) => {
-        profileImage.value = URL.createObjectURL(files[0])
-        imageToUpload.value = files[0]
-      })
-      fileReader.readAsArrayBuffer(files[0])
+      const fileReader = new FileReader();
+      fileReader.addEventListener("load", (e) => {
+        profileImage.value = URL.createObjectURL(files[0]);
+        imageToUpload.value = files[0];
+      });
+      fileReader.readAsArrayBuffer(files[0]);
     }
   }
 
   async function sendPhoto() {
     pictureStatus.value = pictureStatuses[2];
-    const uploadRequest = await auth.uploadPicture(imageToUpload.value)
+    const uploadRequest = await auth.uploadPicture(imageToUpload.value);
     if (uploadRequest.status == 200) {
       pictureStatus.value = pictureStatuses[0];
       const responseJson = await ((await uploadRequest.json()) as Promise<{
         image: string;
       }>);
+      const newImageUrl = responseJson.image + "?" + new Date().getTime()
+      profileImage.value = newImageUrl
       store.commit(
         "authUser/setUserPicture",
-        responseJson.image + "?" + new Date().getTime()
+        newImageUrl
       );
     } else {
       pictureStatus.value = pictureStatuses[3];
@@ -365,11 +407,20 @@ function composeDeployToken() {
   const tokenDeployStatuses = ["INIT", "DEPLOYING", "SUCCESS", "ERROR"];
   const tokenDeployStatus = ref(tokenDeployStatuses[0]);
   const tokenTestnetTx = ref("");
+  const tokenTestnetAddress = ref("");
   const checkoutLink = computed(() => {
-    const encodedName = encodeURIComponent(tokenName.value)
-    const encodedSymbol = encodeURIComponent(tokenSymbol.value)
-    return `${import.meta.env.VITE_BACKEND_URL}/create-checkout-session?tokenName=${encodedName}&tokenSymbol=${encodedSymbol}`
+    const encodedName = encodeURIComponent(tokenName.value);
+    const encodedSymbol = encodeURIComponent(tokenSymbol.value);
+    return `${
+      import.meta.env.VITE_BACKEND_URL
+    }/create-checkout-session?tokenName=${encodedName}&tokenSymbol=${encodedSymbol}`;
   });
+  function onTestDeployButtonPress() {
+    if(tokenDeployStatus.value === "INIT") {
+      deployToTestNet()
+    }
+    openModal()
+  }
   async function deployToTestNet() {
     tokenDeployStatus.value = tokenDeployStatuses[1];
     const apiResponse = await ethApi.deployTokenToTestNet({
@@ -380,11 +431,12 @@ function composeDeployToken() {
       tokenDeployStatus.value = tokenDeployStatuses[2];
       const responseJson = await (apiResponse.json() as Promise<TokenResponse>);
       tokenTestnetTx.value = responseJson.tx;
+      tokenTestnetAddress.value = responseJson.address;
     } else {
       tokenDeployStatus.value = tokenDeployStatuses[3];
     }
   }
-  function openModal(e: Event) {
+  function openModal() {
     modalIsOpen.value = !modalIsOpen.value;
   }
   return {
@@ -395,7 +447,9 @@ function composeDeployToken() {
     openModal,
     tokenDeployStatus,
     tokenTestnetTx,
+    tokenTestnetAddress,
     checkoutLink,
+    onTestDeployButtonPress
   };
 }
 </script>
