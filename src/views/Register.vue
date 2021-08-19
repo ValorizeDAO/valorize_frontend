@@ -177,7 +177,7 @@ export default defineComponent({
     }
 
     return {
-      ...useDebounced(2000, fetchUserName),
+      ...useDebounced(500, fetchUserName),
       email,
       password,
       passwordVerify,

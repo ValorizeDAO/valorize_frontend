@@ -6,9 +6,13 @@ export default function composeTokenInfo(username: string) {
   const tokenCap = ref<number>(0)
   const tokenEthBalance = ref<number>(0)
   const ethPrice = ref<number>(0.0)
+  const ethToCheck = ref<number>(0)
   const tokenPrice = computed(() => {
     return (ethPrice.value * tokenEthBalance.value) / (tokenCap.value === 0 ? 1 : tokenCap.value)
   })
+  function buyToken() {
+    console.log("buy")
+  }
   onMounted(async () => {
     fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/" + username + "/token")
       .then((response) => {
@@ -16,6 +20,7 @@ export default function composeTokenInfo(username: string) {
           tokenStatus.value = tokenStatuses[3]
           return
         }
+        tokenStatus.value = tokenStatuses[2]
         return response.json()
       })
       .then((result) => {
@@ -41,6 +46,7 @@ export default function composeTokenInfo(username: string) {
     tokenCap,
     tokenEthBalance,
     ethPrice,
-    tokenStatus
+    tokenStatus,
+    ethToCheck,
   }
 }
