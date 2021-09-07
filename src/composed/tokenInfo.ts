@@ -16,6 +16,7 @@ export default function composeTokenInfo(username: string) {
           tokenStatus.value = tokenStatuses[3]
           return
         }
+        tokenStatus.value = tokenStatuses[2]
         return response.json()
       })
       .then((result) => {
@@ -41,6 +42,6 @@ export default function composeTokenInfo(username: string) {
     tokenCap,
     tokenEthBalance,
     ethPrice,
-    tokenStatus
+    tokenStatus,
   }
 }

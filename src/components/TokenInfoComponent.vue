@@ -11,7 +11,7 @@
 
       <transition name="fade" mode="out-in">
         <ImageContainer v-if="showImage">
-          <img class="rounded border-2 border-black p-6 bg-purple-100 mb-6 text-center md:text-left" :src="'https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl='+tokenInfo.address+'&choe=UTF-8'" alt="">
+          <img class="rounded border-2 border-black h-52 w-52 p-6 bg-purple-100 mb-6 text-center md:text-left" :src="'https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl='+tokenInfo.address+'&choe=UTF-8'" alt="">
         </ImageContainer>
         <button v-else @click.prevent="showImage=true" class="btn bg-burple-100 mb-4 w-48">Show QR Code</button>
       </transition>
@@ -58,9 +58,10 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from "vue";
+import {ref, defineComponent, Ref} from "vue";
 import composeTokenInfo from "../composed/tokenInfo"
 import composeUserInfo from "../composed/userInfo"
+import composeDebounced from "../composed/useDebounced"
 import ImageContainer from "./ImageContainer.vue";
 export default defineComponent({
   name: "TokenInfoComponent",
@@ -94,7 +95,8 @@ export default defineComponent({
       toggleBuyModal,
       modalIsOpen,
       ...composeTokenInfo(props.username),
-      ...composeUserInfo(props.username)
+      ...composeUserInfo(props.username),
+      ...composeDebounced(300, checkEth)
     }
   },
 });

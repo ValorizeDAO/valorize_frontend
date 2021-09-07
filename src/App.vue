@@ -9,7 +9,8 @@
         w-screen
         flex
         items-center
-        px-16
+        px-4
+        md:px-16
         justify-between
       "
     >
@@ -24,12 +25,12 @@
           </span>
         </button>
         </div>
-        <div :class="showBlock ? '' : 'hidden'" class="absolute sm:relative bg-white -ml-24 sm:block">
-          <div v-if="!authenticated" class="p-8 mb-8 sm:pr-6 flex flex-col sm:flex-row">
-            <router-link class="pr-4" to="/login">Login</router-link>
+        <div :class="showBlock ? '' : 'hidden'" class="absolute left-0 sm:relative bg-white border-b-2 border-black sm:border-0 sm:bg-transparent sm:block">
+          <div @click="triggerBlock" v-if="!authenticated" class="w-screen sm:w-full left-0 px-10 py-4 sm:pr-6 flex flex-col sm:flex-row text-center">
+            <router-link class="pb-8 sm:pb-0 sm:pr-4" to="/login">Login</router-link>
             <router-link to="/register">Register</router-link>
           </div>
-          <div v-else class="px-10 py-4 sm:pr-6 flex flex-col sm:flex-row">
+          <div v-else @click="triggerBlock" class="w-screen sm:w-full left-0 px-10 py-4 sm:pr-6 flex flex-col sm:flex-row text-center">
             <router-link to="/edit-profile" class="px-4 py-2 sm:mr-4">Edit Profile</router-link>
             <button @click="logout" class="px-4 py-2">Logout</button>
           </div>
