@@ -177,7 +177,7 @@
           </button>
         </div>
       </div>
-      <Modal :modal-is-open="modalIsOpen" @toggle="toggleModal">
+      <Modal :modal-is-open="modalIsOpen" @toggle="toggleModal" :body-class="['bg-paper-light']">
       <transition name="fade" mode="out-in">
         <div class="text-center" v-if="tokenDeployStatus === 'INIT'">
           <h1 class="text-2xl">
@@ -201,7 +201,6 @@
           <p class="my-4 max-w-sm mx-auto">
             Coin will be on the Ropsten Ethereum test network, you will have a
             chance to confirm details there
-            <button @click.stop="toggle">close</button>
           </p>
           <SvgLoader class="text-center mx-auto h-24" fill="#"></SvgLoader>
         </div>

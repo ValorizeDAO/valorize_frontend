@@ -4,10 +4,9 @@
     id="modal-bg"
     v-if="modalIsOpen"
     class="
-      mt-20
       h-screen
       w-screen
-      absolute
+      fixed
       top-0
       left-0
       bg-black bg-opacity-70
@@ -19,7 +18,8 @@
     <div
       id="modal-body"
       @click.stop
-      class="bg-paper-light w-full sm:w-9/12 mx-auto px-10 sm:-mt-48"
+      class="w-full sm:w-9/12 mx-auto px-10 sm:-mt-48"
+      :class="bodyClass"
     >
       <div class="flex w-full justify-end">
         <button
@@ -54,6 +54,9 @@ export default defineComponent({
     modalIsOpen: {
       type: Boolean,
       required: true,
+    },
+    bodyClass: {
+      default: ['bg-paper-light']
     }
   },
   setup(props, { emit }) {
