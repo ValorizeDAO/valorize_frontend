@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vueuse/head": "^0.6.0",
+    "ethers": "^5.4.6",
     "vite-ssr": "^0.10.5",
     "vue": "3",
     "vue-router": "4",
