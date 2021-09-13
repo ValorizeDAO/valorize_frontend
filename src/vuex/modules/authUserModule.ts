@@ -59,13 +59,13 @@ export default {
         commit("authenticated", false)
       }
       state.checkingAuth = false
-    }
-  }
+    },
+  },
 }
 
 interface UserState {
-  checkingAuth: boolean,
-  authenticated: boolean,
-  hasToken: boolean,
-  user: User
+  checkingAuth: boolean;
+  authenticated: boolean;
+  hasToken: boolean;
+  user: User;
 }

@@ -1,12 +1,20 @@
 
 <template>
-  <div id="edit-profile-page" class="md:grid grid-cols-12 gap-8 min-h-screen px-8 md:p-0">
-    <div id="left-pane" class="col-span-12 md:col-span-7 md:pl-16 xl:pr-16 pt-4 h-full">
+  <div
+    id="edit-profile-page"
+    class="md:grid grid-cols-12 gap-8 min-h-screen px-8 md:p-0"
+  >
+    <div
+      id="left-pane"
+      class="col-span-12 md:col-span-7 md:pl-16 xl:pr-16 pt-4 h-full"
+    >
       <div class="">
         <div class="sm:flex justify-between flex-wrap">
           <div class="">
             <h1 class="text-3xl font-black sm:mb-6">Your Profile</h1>
-            <h2 class="text-2xl font-black mb-4 sm:mb-0">{{ user.username }}</h2>
+            <h2 class="text-2xl font-black mb-4 sm:mb-0">
+              {{ user.username }}
+            </h2>
           </div>
           <div class="my-8">
             <router-link :to="'/u/' + user.username" class="btn min-h-12 pt-1">
@@ -107,7 +115,9 @@
                 />
               </label>
               <div class="text-center">
-                <button class="btn w-48 mt-24 bg-purple-100 mx-auto">Update Info</button>
+                <button class="btn w-48 mt-24 bg-purple-100 mx-auto">
+                  Update Info
+                </button>
               </div>
             </form>
           </div>
@@ -122,7 +132,8 @@
         pr-4
         md:px-16
         md:pt-4
-        md:border-l-2 border-black
+        md:border-l-2
+        border-black
         h-full
         md:bg-paper-light
       "
@@ -158,126 +169,83 @@
         </label>
         <div class="text-center">
           <p class="my-8">(Get 1000 of this token by deploying the contract)</p>
-          <button @click="onTestDeployButtonPress" class="btn w-48 my-4 bg-paper-darker">
+          <button
+            @click="onTestDeployButtonPress"
+            class="btn w-48 my-4 bg-paper-darker"
+          >
             Test Deploy {{ tokenSymbol }}
           </button>
         </div>
       </div>
-      <div
-        @click.stop="openModal"
-        id="modal-bg"
-        v-if="modalIsOpen"
-        class="
-          mt-20
-          h-screen
-          w-screen
-          absolute
-          top-0
-          left-0
-          bg-black bg-opacity-70
-          flex
-          justify-center
-          items-center
-        "
-      >
-        <div
-          id="modal-body"
-          @click.stop
-          class="bg-paper-light w-full sm:w-9/12 mx-auto px-10 sm:-mt-48"
-        >
-          <div class="flex w-full justify-end">
-            <button
-              @click="openModal"
-              class="my-2 -ml-8 p-1 border-black border rounded"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-5 w-5"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </button>
-          </div>
-          <div class="my-4 mx-auto">
-            <transition name="fade" mode="out-in">
-              <div
-                class="text-center"
-                v-if="tokenDeployStatus === 'INIT'"
-              >
-                <h1 class="text-2xl">
-                  Deploy <span class="font-black mb-12">{{ tokenName }}</span>
-                </h1>
-                <button
-                  @click="deployToTestNet"
-                  class="btn w-48 mt-4 bg-purple-50"
-                >
-                  Test Deploy {{ tokenSymbol }}
-                </button>
-              </div>
-              <div v-else-if="tokenDeployStatus === 'ERROR'" class="text-center mb-12">
-                <h2 class="font-black text-xl">Error Deploying {{ tokenName }}</h2>
-                <p class="mt-6">Try again: </p>
-                <button
-                    @click="deployToTestNet"
-                    class="btn w-48 mt-4 bg-purple-50"
-                >
-                  Test Deploy {{ tokenSymbol }}
-                </button>
-              </div>
-              <div
-                  v-else-if="tokenDeployStatus === 'DEPLOYING'"
-              >
-                <p class="my-4 max-w-sm mx-auto">
-                  Coin will be on the Ropsten Ethereum test network, you will
-                  have a chance to confirm details there
-                </p>
-                  <SvgLoader
-                      class="text-center mx-auto h-24"
-                      fill="#"
-                  ></SvgLoader>
-              </div>
-              <div
-                v-else-if="tokenDeployStatus === 'SUCCESS'"
-                class="text-center my-6"
-              >
-                <h1 class="text-2xl font-black">
-                  Woo! You can now review the test version of {{ tokenName }}!
-                </h1>
-                <p class="my-6">
-                  Here is the launching transaction:<br> <a
-                    class="font-black underline text-center text-lg"
-                    :href="'https://ropsten.etherscan.io/tx/' + tokenTestnetTx"
-                    target="_blank"
-                  >
-                    {{ tokenTestnetTx.substr(0, 15) }}...
-                  </a>
-                </p>
-                <p>And this is the deployed test contract:<br> <a
-                    class="font-black underline text-center text-lg"
-                    :href="'https://ropsten.etherscan.io/address/' + tokenTestnetAddress"
-                    target="_blank"
-                >
-                  {{ tokenTestnetAddress.substr(0, 15) }}...
-                </a><br>(Takes a minute to appear)</p>
-                <p class="mt-12 lg:w-2/5 mb-4 mx-auto">The links above are on the ropsten test network, a playground to verify how your tokens will work once
-                  they are live on the main ethereum network (Mainnet).
-                </p>
-                <a :href="checkoutLink">
-                  <div class="btn md:2/3 lg:w-1/3 mx-auto bg-purple-100 mb-12">
-                    Deploy on Ethereum for $10
-                  </div>
-                </a>
-              </div>
-            </transition>
-          </div>
+      <Modal :modal-is-open="modalIsOpen" @toggle="toggleModal" :body-class="['bg-paper-light']">
+      <transition name="fade" mode="out-in">
+        <div class="text-center" v-if="tokenDeployStatus === 'INIT'">
+          <h1 class="text-2xl">
+            Deploy <span class="font-black mb-12">{{ tokenName }}</span>
+          </h1>
+          <button @click="deployToTestNet" class="btn w-48 mt-4 bg-purple-50">
+            Test Deploy {{ tokenSymbol }}
+          </button>
         </div>
-      </div>
+        <div
+          v-else-if="tokenDeployStatus === 'ERROR'"
+          class="text-center mb-12"
+        >
+          <h2 class="font-black text-xl">Error Deploying {{ tokenName }}</h2>
+          <p class="mt-6">Try again:</p>
+          <button @click="deployToTestNet" class="btn w-48 mt-4 bg-purple-50">
+            Test Deploy {{ tokenSymbol }}
+          </button>
+        </div>
+        <div v-else-if="tokenDeployStatus === 'DEPLOYING'">
+          <p class="my-4 max-w-sm mx-auto">
+            Coin will be on the Ropsten Ethereum test network, you will have a
+            chance to confirm details there
+          </p>
+          <SvgLoader class="text-center mx-auto h-24" fill="#"></SvgLoader>
+        </div>
+        <div
+          v-else-if="tokenDeployStatus === 'SUCCESS'"
+          class="text-center my-6"
+        >
+          <h1 class="text-2xl font-black">
+            Woo! You can now review the test version of {{ tokenName }}!
+          </h1>
+          <p class="my-6">
+            Here is the launching transaction:<br />
+            <a
+              class="font-black underline text-center text-lg"
+              :href="'https://ropsten.etherscan.io/tx/' + tokenTestnetTx"
+              target="_blank"
+            >
+              {{ tokenTestnetTx.substr(0, 15) }}...
+            </a>
+          </p>
+          <p>
+            And this is the deployed test contract:<br />
+            <a
+              class="font-black underline text-center text-lg"
+              :href="
+                'https://ropsten.etherscan.io/address/' + tokenTestnetAddress
+              "
+              target="_blank"
+            >
+              {{ tokenTestnetAddress.substr(0, 15) }}... </a
+            ><br />(Takes a minute to appear)
+          </p>
+          <p class="mt-12 lg:w-2/5 mb-4 mx-auto">
+            The links above are on the ropsten test network, a playground to
+            verify how your tokens will work once they are live on the main
+            ethereum network (Mainnet).
+          </p>
+          <a :href="checkoutLink">
+            <div class="btn md:2/3 lg:w-1/3 mx-auto bg-purple-100 mb-12">
+              Deploy on Ethereum for $10
+            </div>
+          </a>
+        </div>
+      </transition>
+      </Modal>
     </div>
   </div>
 </template>
@@ -291,10 +259,11 @@ import { useStore } from "vuex";
 import SvgLoader from "../components/SvgLoader.vue";
 import ImageContainer from "../components/ImageContainer.vue";
 import TokenInfoComponent from "../components/TokenInfoComponent.vue";
+import Modal from "../components/Modal.vue";
 export default defineComponent({
   name: "EditProfilePage",
   props: {},
-  components: { SvgLoader, ImageContainer, TokenInfoComponent },
+  components: { SvgLoader, ImageContainer, TokenInfoComponent, Modal },
   setup() {
     return {
       ...composeProfileInfo(),
@@ -374,12 +343,9 @@ function composeUpdateImage() {
       const responseJson = await ((await uploadRequest.json()) as Promise<{
         image: string;
       }>);
-      const newImageUrl = responseJson.image + "?" + new Date().getTime()
-      profileImage.value = newImageUrl
-      store.commit(
-        "authUser/setUserPicture",
-        newImageUrl
-      );
+      const newImageUrl = responseJson.image + "?" + new Date().getTime();
+      profileImage.value = newImageUrl;
+      store.commit("authUser/setUserPicture", newImageUrl);
     } else {
       pictureStatus.value = pictureStatuses[3];
     }
@@ -416,10 +382,10 @@ function composeDeployToken() {
     }/create-checkout-session?tokenName=${encodedName}&tokenSymbol=${encodedSymbol}`;
   });
   function onTestDeployButtonPress() {
-    if(tokenDeployStatus.value === "INIT") {
-      deployToTestNet()
+    if (tokenDeployStatus.value === "INIT") {
+      deployToTestNet();
     }
-    openModal()
+    toggleModal();
   }
   async function deployToTestNet() {
     tokenDeployStatus.value = tokenDeployStatuses[1];
@@ -436,20 +402,20 @@ function composeDeployToken() {
       tokenDeployStatus.value = tokenDeployStatuses[3];
     }
   }
-  function openModal() {
+  function toggleModal() {
     modalIsOpen.value = !modalIsOpen.value;
   }
   return {
     tokenName,
     tokenSymbol,
-    modalIsOpen,
     deployToTestNet,
-    openModal,
+    toggleModal,
+    modalIsOpen,
     tokenDeployStatus,
     tokenTestnetTx,
     tokenTestnetAddress,
     checkoutLink,
-    onTestDeployButtonPress
+    onTestDeployButtonPress,
   };
 }
 </script>
