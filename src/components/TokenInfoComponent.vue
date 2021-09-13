@@ -4,7 +4,21 @@
     <h2 class="font-black text-2xl">
       {{ tokenInfo.name }} ({{ tokenInfo.symbol }})
     </h2>
-    <p class="my-4">Address: {{ tokenInfo.address }}</p>
+    <p class="my-4">
+      Address:
+      <a
+              class="font-black underline text-center text-lg"
+              :href="
+                'https://ropsten.etherscan.io/address/' + tokenInfo.address
+              "
+              target="_blank"
+            >
+              {{ tokenInfo.address &&
+                  tokenInfo.address.substr(0, 5) 
+                  + "..." + 
+                  tokenInfo.address.substr(tokenInfo.address.length - 2, tokenInfo.address.length - 1) }} </a
+            >
+    </p>
     <div
       id="token-info-actions"
       class="mx-auto flex justify-center h-56 items-center"
@@ -70,7 +84,7 @@
           <div class="border-black p-10">
             <div class="flex justify-between w-100">
               Ether to Stake:
-              <button @click="ethToCheck -= 0.00001">
+              <button @click="ethToCheck -= 0.0001">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-6 w-6"
@@ -89,11 +103,11 @@
               <input
                 v-model="ethToCheck"
                 @input="debounceListener"
-                step=".00001"
+                step=".0001"
                 type="number"
                 class="bg-transparent border-b-2 border-black"
               />
-              <button @click="ethToCheck += 0.00001">
+              <button @click="ethToCheck += 0.0001">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   class="h-6 w-6"
@@ -120,10 +134,10 @@
             <div>
               Amount of {{ tokenInfo.symbol }} to be received for
               {{ ethToCheck }} Eth <br /><strong>{{
-                amountToBeReceivedFromStakingEth
+                  amountToBeReceivedFromStakingEth
               }}</strong>
               {{
-                amountToBeReceivedFromStakingEth === "" ? "" : tokenInfo.symbol
+                amountToBeReceivedFromStakingEth && tokenInfo.symbol
               }}
             </div>
             </div>
@@ -147,6 +161,7 @@ import composeUserInfo from "../composed/userInfo";
 import composeDebounced from "../composed/useDebounced";
 import ImageContainer from "./ImageContainer.vue";
 import Modal from "./Modal.vue";
+import { BigNumber, ethers } from "ethers";
 export default defineComponent({
   name: "TokenInfoComponent",
   props: ["username"],
@@ -179,7 +194,7 @@ export default defineComponent({
         toBuyer: string;
         toOwner: string;
       };
-      amountToBeReceivedFromStakingEth.value = response.toBuyer;
+      amountToBeReceivedFromStakingEth.value = ethers.utils.formatEther(response.toBuyer).toString();
     }
     function toggleBuyModal() {
       modalIsOpen.value = !modalIsOpen.value;
@@ -190,6 +205,7 @@ export default defineComponent({
       ethToCheck,
       toggleBuyModal,
       modalIsOpen,
+      ethers,
       ...composeTokenInfo(props.username),
       ...composeUserInfo(props.username),
       ...composeDebounced(300, checkEth),

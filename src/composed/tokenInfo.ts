@@ -1,13 +1,14 @@
 import { computed, onMounted, ref } from "vue"
+import { ethers } from "ethers"
 
 export default function composeTokenInfo(username: string) {
   const tokenStatuses = ["INIT", "LOADING", "SUCCESS", "FAIL"]
   const tokenStatus = ref<string>(tokenStatuses[0])
-  const tokenCap = ref<number>(0)
+  const tokenCap = ref<string>("")
   const tokenEthBalance = ref<number>(0)
   const ethPrice = ref<number>(0.0)
   const tokenPrice = computed(() => {
-    return (ethPrice.value * tokenEthBalance.value) / (tokenCap.value === 0 ? 1 : tokenCap.value)
+    return (ethPrice.value * tokenEthBalance.value) / (tokenCap.value === "" ? 1 : parseFloat(tokenCap.value))
   })
   onMounted(async () => {
     fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/" + username + "/token")
@@ -21,7 +22,7 @@ export default function composeTokenInfo(username: string) {
       })
       .then((result) => {
         tokenEthBalance.value = parseInt(result.ether_staked)
-        tokenCap.value = parseInt(result.total_minted)
+        tokenCap.value = ethers.utils.formatUnits(result.total_minted, "ether")
       })
       .catch((error) => console.log(error))
     fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/utils/price")
