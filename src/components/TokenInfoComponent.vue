@@ -13,10 +13,8 @@
               "
               target="_blank"
             >
-              {{ tokenInfo.address &&
-                  tokenInfo.address.substr(0, 5) 
-                  + "..." + 
-                  tokenInfo.address.substr(tokenInfo.address.length - 2, tokenInfo.address.length - 1) }} </a
+              {{ tokenInfo.address && formatAddress(tokenInfo.address) }}
+              </a
             >
     </p>
     <div
@@ -159,9 +157,10 @@ import { ref, defineComponent } from "vue";
 import composeTokenInfo from "../composed/tokenInfo";
 import composeUserInfo from "../composed/userInfo";
 import composeDebounced from "../composed/useDebounced";
+import { formatAddress } from "../services/formatAddress";
 import ImageContainer from "./ImageContainer.vue";
 import Modal from "./Modal.vue";
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 export default defineComponent({
   name: "TokenInfoComponent",
   props: ["username"],
@@ -206,6 +205,7 @@ export default defineComponent({
       toggleBuyModal,
       modalIsOpen,
       ethers,
+      formatAddress,
       ...composeTokenInfo(props.username),
       ...composeUserInfo(props.username),
       ...composeDebounced(300, checkEth),
