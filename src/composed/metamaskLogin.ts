@@ -1,20 +1,8 @@
-
-<template>
-  <div>
-    <button @click="metamaskAuthenticate" class="border border-1 border-grey-600 p-2 rounded-md">
-      Sign in with metamask
-    </button>
-    <div v-if="error" v-html="errorText" class="text-red-700 mt-2"></div>
-  </div>
-
-</template>
-
-<script lang="ts">
-import { ref, defineComponent } from "vue";
+import { ref } from "vue";
 import Ethereum from "../types/Ethereum"
-export default defineComponent({
-  name: "MetamaskLogin",
-  setup: () => {
+import { ethers } from "ethers"
+import { CreatorTokenFactory } from "../types/CreatorTokenFactory"
+export default function metamaskLogin(address: string) { 
     const count = ref(0)
     const metamaskAuthStatuses = ["INIT", "REQUESTED", "PROCESSING", "TIMEOUT", "SUCCESS", "ERROR", "UNAVAILABLE"];
     const metamaskStatus = ref(metamaskAuthStatuses[0]);
@@ -28,11 +16,12 @@ export default defineComponent({
       } else {
         metamaskStatus.value = metamaskAuthStatuses[6];
       }
+      console.log({ ethereum });
+      const signer = (new ethers.providers.Web3Provider(ethereum)).getSigner()
+      console.log({ signer });
+      const tokenContract = new CreatorTokenFactory(signer);
+      tokenContract.attach(address)
+      console.log(tokenContract);
     }
     return { count, metamaskStatus, errorText, metamaskAuthenticate }
-  },
-});
-</script>
-
-<style scoped>
-</style>
+}

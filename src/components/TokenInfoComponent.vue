@@ -7,15 +7,12 @@
     <p class="my-4">
       Address:
       <a
-              class="font-black underline text-center text-lg"
-              :href="
-                'https://ropsten.etherscan.io/address/' + tokenInfo.address
-              "
-              target="_blank"
-            >
-              {{ tokenInfo.address && formatAddress(tokenInfo.address) }}
-              </a
-            >
+        class="font-black underline text-center text-lg"
+        :href="'https://ropsten.etherscan.io/address/' + tokenInfo.address"
+        target="_blank"
+      >
+        {{ tokenInfo.address && formatAddress(tokenInfo.address) }}
+      </a>
     </p>
     <div
       id="token-info-actions"
@@ -76,7 +73,7 @@
         </button>
         <Modal
           :modal-is-open="modalIsOpen"
-          :body-class="['bg-white', 'border',  'max-w-2xl']"
+          :body-class="['bg-white', 'border', 'max-w-2xl']"
           @toggle="toggleBuyModal"
         >
           <div class="border-black p-10">
@@ -123,21 +120,24 @@
               </button>
             </div>
             <div class="text-center">
-            <button
-              @click="checkEth"
-              class="btn bg-purple-100 my-8 w-42 mx-auto"
-            >
-              Calculate Price for {{ tokenInfo.symbol }}
-            </button>
-            <div>
-              Amount of {{ tokenInfo.symbol }} to be received for
-              {{ ethToCheck }} Eth <br /><strong>{{
+              <button
+                @click="checkEth"
+                class="btn bg-purple-100 my-8 w-42 mx-auto"
+              >
+                Calculate Price for {{ tokenInfo.symbol }}
+              </button>
+              <div>
+                Amount of {{ tokenInfo.symbol }} to be received for
+                {{ ethToCheck }} Eth <br /><strong>{{
                   amountToBeReceivedFromStakingEth
-              }}</strong>
-              {{
-                amountToBeReceivedFromStakingEth && tokenInfo.symbol
-              }}
-            </div>
+                }}</strong>
+                {{ amountToBeReceivedFromStakingEth && tokenInfo.symbol }}
+              </div>
+              <div class="flex justify-center my-4">
+                <button @click="metamaskAuthenticate" class="btn mx-4">
+                  Buy</button
+                ><button class="btn mx-4">Sell</button>
+              </div>
             </div>
           </div>
         </Modal>
@@ -157,6 +157,7 @@ import { ref, defineComponent } from "vue";
 import composeTokenInfo from "../composed/tokenInfo";
 import composeUserInfo from "../composed/userInfo";
 import composeDebounced from "../composed/useDebounced";
+import metamaskLogin from "../composed/metamaskLogin";
 import { formatAddress } from "../services/formatAddress";
 import ImageContainer from "./ImageContainer.vue";
 import Modal from "./Modal.vue";
@@ -193,7 +194,9 @@ export default defineComponent({
         toBuyer: string;
         toOwner: string;
       };
-      amountToBeReceivedFromStakingEth.value = ethers.utils.formatEther(response.toBuyer).toString();
+      amountToBeReceivedFromStakingEth.value = ethers.utils
+        .formatEther(response.toBuyer)
+        .toString();
     }
     function toggleBuyModal() {
       modalIsOpen.value = !modalIsOpen.value;
