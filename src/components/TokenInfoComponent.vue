@@ -134,7 +134,7 @@
                 {{ amountToBeReceivedFromStakingEth && tokenInfo.symbol }}
               </div>
               <div class="flex justify-center my-4">
-                <button @click="metamaskAuthenticate" class="btn mx-4">
+                <button @click="sendBuyTransactionToCreatorToken(tokenInfo.address, ethToCheck)" class="btn mx-4">
                   Buy</button
                 ><button class="btn mx-4">Sell</button>
               </div>
@@ -211,6 +211,7 @@ export default defineComponent({
       formatAddress,
       ...composeTokenInfo(props.username),
       ...composeUserInfo(props.username),
+      ...metamaskLogin(),
       ...composeDebounced(300, checkEth),
     };
   },
