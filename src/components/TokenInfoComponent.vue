@@ -135,9 +135,38 @@
               </div>
               <div class="flex justify-center my-4">
                 <button @click="sendBuyTransactionToCreatorToken(tokenInfo.address, ethToCheck)" class="btn mx-4">
-                  Buy</button
-                ><button class="btn mx-4">Sell</button>
+                  Buy Now
+                </button>
               </div>
+              <transition name="fade" mode="out-in">
+                <div v-if="metamaskStatus === 'INIT'">
+                </div>
+                <div v-else-if="metamaskStatus === 'REQUESTED'">
+                  please enable metamask or a web3 provider
+                </div>
+                <div v-else-if="metamaskStatus === 'TIMEOUT'">
+                  timeout
+                </div>
+                <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED'">
+                  enabled
+                </div>
+                <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
+                  To buy tokens, please enable a web3 provider such as <a href="https://metamask.io/" class="font-black underline">Metamask</a>
+                </div>
+                <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
+                  Please confirm details in a web3 provider like Metamask
+                </div>
+                <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
+                  You just bought {{ amountToBeReceivedFromStakingEth }} {{tokenInfo.symbol }}<br> 
+                  See the transaction here:{{ formatAddress(buyTxHash) }}
+                </div>
+                <div v-else-if="metamaskStatus === 'TX_REJECTED'">
+                  Please verify the details and try again.
+                </div>
+                <div v-else-if="metamaskStatus === 'TX_ERROR'">
+                  There was an error processing the request to buy {{ tokenInfo.symbol }}.
+                </div>
+              </transition>
             </div>
           </div>
         </Modal>
