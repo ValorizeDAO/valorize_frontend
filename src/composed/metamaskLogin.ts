@@ -20,7 +20,7 @@ export default function metamaskLogin() {
   const buyTxHash = ref("");
   const buyingAddress = ref("");
   function loadTokenData(address: string) {
-    const ethereum: Ethereum = (window as any).ethereum;
+    const ethereum: any = (window as any).ethereum;
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     const tokenContract = new CreatorTokenFactory(signer);
