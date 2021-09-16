@@ -73,8 +73,9 @@
 <script lang="ts">
 import { ref, defineComponent } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import SvgLoader from "../components/SvgLoader.vue";
+import auth from "../services/authentication";
 
 export default defineComponent({
   name: "Login",
@@ -83,6 +84,7 @@ export default defineComponent({
   setup: () => {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     const name = ref("");
     const password = ref("");
     const authError = ref(false);
@@ -99,7 +101,6 @@ export default defineComponent({
         body: formdata,
         credentials: "include",
       } as RequestInit;
-
       fetch(import.meta.env.VITE_BACKEND_URL + "/login", requestOptions)
         .then((response) => {
           if (response.status !== 200) {
@@ -111,7 +112,16 @@ export default defineComponent({
           if (!authError.value) {
             store.state.authenticated = true;
             store.commit("authUser/setUser", result);
-            router.push("/");
+            if (route.query.redirectUri && route.query.registerAddress) {
+              auth.addExternalWalletToAccount(
+                  route.query.registerAddress.toString()
+                )
+                .then(() => {
+                  router.push(decodeURI(route.query.redirectUri.toString()));
+                });
+            } else {
+              router.push("/");
+            }
           }
           authenticating.value = false;
         })

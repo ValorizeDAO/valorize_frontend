@@ -17,7 +17,8 @@ export default function metamaskLogin() {
     "TX_ERROR"                 //8
   ];
   const metamaskStatus = ref(metamaskAuthStatuses[0]);
-  const buyTxHash = ref("")
+  const buyTxHash = ref("");
+  const buyingAddress = ref("");
   function loadTokenData(address: string) {
     const ethereum: Ethereum = (window as any).ethereum;
     const provider = new ethers.providers.Web3Provider(ethereum);
@@ -43,6 +44,7 @@ export default function metamaskLogin() {
       const account = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
       metamaskStatus.value = metamaskAuthStatuses[3]
       console.log({ account });
+      buyingAddress.value = account[0]
       Auth.addExternalWalletToAccount(account[0])
 
       
@@ -63,5 +65,5 @@ export default function metamaskLogin() {
       metamaskStatus.value = metamaskAuthStatuses[5]
     }
   }
-  return { count, metamaskStatus, buyTxHash, sendBuyTransactionToCreatorToken };
+  return { count, metamaskStatus, buyTxHash, buyingAddress, sendBuyTransactionToCreatorToken };
 }

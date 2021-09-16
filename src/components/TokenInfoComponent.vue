@@ -51,16 +51,31 @@
     </div>
     <div id="coin-data" v-if="tokenStatus === 'SUCCESS'">
       <div class="flex justify-between flex-wrap">
-        <div><h3 class="text-l"><span class="font-black">${{ currency(tokenPrice.toString()) }}</span> per token</h3></div>
         <div>
           <h3 class="text-l">
-            <span class="font-black">{{ currency(tokenCap, { separator: ',' }) }}</span> in circulation
+            <span class="font-black"
+              >${{ currency(tokenPrice.toString()) }}</span
+            >
+            per token
           </h3>
         </div>
         <div>
           <h3 class="text-l">
-            <strong class="font-black">${{ currency(usdLockedInContract) }} </strong>
-            USD Locked in {{ tokenInfo.symbol }}  <strong class="font-black">({{ethers.utils.formatEther(tokenEthBalance)}} ETH)</strong>
+            <span class="font-black">{{
+              currency(tokenCap, { separator: "," })
+            }}</span>
+            in circulation
+          </h3>
+        </div>
+        <div>
+          <h3 class="text-l">
+            <strong class="font-black"
+              >${{ currency(usdLockedInContract) }}
+            </strong>
+            USD Locked in {{ tokenInfo.symbol }}
+            <strong class="font-black"
+              >({{ ethers.utils.formatEther(tokenEthBalance) }} ETH)</strong
+            >
           </h3>
         </div>
       </div>
@@ -134,37 +149,63 @@
                 {{ amountToBeReceivedFromStakingEth && tokenInfo.symbol }}
               </div>
               <div class="flex justify-center my-4">
-                <button @click="sendBuyTransactionToCreatorToken(tokenInfo.address, ethToCheck)" class="btn mx-4 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-400" :disabled="ethToCheck === 0">
+                <button
+                  @click="
+                    sendBuyTransactionToCreatorToken(
+                      tokenInfo.address,
+                      ethToCheck
+                    )
+                  "
+                  class="
+                    btn
+                    mx-4
+                    disabled:bg-gray-200
+                    disabled:text-gray-400
+                    disabled:border-gray-400
+                  "
+                  :disabled="ethToCheck === 0"
+                >
                   Buy Now
                 </button>
               </div>
               <transition name="fade" mode="out-in">
-                <div v-if="metamaskStatus === 'INIT'">
-                </div>
+                <div v-if="metamaskStatus === 'INIT'"></div>
                 <div v-else-if="metamaskStatus === 'REQUESTED'">
                   please enable metamask or a web3 provider
                 </div>
-                <div v-else-if="metamaskStatus === 'TIMEOUT'">
-                  timeout
-                </div>
+                <div v-else-if="metamaskStatus === 'TIMEOUT'">timeout</div>
                 <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED'">
                   enabled
                 </div>
                 <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
-                  To buy tokens, please enable a web3 provider such as <a href="https://metamask.io/" class="font-black underline">Metamask</a>
+                  To buy tokens, please enable a web3 provider such as
+                  <a href="https://metamask.io/" class="font-black underline"
+                    >Metamask</a
+                  >
                 </div>
                 <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
                   Please confirm details in a web3 provider like Metamask
                 </div>
                 <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
-                  You just bought {{ amountToBeReceivedFromStakingEth }} {{tokenInfo.symbol }}<br> 
-                  See the transaction here:{{ formatAddress(buyTxHash) }}
+                  You just bought {{ amountToBeReceivedFromStakingEth }}
+                  {{ tokenInfo.symbol }}<br />
+                  See the transaction here:
+                  <a
+                    class="font-black underline text-center text-lg"
+                    :href="etherscanAddress + '/tx/' + buyTxHash"
+                    target="_blank"
+                  >
+                    {{ formatAddress(buyTxHash) }}
+                  </a><br>
+{{state}}
+                  <router-link v-if="!isAuthenticated" class="my-3 font-black underline text-center text-lg" :to="'/login?redirectUri='+ routeForRedirect + '&registerAddress=' + buyingAddress">Link your new tokens to valorize</router-link>
                 </div>
                 <div v-else-if="metamaskStatus === 'TX_REJECTED'">
                   Please verify the details and try again.
                 </div>
                 <div v-else-if="metamaskStatus === 'TX_ERROR'">
-                  There was an error processing the request to buy {{ tokenInfo.symbol }}.
+                  There was an error processing the request to buy
+                  {{ tokenInfo.symbol }}.
                 </div>
               </transition>
             </div>
@@ -190,17 +231,23 @@ import metamaskLogin from "../composed/metamaskLogin";
 import { formatAddress } from "../services/formatAddress";
 import ImageContainer from "./ImageContainer.vue";
 import Modal from "./Modal.vue";
-import { ethers, BigNumber } from "ethers";
-import currency from "currency.js"
+import { ethers } from "ethers";
+import { useRouter } from "vue-router";
+import { useStore } from "vuex";
+import currency from "currency.js";
 export default defineComponent({
   name: "TokenInfoComponent",
   props: ["username"],
   components: { ImageContainer, Modal },
   setup: (props) => {
+    const router = useRouter();
+    const store = useStore();
     const amountToBeReceivedFromStakingEth = ref<string>("");
     const ethToCheck = ref<number>(0);
     const modalIsOpen = ref<boolean>(false);
-    const etherscanAddress = import.meta.env.VITE_ETHERSCAN_ADDRESS_MAINNET
+    const etherscanAddress = import.meta.env.VITE_ETHERSCAN_ADDRESS_MAINNET;
+    const routeForRedirect = encodeURI(router.currentRoute.value.fullPath)
+    const isAuthenticated = store.getters["authUser/authenticated"]
     async function checkEth() {
       const formdata = new FormData();
       formdata.append(
@@ -242,6 +289,8 @@ export default defineComponent({
       currency,
       formatAddress,
       etherscanAddress,
+      routeForRedirect,
+      isAuthenticated,
       ...composeTokenInfo(props.username),
       ...composeUserInfo(props.username),
       ...metamaskLogin(),
