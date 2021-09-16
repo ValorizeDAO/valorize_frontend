@@ -8,7 +8,7 @@
       Address:
       <a
         class="font-black underline text-center text-lg"
-        :href="'https://ropsten.etherscan.io/address/' + tokenInfo.address"
+        :href="etherscanAddress + '/address/' + tokenInfo.address"
         target="_blank"
       >
         {{ tokenInfo.address && formatAddress(tokenInfo.address) }}
@@ -134,7 +134,7 @@
                 {{ amountToBeReceivedFromStakingEth && tokenInfo.symbol }}
               </div>
               <div class="flex justify-center my-4">
-                <button @click="sendBuyTransactionToCreatorToken(tokenInfo.address, ethToCheck)" class="btn mx-4 disabled:bg-grey-700" :disabled="ethToCheck === 0">
+                <button @click="sendBuyTransactionToCreatorToken(tokenInfo.address, ethToCheck)" class="btn mx-4 disabled:bg-gray-200 disabled:text-gray-400 disabled:border-gray-400" :disabled="ethToCheck === 0">
                   Buy Now
                 </button>
               </div>
@@ -200,6 +200,7 @@ export default defineComponent({
     const amountToBeReceivedFromStakingEth = ref<string>("");
     const ethToCheck = ref<number>(0);
     const modalIsOpen = ref<boolean>(false);
+    const etherscanAddress = import.meta.env.VITE_ETHERSCAN_ADDRESS_MAINNET
     async function checkEth() {
       const formdata = new FormData();
       formdata.append(
@@ -240,6 +241,7 @@ export default defineComponent({
       ethers,
       currency,
       formatAddress,
+      etherscanAddress,
       ...composeTokenInfo(props.username),
       ...composeUserInfo(props.username),
       ...metamaskLogin(),
