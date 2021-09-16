@@ -60,7 +60,7 @@
           </transition>
           <div class="py-8">
             Or
-            <router-link to="/register" class="font-black underline"
+            <router-link :to="{ path: 'register', query: route.query }" class="font-black underline"
               >Register New Account</router-link
             >
           </div>
@@ -89,6 +89,7 @@ export default defineComponent({
     const password = ref("");
     const authError = ref(false);
     const authenticating = ref(false);
+    const hasQueryToAddUserWallet = route.query.redirectUri && route.query.registerAddress
     async function sendLogin() {
       authError.value = false;
       authenticating.value = true;
@@ -112,7 +113,7 @@ export default defineComponent({
           if (!authError.value) {
             store.state.authenticated = true;
             store.commit("authUser/setUser", result);
-            if (route.query.redirectUri && route.query.registerAddress) {
+            if (hasQueryToAddUserWallet) {
               auth.addExternalWalletToAccount(
                   route.query.registerAddress.toString()
                 )
@@ -128,7 +129,7 @@ export default defineComponent({
         .catch((error) => console.log("error", error));
     }
 
-    return { name, password, sendLogin, authError, authenticating };
+    return { name, password, hasQueryToAddUserWallet, route, sendLogin, authError, authenticating };
   },
 });
 </script>
