@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vueuse/head": "^0.6.0",
+    "currency.js": "^2.0.4",
     "ethers": "^5.4.6",
     "vite-ssr": "^0.10.5",
     "vue": "3",

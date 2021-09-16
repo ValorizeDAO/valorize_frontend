@@ -51,15 +51,15 @@
     </div>
     <div id="coin-data" v-if="tokenStatus === 'SUCCESS'">
       <div class="flex justify-between flex-wrap">
-        <div><h3 class="text-l"><span class="font-black">${{ tokenPrice.toString() }}</span> per token</h3></div>
+        <div><h3 class="text-l"><span class="font-black">${{ currency(tokenPrice.toString()) }}</span> per token</h3></div>
         <div>
           <h3 class="text-l">
-            <span class="font-black">{{ tokenCap }}</span> in circulation
+            <span class="font-black">{{ currency(tokenCap, { separator: ',' }) }}</span> in circulation
           </h3>
         </div>
         <div>
           <h3 class="text-l">
-            <strong class="font-black">${{ usdLockedInContract }} </strong>
+            <strong class="font-black">${{ currency(usdLockedInContract) }} </strong>
             USD Locked in {{ tokenInfo.symbol }}  <strong class="font-black">({{ethers.utils.formatEther(tokenEthBalance)}} ETH)</strong>
           </h3>
         </div>
@@ -191,6 +191,7 @@ import { formatAddress } from "../services/formatAddress";
 import ImageContainer from "./ImageContainer.vue";
 import Modal from "./Modal.vue";
 import { ethers, BigNumber } from "ethers";
+import currency from "currency.js"
 export default defineComponent({
   name: "TokenInfoComponent",
   props: ["username"],
@@ -237,7 +238,7 @@ export default defineComponent({
       toggleBuyModal,
       modalIsOpen,
       ethers,
-      BigNumber,
+      currency,
       formatAddress,
       ...composeTokenInfo(props.username),
       ...composeUserInfo(props.username),
