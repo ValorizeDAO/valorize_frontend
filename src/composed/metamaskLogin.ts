@@ -2,6 +2,7 @@ import { ref, onMounted } from "vue";
 import Ethereum from "../types/Ethereum";
 import { ethers, utils } from "ethers";
 import { CreatorTokenFactory } from "../types/CreatorTokenFactory";
+import Auth from "../services/authentication";
 export default function metamaskLogin() {
   const count = ref(0);
   const metamaskAuthStatuses = [
@@ -39,8 +40,12 @@ export default function metamaskLogin() {
           metamaskStatus.value  = metamaskAuthStatuses[2];
         }
       }, 10000);
-      await ethereum.request({ method: 'eth_requestAccounts' });
+      const account = await ethereum.request({ method: 'eth_requestAccounts' }) as string[];
       metamaskStatus.value = metamaskAuthStatuses[3]
+      console.log({ account });
+      Auth.addExternalWalletToAccount(account[0])
+
+      
       const token = loadTokenData(address)
       token.buyNewTokens({ value: utils.parseEther(ethToBuy.toString()) })
         .then(tx => {

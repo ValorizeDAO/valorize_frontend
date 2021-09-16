@@ -59,8 +59,8 @@
         </div>
         <div>
           <h3 class="text-l">
-            <span class="font-black">${{ tokenEthBalance * ethPrice }}</span>
-            USD Locked in {{ tokenInfo.symbol }}
+            <strong class="font-black">${{ ethers.utils.formatEther(tokenEthBalance * ethPrice) }} </strong>
+            USD Locked in {{ tokenInfo.symbol }}  <strong class="font-black">({{ethers.utils.formatEther(tokenEthBalance)}} ETH)</strong>
           </h3>
         </div>
       </div>
@@ -134,7 +134,7 @@
                 {{ amountToBeReceivedFromStakingEth && tokenInfo.symbol }}
               </div>
               <div class="flex justify-center my-4">
-                <button @click="sendBuyTransactionToCreatorToken(tokenInfo.address, ethToCheck)" class="btn mx-4">
+                <button @click="sendBuyTransactionToCreatorToken(tokenInfo.address, ethToCheck)" class="btn mx-4 disabled:bg-grey-700" :disabled="ethToCheck === 0">
                   Buy Now
                 </button>
               </div>
