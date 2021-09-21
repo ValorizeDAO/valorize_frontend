@@ -197,7 +197,6 @@
                   >
                     {{ formatAddress(buyTxHash) }}
                   </a><br>
-{{state}}
                   <router-link v-if="!isAuthenticated" class="my-3 font-black underline text-center text-lg" :to="'/login?redirectUri='+ routeForRedirect + '&registerAddress=' + buyingAddress">Link your new tokens to valorize</router-link>
                 </div>
                 <div v-else-if="metamaskStatus === 'TX_REJECTED'">

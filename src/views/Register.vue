@@ -181,8 +181,8 @@ export default defineComponent({
         const result = (await response.json()) as User | { error: string };
         store.commit("authUser/setUser", result);
         if (hasQueryToAddUserWallet) {
-          await auth.addExternalWalletToAccount(route.query.registerAddress.toString())
-          await router.push(decodeURI(route.query.redirectUri.toString()));
+          route.query.registerAddress && await auth.addExternalWalletToAccount(route.query.registerAddress.toString())
+          route.query.redirectUri && await router.push(decodeURI(route.query.redirectUri.toString()));
         } else {
           await router.push({ path: "/edit-profile" });
         }

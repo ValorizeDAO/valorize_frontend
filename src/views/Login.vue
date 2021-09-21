@@ -114,11 +114,11 @@ export default defineComponent({
             store.state.authenticated = true;
             store.commit("authUser/setUser", result);
             if (hasQueryToAddUserWallet) {
-              auth.addExternalWalletToAccount(
-                  route.query.registerAddress.toString()
+              route.query.registerAddress && auth.addExternalWalletToAccount(
+                   route.query.registerAddress.toString()
                 )
                 .then(() => {
-                  router.push(decodeURI(route.query.redirectUri.toString()));
+                  route.query.redirectUri && router.push(decodeURI(route.query.redirectUri.toString()));
                 });
             } else {
               router.push("/");

@@ -1,8 +1,9 @@
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
 import Ethereum from "../types/Ethereum";
 import { ethers, utils } from "ethers";
 import { CreatorTokenFactory } from "../types/CreatorTokenFactory";
 import Auth from "../services/authentication";
+
 export default function metamaskLogin() {
   const count = ref(0);
   const metamaskAuthStatuses = [
