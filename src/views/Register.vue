@@ -100,10 +100,11 @@
 <script lang="ts">
 import { ref, defineComponent, computed, Ref } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import SvgLoader from "../components/SvgLoader.vue";
 import useDebounced from "../composed/useDebounced";
-import {User} from "../models/User";
+import { User } from "../models/User";
+import auth from "../services/authentication";
 
 export default defineComponent({
   name: "Register",
@@ -112,12 +113,15 @@ export default defineComponent({
     const requestStatuses = ["init", "pending", "conflict", "error", "success"];
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     const email = ref("");
     const username = ref("");
     const password = ref("");
     const passwordVerify = ref("");
     const status = ref(requestStatuses[0]);
     const userNameAvailable = ref(true);
+    const hasQueryToAddUserWallet =
+      route.query.redirectUri && route.query.registerAddress;
 
     const ready = computed(() => {
       const passwordIsNotEmpty =
@@ -135,14 +139,17 @@ export default defineComponent({
 
     async function fetchUserName(usernameToTest: Ref<string>) {
       username.value = usernameToTest.value;
-      fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/" + usernameToTest.value)
+      fetch(
+        import.meta.env.VITE_BACKEND_URL +
+          "/api/v0/users/" +
+          usernameToTest.value
+      )
         .then((response) => {
           if (response.status === 404) {
             userNameAvailable.value = true;
-          } else if( response.status === 200 ){
+          } else if (response.status === 200) {
             userNameAvailable.value = false;
           } else {
-
           }
           return response.json();
         })
@@ -160,17 +167,25 @@ export default defineComponent({
       const requestOptions = {
         method: "POST",
         body: formdata,
-        credentials: "include"
+        credentials: "include",
       } as RequestInit;
 
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/register", requestOptions)
+      const response = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/register",
+        requestOptions
+      );
       if (response.status === 409) {
         status.value = requestStatuses[2];
       } else if (response.status === 201) {
         status.value = requestStatuses[4];
-        const result = (await response.json() as User | { error: string })
+        const result = (await response.json()) as User | { error: string };
         store.commit("authUser/setUser", result);
-        await router.push({ path: "/edit-profile" });
+        if (hasQueryToAddUserWallet) {
+          route.query.registerAddress && await auth.addExternalWalletToAccount(route.query.registerAddress.toString())
+          route.query.redirectUri && await router.push(decodeURI(route.query.redirectUri.toString()));
+        } else {
+          await router.push({ path: "/edit-profile" });
+        }
       } else {
         status.value = requestStatuses[3];
       }
@@ -191,7 +206,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
-
 @keyframes rotate {
   100% {
     transform: rotate(360deg);

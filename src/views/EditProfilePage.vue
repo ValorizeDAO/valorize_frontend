@@ -218,7 +218,7 @@
               :href="'https://ropsten.etherscan.io/tx/' + tokenTestnetTx"
               target="_blank"
             >
-              {{ tokenTestnetTx.substr(0, 15) }}...
+              {{ formatAddress(tokenTestnetTx) }}
             </a>
           </p>
           <p>
@@ -230,7 +230,7 @@
               "
               target="_blank"
             >
-              {{ tokenTestnetAddress.substr(0, 15) }}... </a
+              {{ formatAddress(tokenTestnetAddress) }} </a
             ><br />(Takes a minute to appear)
           </p>
           <p class="mt-12 lg:w-2/5 mb-4 mx-auto">
@@ -253,6 +253,7 @@
 <script lang="ts">
 import { ref, defineComponent, computed } from "vue";
 import auth from "../services/authentication";
+import { formatAddress } from "../services/formatAddress";
 import { User } from "../models/User";
 import ethApi, { TokenResponse } from "../services/ethApi";
 import { useStore } from "vuex";
@@ -306,6 +307,7 @@ function composeProfileInfo() {
     about,
     profileUpdateStatus,
     hasToken,
+    formatAddress
   };
 }
 function composeUpdateImage() {

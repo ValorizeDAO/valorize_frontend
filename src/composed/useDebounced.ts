@@ -13,7 +13,7 @@ export default function useDebounced(timeoutCount = 800, fn = (args: any) => arg
     // @ts-ignore
     const { value }: string = e.target
     displayValue.value = value
-    timeoutRef = setTimeout(() => {
+    timeoutRef = window.setTimeout(() => {
       debouncedValue.value = value
       fn(debouncedValue)
     }, timeoutCount)
