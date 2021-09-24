@@ -218,6 +218,9 @@
         EtherScan
       </h3>
     </div>
+    <div v-else>
+      {{ userTokenBalance }}
+    </div>
   </div>
 </template>
 
@@ -226,14 +229,21 @@ import { ref, defineComponent } from "vue";
 import composeTokenInfo from "../composed/tokenInfo";
 import composeUserInfo from "../composed/userInfo";
 import composeDebounced from "../composed/useDebounced";
-import metamaskLogin from "../composed/metamaskLogin";
+import creatorTokenInterface from "../composed/creatorTokenInterface";
 import { formatAddress } from "../services/formatAddress";
 import ImageContainer from "./ImageContainer.vue";
 import Modal from "./Modal.vue";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import currency from "currency.js";
+
+interface TokenBalanceResponse {
+  total_balance: string;
+  wallets: Array<{
+    address: string
+    balance: number }>
+  }
 export default defineComponent({
   name: "TokenInfoComponent",
   props: ["username"],
@@ -241,6 +251,7 @@ export default defineComponent({
   setup: (props) => {
     const router = useRouter();
     const store = useStore();
+    const userTokenBalance = ref<BigNumber>(BigNumber.from(0));
     const amountToBeReceivedFromStakingEth = ref<string>("");
     const ethToCheck = ref<number>(0);
     const modalIsOpen = ref<boolean>(false);
@@ -278,6 +289,16 @@ export default defineComponent({
     function toggleBuyModal() {
       modalIsOpen.value = !modalIsOpen.value;
     }
+
+    async function getUserTokenBalance(tokenId: number) {
+      const request = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/tokens/" + tokenId + "/balance")
+      if (request.status === 200) {
+        const response = (await request.json()) as TokenBalanceResponse
+        userTokenBalance.value = BigNumber.from(response.total_balance)
+      }
+    }
+    const user = { ...composeUserInfo(props.username) }
+    // getUserTokenBalance(user.userInfo.value.token.id)
     return {
       amountToBeReceivedFromStakingEth,
       checkEth,
@@ -290,13 +311,15 @@ export default defineComponent({
       etherscanAddress,
       routeForRedirect,
       isAuthenticated,
+      userTokenBalance,
+      ...user,
       ...composeTokenInfo(props.username),
-      ...composeUserInfo(props.username),
-      ...metamaskLogin(),
+      ...creatorTokenInterface(),
       ...composeDebounced(300, checkEth),
     };
   },
 });
+
 </script>
 
 <style scoped>
