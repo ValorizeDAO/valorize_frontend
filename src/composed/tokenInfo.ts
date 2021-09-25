@@ -31,7 +31,7 @@ export default function composeTokenInfo(username: string) {
         tokenEthBalance.value = ethers.BigNumber.from(priceData.ether_staked)
         tokenCap.value = ethers.utils.formatUnits(priceData.total_minted, "ether")
       })
-      .catch((error) => console.log("JAVIER", error))
+      .catch((error) => console.log(error))
     fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/utils/price")
       .then((response) => {
         if (response.status !== 200) {
