@@ -86,7 +86,9 @@
         >
           Buy {{ tokenInfo.symbol }}
         </button>
-        <span>Your Current {{tokenInfo.symbol }} Balance: <strong class="font-black">{{ currency(userTokenBalance) }}</strong></span>
+
+        <span v-if="isAuthenticated">Your Current {{tokenInfo.symbol }} Balance: <strong class="font-black">{{ currency(userTokenBalance) }}</strong></span>
+        <span v-else>Sign in to see your balance</span>
         <Modal
           :modal-is-open="modalIsOpen"
           :body-class="['bg-white', 'border', 'max-w-2xl']"
