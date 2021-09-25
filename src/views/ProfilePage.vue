@@ -25,7 +25,6 @@
             <p>If you have just deployed your token, please check in a few minutes</p>
           </div>
           <div v-else>
-            {{ authUser.username }} 2{{ username }}
             <h2 class="text-2xl font-black mt-12 mb-6">Looks like this user has not deployed a token yet</h2>
           </div>
         </div>

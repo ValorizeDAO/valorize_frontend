@@ -52,7 +52,7 @@
     <div id="coin-data" v-if="tokenStatus === 'SUCCESS'">
       <div class="flex justify-between flex-wrap">
         <div>
-          <h3 class="text-l">
+          <h3 class="text-l mr-3">
             <span class="font-black"
               >${{ currency(tokenPrice.toString()) }}</span
             >
@@ -60,7 +60,7 @@
           </h3>
         </div>
         <div>
-          <h3 class="text-l">
+          <h3 class="text-l mr-3">
             <span class="font-black">{{
               currency(tokenCap, { separator: "," })
             }}</span>
@@ -86,6 +86,9 @@
         >
           Buy {{ tokenInfo.symbol }}
         </button>
+
+        <span v-if="isAuthenticated">Your Current {{tokenInfo.symbol }} Balance: <strong class="font-black">{{ currency(userTokenBalance) }}</strong></span>
+        <span v-else>Sign in to see your balance</span>
         <Modal
           :modal-is-open="modalIsOpen"
           :body-class="['bg-white', 'border', 'max-w-2xl']"
@@ -222,11 +225,11 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from "vue";
+import { ref, defineComponent, onMounted } from "vue";
 import composeTokenInfo from "../composed/tokenInfo";
 import composeUserInfo from "../composed/userInfo";
 import composeDebounced from "../composed/useDebounced";
-import metamaskLogin from "../composed/metamaskLogin";
+import creatorTokenInterface from "../composed/creatorTokenInterface";
 import { formatAddress } from "../services/formatAddress";
 import ImageContainer from "./ImageContainer.vue";
 import Modal from "./Modal.vue";
@@ -234,6 +237,7 @@ import { ethers } from "ethers";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import currency from "currency.js";
+
 export default defineComponent({
   name: "TokenInfoComponent",
   props: ["username"],
@@ -290,13 +294,14 @@ export default defineComponent({
       etherscanAddress,
       routeForRedirect,
       isAuthenticated,
-      ...composeTokenInfo(props.username),
       ...composeUserInfo(props.username),
-      ...metamaskLogin(),
+      ...composeTokenInfo(props.username),
+      ...creatorTokenInterface(),
       ...composeDebounced(300, checkEth),
     };
   },
 });
+
 </script>
 
 <style scoped>
