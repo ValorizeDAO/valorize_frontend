@@ -10,9 +10,9 @@ export default function composeUserInfo(username: string) {
   const userInfo = ref<User>(emptyUser)
   const tokenInfo = ref<Token>(<Token>{})
   const showImage = ref<boolean>(false)
+  store.dispatch("authUser/checkAuth")
 
   onMounted(() => {
-    store.dispatch("authUser/checkAuth")
     fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/" + username)
       .then((response) => {
         if (response.status !== 200) {

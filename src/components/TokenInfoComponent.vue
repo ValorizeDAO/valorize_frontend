@@ -52,7 +52,7 @@
     <div id="coin-data" v-if="tokenStatus === 'SUCCESS'">
       <div class="flex justify-between flex-wrap">
         <div>
-          <h3 class="text-l">
+          <h3 class="text-l mr-3">
             <span class="font-black"
               >${{ currency(tokenPrice.toString()) }}</span
             >
@@ -60,7 +60,7 @@
           </h3>
         </div>
         <div>
-          <h3 class="text-l">
+          <h3 class="text-l mr-3">
             <span class="font-black">{{
               currency(tokenCap, { separator: "," })
             }}</span>
@@ -225,7 +225,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from "vue";
+import { ref, defineComponent, onMounted } from "vue";
 import composeTokenInfo from "../composed/tokenInfo";
 import composeUserInfo from "../composed/userInfo";
 import composeDebounced from "../composed/useDebounced";
@@ -237,6 +237,7 @@ import { BigNumber, ethers } from "ethers";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import currency from "currency.js";
+import { userInfo } from "os";
 
 interface TokenBalanceResponse {
   total_balance: string;
@@ -291,14 +292,28 @@ export default defineComponent({
     }
 
     async function getUserTokenBalance(tokenId: number) {
-      const request = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/tokens/" + tokenId + "/balance")
+      var formdata = new FormData();
+      formdata.append("username", store.getters["authUser/username"]);
+      var requestOptions = {
+        method: 'POST',
+        body: formdata,
+        redirect: 'follow',
+        credentials: 'include',
+      } as RequestInit;
+
+      const request = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/tokens/" + tokenId + "/balance", requestOptions);
       if (request.status === 200) {
         const response = (await request.json()) as TokenBalanceResponse
         userTokenBalance.value = BigNumber.from(response.total_balance)
       }
     }
     const user = { ...composeUserInfo(props.username) }
-    // getUserTokenBalance(user.userInfo.value.token.id)
+    
+    if (store.getters["authUser/authenticated"]) {
+      console.log(user.username)
+      getUserTokenBalance(10)
+      
+    }
     return {
       amountToBeReceivedFromStakingEth,
       checkEth,
