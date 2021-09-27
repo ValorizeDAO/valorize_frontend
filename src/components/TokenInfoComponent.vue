@@ -80,22 +80,27 @@
         </div>
       </div>
       <div class="mt-8 flex flex-col">
-        <button
-          @click="toggleBuyModal"
-          class="btn bg-purple-100 my-8 w-42 mx-auto"
-        >
-          Buy {{ tokenInfo.symbol }}
-        </button>
 
-        <span v-if="isAuthenticated">Your Current {{tokenInfo.symbol }} Balance: <strong class="font-black">{{ currency(userTokenBalance) }}</strong></span>
-        <span v-else>Sign in to see your balance</span>
+        <div class="flex flex-col">
+          <span v-if="isAuthenticated">Your Current {{tokenInfo.symbol }} Balance: <strong class="font-black">{{ currency(userTokenBalance) }}</strong></span>
+          <span v-else>Sign in to see your balance</span>
+          <div class="mt-2 mx-auto">
+            <button
+              @click="toggleBuyModal"
+              class="btn bg-purple-100 my-8 w-42 mr-4"
+            >
+              Buy {{ tokenInfo.symbol }}
+            </button>
+            <button @click="toggleSellModal" class="btn bg-purple-100">Sell {{ tokenInfo.symbol }}</button>
+          </div>
+        </div>
         <Modal
           :modal-is-open="modalIsOpen"
           :body-class="['bg-white', 'border', 'max-w-2xl']"
           @toggle="toggleBuyModal"
         >
           <div class="border-black p-10">
-            <div class="flex justify-between w-100">
+            <div class="flex justify-between w-100" v-if="modalType == 'buy'">
               Ether to Stake:
               <button @click="ethToCheck -= 0.0001">
                 <svg
@@ -136,20 +141,62 @@
                   />
                 </svg>
               </button>
+            </div> 
+            <div class="flex justify-between w-100" v-if="modalType == 'sell'">
+              Amount of Coins To Sell:
+              <button @click="tokenToCheck -= 0.01">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+              <input
+                v-model="tokenToCheck"
+                @input="debounceListener"
+                step=".0001"
+                type="number"
+                class="bg-transparent border-b-2 border-black"
+              />
+              <button @click="tokenToSell += 0.01">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
             </div>
             <div class="text-center">
               <button
-                @click="checkEth"
+                @click="checkToken"
                 class="btn bg-purple-100 my-8 w-42 mx-auto"
               >
                 Calculate Price for {{ tokenInfo.symbol }}
               </button>
               <div>
-                Amount of {{ tokenInfo.symbol }} to be received for
-                {{ ethToCheck }} Eth <br /><strong>{{
-                  amountToBeReceivedFromStakingEth
+                Amount of ETH to be received for
+                {{ tokenToCheck }} {{ tokenInfo.symbol }} <br /><strong>{{
+                  amountToBeReceivedFromSellingToken
                 }}</strong>
-                {{ amountToBeReceivedFromStakingEth && tokenInfo.symbol }}
+                {{ amountToBeReceivedFromSellingToken && 'ETH' }}
               </div>
               <div class="flex justify-center my-4">
                 <button
@@ -247,10 +294,12 @@ export default defineComponent({
     const store = useStore();
     const amountToBeReceivedFromStakingEth = ref<string>("");
     const ethToCheck = ref<number>(0);
+    const tokenToCheck = ref<number>(0);
     const modalIsOpen = ref<boolean>(false);
     const etherscanAddress = import.meta.env.VITE_ETHERSCAN_ADDRESS_MAINNET;
     const routeForRedirect = encodeURI(router.currentRoute.value.fullPath)
     const isAuthenticated = store.getters["authUser/authenticated"]
+    const modalType = ref<string>("");
     async function checkEth() {
       const formdata = new FormData();
       formdata.append(
@@ -279,13 +328,47 @@ export default defineComponent({
         .formatEther(response.toBuyer)
         .toString();
     }
+    async function checkToken() {
+      const formdata = new FormData();
+      formdata.append(
+        "etherToCheck",
+        String(Math.floor(ethToCheck.value * Math.pow(10, 18)))
+      );
+
+      const requestOptions = {
+        method: "POST",
+        body: formdata,
+        redirect: "follow",
+      } as RequestInit;
+
+      const request = await fetch(
+        import.meta.env.VITE_BACKEND_URL +
+          "/api/v0/users/" +
+          props.username +
+          "/token/sellingrewards",
+        requestOptions
+      );
+      const response = (await request.json()) as {
+        return: string;
+      };
+      amountToBeReceivedFromStakingEth.value = ethers.utils
+        .formatEther(response.toBuyer)
+        .toString();
+    }
     function toggleBuyModal() {
       modalIsOpen.value = !modalIsOpen.value;
+      modalType.value = "buy";
+    }
+    function toggleSellModal() {
+      modalIsOpen.value = !modalIsOpen.value;
+      modalType.value = "sell";
     }
     return {
       amountToBeReceivedFromStakingEth,
       checkEth,
+      checkToken,
       ethToCheck,
+      tokenToCheck,
       toggleBuyModal,
       modalIsOpen,
       ethers,
@@ -294,6 +377,8 @@ export default defineComponent({
       etherscanAddress,
       routeForRedirect,
       isAuthenticated,
+      toggleSellModal,
+      modalType,
       ...composeUserInfo(props.username),
       ...composeTokenInfo(props.username),
       ...creatorTokenInterface(),
