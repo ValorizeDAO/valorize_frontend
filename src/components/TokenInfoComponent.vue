@@ -291,12 +291,12 @@
                   }}</strong>
                   {{ amountToBeReceivedForSellingToken && "ETH" }}
                 </div>
-                <!-- <div class="flex justify-center my-4">
+                <div class="flex justify-center my-4">
                   <button
                     @click="
-                      sendBuyTransactionToCreatorToken(
+                      sendSellTransactionToCreatorToken(
                         tokenInfo.address,
-                        ethToCheck
+                        tokenToCheck
                       )
                     "
                     class="
@@ -306,11 +306,11 @@
                       disabled:text-gray-400
                       disabled:border-gray-400
                     "
-                    :disabled="ethToCheck === 0"
+                    :disabled="tokenToCheck === 0"
                   >
-                    Buy Now
+                    Sell {{ tokenInfo.symbol }}
                   </button>
-                </div> -->
+                </div>
                 <transition name="fade" mode="out-in">
                   <div v-if="metamaskStatus === 'INIT'"></div>
                   <div v-else-if="metamaskStatus === 'REQUESTED'">
@@ -330,15 +330,15 @@
                     Please confirm details in a web3 provider like Metamask
                   </div>
                   <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
-                    You just bought {{ amountToBeReceivedFromStakingEth }}
-                    {{ tokenInfo.symbol }}<br />
+                    You just sold {{ tokenToCheck }}
+                    {{ tokenInfo.symbol }} for {{ amountToBeReceivedForSellingToken }} ETH<br />
                     See the transaction here:
                     <a
                       class="font-black underline text-center text-lg"
-                      :href="etherscanAddress + '/tx/' + buyTxHash"
+                      :href="etherscanAddress + '/tx/' + sellTxHash"
                       target="_blank"
                     >
-                      {{ formatAddress(buyTxHash) }} </a
+                      {{ formatAddress(sellTxHash) }} </a
                     ><br />
                     <router-link
                       v-if="!isAuthenticated"
@@ -349,14 +349,14 @@
                         '&registerAddress=' +
                         buyingAddress
                       "
-                      >Link your new tokens to valorize</router-link
+                      >Link your account to valorize</router-link
                     >
                   </div>
                   <div v-else-if="metamaskStatus === 'TX_REJECTED'">
                     Please verify the details and try again.
                   </div>
                   <div v-else-if="metamaskStatus === 'TX_ERROR'">
-                    There was an error processing the request to buy
+                    There was an error processing the request to sell
                     {{ tokenInfo.symbol }}.
                   </div>
                 </transition>
