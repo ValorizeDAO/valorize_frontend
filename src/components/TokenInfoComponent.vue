@@ -80,9 +80,13 @@
         </div>
       </div>
       <div class="mt-8 flex flex-col">
-
         <div class="flex flex-col">
-          <span v-if="isAuthenticated">Your Current {{tokenInfo.symbol }} Balance: <strong class="font-black">{{ currency(userTokenBalance) }}</strong></span>
+          <span v-if="isAuthenticated"
+            >Your Current {{ tokenInfo.symbol }} Balance:
+            <strong class="font-black">{{
+              currency(userTokenBalance)
+            }}</strong></span
+          >
           <span v-else>Sign in to see your balance</span>
           <div class="mt-2 mx-auto">
             <button
@@ -91,7 +95,9 @@
             >
               Buy {{ tokenInfo.symbol }}
             </button>
-            <button @click="toggleSellModal" class="btn bg-purple-100">Sell {{ tokenInfo.symbol }}</button>
+            <button @click="toggleSellModal" class="btn bg-purple-100">
+              Sell {{ tokenInfo.symbol }}
+            </button>
           </div>
         </div>
         <Modal
@@ -100,163 +106,261 @@
           @toggle="toggleBuyModal"
         >
           <div class="border-black p-10">
-            <div class="flex justify-between w-100" v-if="modalType == 'buy'">
-              Ether to Stake:
-              <button @click="ethToCheck -= 0.0001">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
-              <input
-                v-model="ethToCheck"
-                @input="debounceListener"
-                step=".0001"
-                type="number"
-                class="bg-transparent border-b-2 border-black"
-              />
-              <button @click="ethToCheck += 0.0001">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
-            </div> 
-            <div class="flex justify-between w-100" v-if="modalType == 'sell'">
-              Amount of Coins To Sell:
-              <button @click="tokenToCheck -= 0.01">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
-              <input
-                v-model="tokenToCheck"
-                @input="debounceListener"
-                step=".0001"
-                type="number"
-                class="bg-transparent border-b-2 border-black"
-              />
-              <button @click="tokenToSell += 0.01">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div class="text-center">
-              <button
-                @click="checkToken"
-                class="btn bg-purple-100 my-8 w-42 mx-auto"
-              >
-                Calculate Price for {{ tokenInfo.symbol }}
-              </button>
-              <div>
-                Amount of ETH to be received for
-                {{ tokenToCheck }} {{ tokenInfo.symbol }} <br /><strong>{{
-                  amountToBeReceivedFromSellingToken
-                }}</strong>
-                {{ amountToBeReceivedFromSellingToken && 'ETH' }}
-              </div>
-              <div class="flex justify-center my-4">
-                <button
-                  @click="
-                    sendBuyTransactionToCreatorToken(
-                      tokenInfo.address,
-                      ethToCheck
-                    )
-                  "
-                  class="
-                    btn
-                    mx-4
-                    disabled:bg-gray-200
-                    disabled:text-gray-400
-                    disabled:border-gray-400
-                  "
-                  :disabled="ethToCheck === 0"
-                >
-                  Buy Now
+            <div v-if="modalType == 'buy'">
+              <div class="flex justify-between w-100">
+                Ether to Stake:
+                <button @click="ethToCheck -= 0.0001">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
+                <input
+                  v-model="ethToCheck"
+                  @input="debounceListener"
+                  step=".0001"
+                  type="number"
+                  class="bg-transparent border-b-2 border-black"
+                />
+                <button @click="ethToCheck += 0.0001">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
                 </button>
               </div>
-              <transition name="fade" mode="out-in">
-                <div v-if="metamaskStatus === 'INIT'"></div>
-                <div v-else-if="metamaskStatus === 'REQUESTED'">
-                  please enable metamask or a web3 provider
+              <div class="text-center">
+                <button
+                  @click="checkToken"
+                  class="btn bg-purple-100 my-8 w-42 mx-auto"
+                >
+                  Calculate Price for {{ tokenInfo.symbol }}
+                </button>
+                <div>
+                  Amount of {{ tokenInfo.symbol }} to be received for
+                  {{ tokenToCheck }} ETH<br /><strong>{{
+                    amountToBeReceivedFromStakingEth
+                  }}</strong>
+                  {{ amountToBeReceivedFromStakingEth && "ETH" }}
                 </div>
-                <div v-else-if="metamaskStatus === 'TIMEOUT'">timeout</div>
-                <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED'">
-                  enabled
-                </div>
-                <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
-                  To buy tokens, please enable a web3 provider such as
-                  <a href="https://metamask.io/" class="font-black underline"
-                    >Metamask</a
+                <div class="flex justify-center my-4">
+                  <button
+                    @click="
+                      sendBuyTransactionToCreatorToken(
+                        tokenInfo.address,
+                        ethToCheck
+                      )
+                    "
+                    class="
+                      btn
+                      mx-4
+                      disabled:bg-gray-200
+                      disabled:text-gray-400
+                      disabled:border-gray-400
+                    "
+                    :disabled="ethToCheck === 0"
                   >
+                    Buy Now
+                  </button>
                 </div>
-                <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
-                  Please confirm details in a web3 provider like Metamask
-                </div>
-                <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
-                  You just bought {{ amountToBeReceivedFromStakingEth }}
-                  {{ tokenInfo.symbol }}<br />
-                  See the transaction here:
-                  <a
-                    class="font-black underline text-center text-lg"
-                    :href="etherscanAddress + '/tx/' + buyTxHash"
-                    target="_blank"
+                <transition name="fade" mode="out-in">
+                  <div v-if="metamaskStatus === 'INIT'"></div>
+                  <div v-else-if="metamaskStatus === 'REQUESTED'">
+                    please enable metamask or a web3 provider
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TIMEOUT'">timeout</div>
+                  <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED'">
+                    enabled
+                  </div>
+                  <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
+                    To buy tokens, please enable a web3 provider such as
+                    <a href="https://metamask.io/" class="font-black underline"
+                      >Metamask</a
+                    >
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
+                    Please confirm details in a web3 provider like Metamask
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
+                    You just bought {{ amountToBeReceivedFromStakingEth }}
+                    {{ tokenInfo.symbol }}<br />
+                    See the transaction here:
+                    <a
+                      class="font-black underline text-center text-lg"
+                      :href="etherscanAddress + '/tx/' + buyTxHash"
+                      target="_blank"
+                    >
+                      {{ formatAddress(buyTxHash) }} </a
+                    ><br />
+                    <router-link
+                      v-if="!isAuthenticated"
+                      class="my-3 font-black underline text-center text-lg"
+                      :to="
+                        '/login?redirectUri=' +
+                        routeForRedirect +
+                        '&registerAddress=' +
+                        buyingAddress
+                      "
+                      >Link your new tokens to valorize</router-link
+                    >
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TX_REJECTED'">
+                    Please verify the details and try again.
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TX_ERROR'">
+                    There was an error processing the request to buy
+                    {{ tokenInfo.symbol }}.
+                  </div>
+                </transition>
+              </div>
+            </div>
+            <div v-if="modalType == 'sell'">
+              <div class="flex justify-between w-100">
+                Amount of Coins To Sell:
+                <button @click="tokenToCheck -= 0.01">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
                   >
-                    {{ formatAddress(buyTxHash) }}
-                  </a><br>
-                  <router-link v-if="!isAuthenticated" class="my-3 font-black underline text-center text-lg" :to="'/login?redirectUri='+ routeForRedirect + '&registerAddress=' + buyingAddress">Link your new tokens to valorize</router-link>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
+                <input
+                  v-model="tokenToCheck"
+                  @input="tokenDebouncedListener"
+                  step=".0001"
+                  type="number"
+                  class="bg-transparent border-b-2 border-black"
+                />
+                <button @click="tokenToSell += 0.01">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div class="text-center">
+                <button
+                  @click="checkToken"
+                  class="btn bg-purple-100 my-8 w-42 mx-auto"
+                >
+                  Calculate Sale Price for {{ tokenInfo.symbol }}
+                </button>
+                <div>
+                  Amount of ETH to be received for
+                  {{ tokenToCheck }} {{ tokenInfo.symbol }} <br /><strong>{{
+                    amountToBeReceivedForSellingToken
+                  }}</strong>
+                  {{ amountToBeReceivedForSellingToken && "ETH" }}
                 </div>
-                <div v-else-if="metamaskStatus === 'TX_REJECTED'">
-                  Please verify the details and try again.
-                </div>
-                <div v-else-if="metamaskStatus === 'TX_ERROR'">
-                  There was an error processing the request to buy
-                  {{ tokenInfo.symbol }}.
-                </div>
-              </transition>
+                <!-- <div class="flex justify-center my-4">
+                  <button
+                    @click="
+                      sendBuyTransactionToCreatorToken(
+                        tokenInfo.address,
+                        ethToCheck
+                      )
+                    "
+                    class="
+                      btn
+                      mx-4
+                      disabled:bg-gray-200
+                      disabled:text-gray-400
+                      disabled:border-gray-400
+                    "
+                    :disabled="ethToCheck === 0"
+                  >
+                    Buy Now
+                  </button>
+                </div> -->
+                <transition name="fade" mode="out-in">
+                  <div v-if="metamaskStatus === 'INIT'"></div>
+                  <div v-else-if="metamaskStatus === 'REQUESTED'">
+                    please enable metamask or a web3 provider
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TIMEOUT'">timeout</div>
+                  <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED'">
+                    enabled
+                  </div>
+                  <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
+                    To buy tokens, please enable a web3 provider such as
+                    <a href="https://metamask.io/" class="font-black underline"
+                      >Metamask</a
+                    >
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
+                    Please confirm details in a web3 provider like Metamask
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
+                    You just bought {{ amountToBeReceivedFromStakingEth }}
+                    {{ tokenInfo.symbol }}<br />
+                    See the transaction here:
+                    <a
+                      class="font-black underline text-center text-lg"
+                      :href="etherscanAddress + '/tx/' + buyTxHash"
+                      target="_blank"
+                    >
+                      {{ formatAddress(buyTxHash) }} </a
+                    ><br />
+                    <router-link
+                      v-if="!isAuthenticated"
+                      class="my-3 font-black underline text-center text-lg"
+                      :to="
+                        '/login?redirectUri=' +
+                        routeForRedirect +
+                        '&registerAddress=' +
+                        buyingAddress
+                      "
+                      >Link your new tokens to valorize</router-link
+                    >
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TX_REJECTED'">
+                    Please verify the details and try again.
+                  </div>
+                  <div v-else-if="metamaskStatus === 'TX_ERROR'">
+                    There was an error processing the request to buy
+                    {{ tokenInfo.symbol }}.
+                  </div>
+                </transition>
+              </div>
             </div>
           </div>
         </Modal>
@@ -293,18 +397,19 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore();
     const amountToBeReceivedFromStakingEth = ref<string>("");
+    const amountToBeReceivedForSellingToken = ref<string>("");
     const ethToCheck = ref<number>(0);
     const tokenToCheck = ref<number>(0);
     const modalIsOpen = ref<boolean>(false);
     const etherscanAddress = import.meta.env.VITE_ETHERSCAN_ADDRESS_MAINNET;
-    const routeForRedirect = encodeURI(router.currentRoute.value.fullPath)
-    const isAuthenticated = store.getters["authUser/authenticated"]
+    const routeForRedirect = encodeURI(router.currentRoute.value.fullPath);
+    const isAuthenticated = store.getters["authUser/authenticated"];
     const modalType = ref<string>("");
     async function checkEth() {
       const formdata = new FormData();
       formdata.append(
         "etherToCheck",
-        String(Math.floor(ethToCheck.value * Math.pow(10, 18)))
+        ethers.utils.parseUnits(String(ethToCheck.value), 18).toString()
       );
 
       const requestOptions = {
@@ -329,10 +434,10 @@ export default defineComponent({
         .toString();
     }
     async function checkToken() {
-      const formdata = new FormData();
+      const formdata = new FormData();      
       formdata.append(
-        "etherToCheck",
-        String(Math.floor(ethToCheck.value * Math.pow(10, 18)))
+        "tokenToCheck",
+        ethers.utils.parseUnits(String(tokenToCheck.value), 18).toString()
       );
 
       const requestOptions = {
@@ -349,10 +454,11 @@ export default defineComponent({
         requestOptions
       );
       const response = (await request.json()) as {
-        return: string;
+        total_eth: string;
       };
-      amountToBeReceivedFromStakingEth.value = ethers.utils
-        .formatEther(response.toBuyer)
+      
+      amountToBeReceivedForSellingToken.value = ethers.utils
+        .formatEther(ethers.BigNumber.from(response.total_eth))
         .toString();
     }
     function toggleBuyModal() {
@@ -363,8 +469,14 @@ export default defineComponent({
       modalIsOpen.value = !modalIsOpen.value;
       modalType.value = "sell";
     }
+    const {
+      debouncedValue: tokensDebouncedValue,
+      displayValue: tokenDisplayValue,
+      debounceListener: tokenDebouncedListener,
+    } = { ...composeDebounced(300, checkToken) };
     return {
       amountToBeReceivedFromStakingEth,
+      amountToBeReceivedForSellingToken,
       checkEth,
       checkToken,
       ethToCheck,
@@ -379,6 +491,9 @@ export default defineComponent({
       isAuthenticated,
       toggleSellModal,
       modalType,
+      tokensDebouncedValue,
+      tokenDisplayValue,
+      tokenDebouncedListener,
       ...composeUserInfo(props.username),
       ...composeTokenInfo(props.username),
       ...creatorTokenInterface(),
@@ -386,7 +501,6 @@ export default defineComponent({
     };
   },
 });
-
 </script>
 
 <style scoped>
