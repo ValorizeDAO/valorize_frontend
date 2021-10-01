@@ -127,7 +127,7 @@
                 </button>
                 <input
                   v-model="ethToCheck"
-                  @input="debounceListener"
+                  @input="ethDebouncedListener"
                   step=".0001"
                   type="number"
                   class="bg-transparent border-b-2 border-black"
@@ -151,17 +151,17 @@
               </div>
               <div class="text-center">
                 <button
-                  @click="checkToken"
+                  @click="checkEth"
                   class="btn bg-purple-100 my-8 w-42 mx-auto"
                 >
                   Calculate Price for {{ tokenInfo.symbol }}
                 </button>
                 <div>
                   Amount of {{ tokenInfo.symbol }} to be received for
-                  {{ tokenToCheck }} ETH<br /><strong>{{
+                  {{ ethToCheck }} ETH<br /><strong>{{
                     amountToBeReceivedFromStakingEth
                   }}</strong>
-                  {{ amountToBeReceivedFromStakingEth && "ETH" }}
+                  {{ amountToBeReceivedFromStakingEth && tokenInfo.symbol }}
                 </div>
                 <div class="flex justify-center my-4">
                   <button
@@ -406,6 +406,8 @@ export default defineComponent({
     const isAuthenticated = store.getters["authUser/authenticated"];
     const modalType = ref<string>("");
     async function checkEth() {
+      console.log("checking eth");
+      
       const formdata = new FormData();
       formdata.append(
         "etherToCheck",
@@ -465,6 +467,11 @@ export default defineComponent({
       modalIsOpen.value = !modalIsOpen.value;
       modalType.value = "buy";
     }
+    const {
+      debouncedValue: ethDebouncedValue,
+      displayValue: ethDisplayValue,
+      debounceListener: ethDebouncedListener,
+    } = { ...composeDebounced(300, checkEth) };
     function toggleSellModal() {
       modalIsOpen.value = !modalIsOpen.value;
       modalType.value = "sell";
@@ -494,10 +501,13 @@ export default defineComponent({
       tokensDebouncedValue,
       tokenDisplayValue,
       tokenDebouncedListener,
+      ethDebouncedValue,
+      ethDisplayValue,
+      ethDebouncedListener,
       ...composeUserInfo(props.username),
       ...composeTokenInfo(props.username),
       ...creatorTokenInterface(),
-      ...composeDebounced(300, checkEth),
+
     };
   },
 });
