@@ -260,7 +260,7 @@
                   type="number"
                   class="bg-transparent border-b-2 border-black"
                 />
-                <button @click="tokenToSell += 0.01">
+                <button @click="tokenToCheck += 0.01">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     class="h-6 w-6"
@@ -296,7 +296,7 @@
                     @click="
                       sendSellTransactionToCreatorToken(
                         tokenInfo.address,
-                        tokenToCheck
+                        tokenToCheck.toString()
                       )
                     "
                     class="
