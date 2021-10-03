@@ -42,10 +42,11 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const publicRoutes = ["Login", "Register", "Show Profile"]
   let { name } = to
+  const { username } = to.params
   name = name?.toString() || ""
   const title = document.querySelector("head > title")
   if (title) {
-    title.innerHTML = name + " | Valorize"
+    title.innerHTML = (name === "Show Profile" ? `${username}'s Profile ` : name) + " | Valorize"
   }
   const isAuthenticated = store.state.authenticated
   if (!publicRoutes.includes(name) && !isAuthenticated) {
