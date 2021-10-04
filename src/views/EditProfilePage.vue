@@ -17,7 +17,7 @@
             </h2>
           </div>
           <div class="my-8">
-            <router-link :to="'/u/' + user.username" class="btn min-h-12 pt-1">
+            <router-link :to="user.username" class="btn min-h-12 pt-1">
               See Public Profile</router-link
             >
           </div>
