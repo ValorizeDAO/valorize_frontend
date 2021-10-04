@@ -34,13 +34,16 @@
         />
         <div class="describeSection__imageContainer--text" ref="desc">
           <h3>Tim Lee</h3>
-          <p class="whitespace-nowrap	">
-            <strong>$</strong><strong v-text="tokenSamplePrice"></strong> pertoken
+          <p class="whitespace-nowrap">
+            <strong>$</strong><strong v-text="tokenSamplePrice"></strong> per
+            token
           </p>
-          <p><strong v-text="investors"></strong> investors</p>
+          <p class="whitespace-nowrap">
+            <strong v-text="investors"></strong> investors
+          </p>
         </div>
         <div class="describeSection__imageContainer--chart">
-          <canvas id="myChart" width="300" height="100" x-data="chart"></canvas>
+          <canvas id="myChart" width="300" height="100" ref="chart"></canvas>
         </div>
       </div>
     </div>
@@ -153,6 +156,8 @@
 <script lang="ts">
 import { ref, defineComponent, onMounted, Ref } from "vue";
 import { useStore } from "vuex";
+import { Chart, ChartConfiguration, registerables } from "chart.js";
+Chart.register(...registerables);
 export default defineComponent({
   name: "Dashboard",
   props: {},
@@ -180,21 +185,25 @@ export default defineComponent({
     },
   },
   setup() {
-    return { ...composeImageSlider() }
-  }
+    return { ...composeImageSlider(), ...composeChart() };
+  },
 });
 
 const totalDuration = 5000;
 const data = [
-  3, 30, 42, 65, 75, 79, 121, 145, 175, 235, 365, 418, 522, 588, 660, 775, 815, 900, 1025, 1050, 1178, 1280, 1320, 1390, 1580, 1650
+  3, 30, 42, 65, 75, 79, 121, 145, 175, 235, 365, 418, 522, 588, 660, 775, 815,
+  900, 1025, 1050, 1178, 1280, 1320, 1390, 1580, 1650,
 ];
+const delayBetweenPoints = totalDuration / data.length;
 
 function composeImageSlider() {
   const container: Ref<null | HTMLDivElement> = ref(null);
-  const investors = ref(150)
-  const tokenSamplePrice = ref(20.00)
+  const investors = ref(150);
+  const tokenSamplePrice = ref(20.0);
   onMounted(() => {
-    const observerCallback: IntersectionObserverCallback = (e: IntersectionObserverEntry[]) => {
+    const observerCallback: IntersectionObserverCallback = (
+      e: IntersectionObserverEntry[]
+    ) => {
       if (e[0].isIntersecting && investors.value === 150) {
         const increaseNums = window.setInterval(animateFrame, 50);
         window.setTimeout(
@@ -212,19 +221,105 @@ function composeImageSlider() {
       observer.observe(container.value);
     }
     const animateFrame = () => {
-     investors.value = investors.value + 15;
-     tokenSamplePrice.value = Number((Math.round((investors.value / 25) * 100) / 100).toFixed(
-        2
-      ));
+      investors.value = investors.value + 15;
+      tokenSamplePrice.value = Number(
+        (Math.round((investors.value / 25) * 100) / 100).toFixed(2)
+      );
     };
   });
   return {
     investors,
     tokenSamplePrice,
-    container
-  }
-
+    container,
+  };
 }
+
+let myChart: Chart;
+function composeChart() {
+  const chart: Ref<null | HTMLCanvasElement> = ref(null);
+  onMounted(() => {
+    const observerCallback: IntersectionObserverCallback = (e) => {
+      if (e[0].isIntersecting && !myChart && chart.value) {
+        myChart = new Chart(chart.value, config);
+      }
+    };
+    let observer = new IntersectionObserver(observerCallback);
+    const { value: ctx } = chart;
+    if (ctx) {
+      observer.observe(ctx);
+    }
+  });
+  return { chart };
+}
+            
+      const previousY = (ctx: { index: number; chart: { scales: { y: { getPixelForValue: (arg0: number) => any; }; }; getDatasetMeta: (arg0: any) => { (): any; new(): any; data: { getProps: (arg0: string[], arg1: boolean) => { (): any; new(): any; y: any; }; }[]; }; }; datasetIndex: any; }) =>
+        ctx.index === 0
+          ? ctx.chart.scales.y.getPixelForValue(100)
+          : ctx.chart
+              .getDatasetMeta(ctx.datasetIndex)
+              .data[ctx.index - 1].getProps(["y"], true).y;
+
+      const animation = {
+        x: {
+          type: "number",
+          easing: "linear",
+          duration: delayBetweenPoints,
+          from: NaN, // the point is initially skipped
+          delay(ctx: { type: string; xStarted: boolean; index: number; }) {
+            if (ctx.type !== "data" || ctx.xStarted) {
+              return 0;
+            }
+            ctx.xStarted = true;
+            return ctx.index * delayBetweenPoints;
+          },
+        },
+        y: {
+          type: "number",
+          easing: "linear",
+          duration: delayBetweenPoints,
+          from: previousY,
+          delay(ctx: { type: string; yStarted: boolean; index: number; }) {
+            if (ctx.type !== "data" || ctx.yStarted) {
+              return 0;
+            }
+            ctx.yStarted = true;
+            return ctx.index * delayBetweenPoints;
+          },
+        },
+      };
+              let config: ChartConfiguration = {
+                type: "line",
+                data: {
+                  labels: new Array(data.length).fill(""),
+                  datasets: [
+                    {
+                      label: "",
+                      data: data,
+                      fill: false,
+                      borderColor: "#23123a",
+                    },
+                  ],
+                },
+                options: {
+                  animation,
+                  interaction: { intersect: false },
+                  scales: {
+                    y: {
+                      beginAtZero: true,
+                      grid: { display: false },
+                      ticks: { display: false },
+                    },
+                    x: {
+                      beginAtZero: true,
+                      grid: { display: false },
+                      ticks: { display: false },
+                    },
+                  },
+                  plugins: {
+                    legend: { display: false },
+                  },
+                },
+              };
 </script>
 
 <style scoped>
