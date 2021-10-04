@@ -121,7 +121,7 @@ export default defineComponent({
                   route.query.redirectUri && router.push(decodeURI(route.query.redirectUri.toString()));
                 });
             } else {
-              router.push("/");
+              router.push("/" + name.value);
             }
           }
           authenticating.value = false;
