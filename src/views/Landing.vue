@@ -15,22 +15,29 @@
     <aside id="demo" class="heroSection__aside--right">
       <div>
         <p class="heroSection__supportCopy">Be the first to join:</p>
-          <component :is="'script'" async data-uid="c7b0f198cc" src="https://fabulous-creator-6382.ck.page/c7b0f198cc/index.js">
-          </component>
+        <component
+          :is="'script'"
+          async
+          data-uid="c7b0f198cc"
+          src="https://fabulous-creator-6382.ck.page/c7b0f198cc/index.js"
+        >
+        </component>
       </div>
     </aside>
   </section>
   <section id="describe" class="describeSection">
-    <div x-data="imageSlider" class="describeSection__imageContainer">
-      <div class="describeSection__imageContainer--slider" x-ref="container">
-        <img src="src/assets/describe-1.png" alt="Guitar Player Singing to a mic" />
-        <div class="describeSection__imageContainer--text" x-ref="desc">
+    <div class="describeSection__imageContainer">
+      <div class="describeSection__imageContainer--slider" ref="container">
+        <img
+          src="src/assets/describe-1.png"
+          alt="Guitar Player Singing to a mic"
+        />
+        <div class="describeSection__imageContainer--text" ref="desc">
           <h3>Tim Lee</h3>
-          <p>
-            <strong>$</strong><strong x-text="tokenPrice">5.00</strong> per
-            token
+          <p class="whitespace-nowrap	">
+            <strong>$</strong><strong v-text="tokenSamplePrice"></strong> pertoken
           </p>
-          <p><strong x-text="investors">300</strong> investors</p>
+          <p><strong v-text="investors"></strong> investors</p>
         </div>
         <div class="describeSection__imageContainer--chart">
           <canvas id="myChart" width="300" height="100" x-data="chart"></canvas>
@@ -71,9 +78,7 @@
     </div>
     <h2 class="howItWorksSection__cta">
       It's that easy! <br /><br />
-      <router-link to="Register" class="cta_button">
-        Sign Up
-      </router-link>
+      <router-link to="Register" class="cta_button"> Sign Up </router-link>
     </h2>
   </section>
   <section id="FAQ" class="faqSection">
@@ -146,7 +151,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from "vue";
+import { ref, defineComponent, onMounted, Ref } from "vue";
 import { useStore } from "vuex";
 export default defineComponent({
   name: "Dashboard",
@@ -157,7 +162,7 @@ export default defineComponent({
       isHidden1: true,
       isHidden2: true,
       isHidden3: true,
-    }
+    };
   },
   methods: {
     //sorry to whoever cleans this or to future me
@@ -174,7 +179,52 @@ export default defineComponent({
       this.isHidden3 = !this.isHidden3;
     },
   },
+  setup() {
+    return { ...composeImageSlider() }
+  }
 });
+
+const totalDuration = 5000;
+const data = [
+  3, 30, 42, 65, 75, 79, 121, 145, 175, 235, 365, 418, 522, 588, 660, 775, 815, 900, 1025, 1050, 1178, 1280, 1320, 1390, 1580, 1650
+];
+
+function composeImageSlider() {
+  const container: Ref<null | HTMLDivElement> = ref(null);
+  const investors = ref(150)
+  const tokenSamplePrice = ref(20.00)
+  onMounted(() => {
+    const observerCallback: IntersectionObserverCallback = (e: IntersectionObserverEntry[]) => {
+      if (e[0].isIntersecting && investors.value === 150) {
+        const increaseNums = window.setInterval(animateFrame, 50);
+        window.setTimeout(
+          () => window.clearInterval(increaseNums),
+          totalDuration
+        );
+      } else {
+        window.removeEventListener("scroll", animateFrame);
+      }
+    };
+    let observer = new IntersectionObserver(observerCallback, {
+      threshold: 0,
+    });
+    if (container.value) {
+      observer.observe(container.value);
+    }
+    const animateFrame = () => {
+     investors.value = investors.value + 15;
+     tokenSamplePrice.value = Number((Math.round((investors.value / 25) * 100) / 100).toFixed(
+        2
+      ));
+    };
+  });
+  return {
+    investors,
+    tokenSamplePrice,
+    container
+  }
+
+}
 </script>
 
 <style scoped>
