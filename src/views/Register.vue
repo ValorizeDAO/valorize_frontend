@@ -78,8 +78,8 @@
               <div v-if="status === 'pending'">
                 <SvgLoader fill="#cecece" class="h-12 mx-auto"></SvgLoader>
               </div>
+              <div v-else-if="['init', 'error', 'conflict'].includes(status)">
               <input
-                v-else-if="['init', 'error', 'conflict'].includes(status)"
                 type="submit"
                 class="px-4 py-2 border-2 rounded-md font-black w-full"
                 :class="
@@ -89,7 +89,12 @@
                 "
                 :disabled="!ready"
               />
+                <p v-if="status === 'error'" class="text-red-800 font-bold">
+                  {{ errorMessage }}
+                </p>
+              </div>
             </transition>
+
           </div>
         </form>
       </div>
@@ -120,6 +125,7 @@ export default defineComponent({
     const passwordVerify = ref("");
     const status = ref(requestStatuses[0]);
     const userNameAvailable = ref(true);
+    const errorMessage = ref("");
     const hasQueryToAddUserWallet =
       route.query.redirectUri && route.query.registerAddress;
 
@@ -188,6 +194,8 @@ export default defineComponent({
         }
       } else {
         status.value = requestStatuses[3];
+        const result = await response.json() as { error: string };
+        errorMessage.value = result.error;
       }
     }
 
@@ -200,6 +208,7 @@ export default defineComponent({
       ready,
       userNameAvailable,
       sendLogin,
+      errorMessage
     };
   },
 });
