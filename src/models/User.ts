@@ -9,6 +9,7 @@ export interface User {
   about: string,
   hasDeployedToken: boolean,
   hasVerifiedEmail: boolean,
+  isAlphaUser: boolean,
   token?: Token
 }
 
@@ -21,4 +22,5 @@ export const emptyUser: User = {
   about: "",
   hasDeployedToken: false,
   hasVerifiedEmail: false,
+  isAlphaUser: false,
 }
