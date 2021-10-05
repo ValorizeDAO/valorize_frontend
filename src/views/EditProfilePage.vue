@@ -284,15 +284,7 @@ function composeProfileInfo() {
   const fullName = ref(store.state.authUser.user.name);
   const about = ref(store.state.authUser.user.about);
   const hasToken = store.getters["authUser/hasToken"];
-  const allowedUsernames: Ref<User[]> = ref([]);
-  onMounted(async () => {
-    allowedUsernames.value = await auth.getAllowedUsers()
-    })
-  const isAllowedUser = computed(() => {
-    return allowedUsernames.value.some(
-      (user) => user.username === store.state.authUser.user.username
-    );
-  });
+  const isAllowedUser = ref(store.state.authUser.user.isAlphaUser);
 
   const profileUpdateStatuses = [
     "INIT",
