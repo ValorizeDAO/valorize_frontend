@@ -27,7 +27,7 @@
     <div class="describeSection__imageContainer">
       <div class="describeSection__imageContainer--slider" ref="container">
         <img
-          src="src/assets/describe-1.png"
+          src="/src/assets/describe-1.png"
           alt="Guitar Player Singing to a mic"
         />
         <div class="describeSection__imageContainer--text" ref="desc">
@@ -315,7 +315,6 @@ let config: ChartConfiguration = {
     ],
   },
   options: {
-    animation,
     interaction: { intersect: false },
     scales: {
       y: {
