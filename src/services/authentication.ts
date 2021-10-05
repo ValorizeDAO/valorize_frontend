@@ -88,4 +88,9 @@ export default {
     const apiResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/wallet/new", requestOptions)
     return apiResponse.json()
   },
+  async getAllowedUsers() {
+    const req = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/alpha")
+    const users = await req.json() as User[]
+    return users
+  }
 };
