@@ -17,7 +17,7 @@
             </h2>
           </div>
           <div class="my-8">
-            <router-link :to="'/u/' + user.username" class="btn min-h-12 pt-1">
+            <router-link :to="user.username" class="btn min-h-12 pt-1">
               See Public Profile</router-link
             >
           </div>
@@ -139,6 +139,7 @@
       "
     >
       <h2 class="text-3xl font-black mb-6 mt-24 sm:mt-0">Your Token</h2>
+    <div v-if="isAllowedUser">
       <TokenInfoComponent
         v-if="user.hasDeployedToken"
         :username="user.username"
@@ -218,7 +219,7 @@
               :href="'https://ropsten.etherscan.io/tx/' + tokenTestnetTx"
               target="_blank"
             >
-              {{ tokenTestnetTx.substr(0, 15) }}...
+              {{ formatAddress(tokenTestnetTx) }}
             </a>
           </p>
           <p>
@@ -230,7 +231,7 @@
               "
               target="_blank"
             >
-              {{ tokenTestnetAddress.substr(0, 15) }}... </a
+              {{ formatAddress(tokenTestnetAddress) }} </a
             ><br />(Takes a minute to appear)
           </p>
           <p class="mt-12 lg:w-2/5 mb-4 mx-auto">
@@ -247,12 +248,17 @@
       </transition>
       </Modal>
     </div>
+    <div v-else>
+      Deploy Your Token Soon!
+    </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed } from "vue";
+import { ref, defineComponent, computed, onMounted, Ref } from "vue";
 import auth from "../services/authentication";
+import { formatAddress } from "../services/formatAddress";
 import { User } from "../models/User";
 import ethApi, { TokenResponse } from "../services/ethApi";
 import { useStore } from "vuex";
@@ -265,6 +271,7 @@ export default defineComponent({
   props: {},
   components: { SvgLoader, ImageContainer, TokenInfoComponent, Modal },
   setup() {
+
     return {
       ...composeProfileInfo(),
       ...composeUpdateImage(),
@@ -277,6 +284,7 @@ function composeProfileInfo() {
   const fullName = ref(store.state.authUser.user.name);
   const about = ref(store.state.authUser.user.about);
   const hasToken = store.getters["authUser/hasToken"];
+  const isAllowedUser = ref(store.state.authUser.user.isAlphaUser);
 
   const profileUpdateStatuses = [
     "INIT",
@@ -306,6 +314,8 @@ function composeProfileInfo() {
     about,
     profileUpdateStatus,
     hasToken,
+    formatAddress,
+    isAllowedUser,
   };
 }
 function composeUpdateImage() {

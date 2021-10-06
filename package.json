@@ -9,7 +9,11 @@
     "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore . --fix"
   },
   "dependencies": {
+    "@types/chartjs": "^0.0.31",
+    "@types/node": "^16.9.4",
     "@vueuse/head": "^0.6.0",
+    "chart.js": "^3.5.1",
+    "currency.js": "^2.0.4",
     "ethers": "^5.4.6",
     "vite-ssr": "^0.10.5",
     "vue": "3",

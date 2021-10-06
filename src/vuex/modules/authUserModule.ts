@@ -22,6 +22,7 @@ export default {
   getters: {
     authenticated: (state: UserState) => state.authenticated,
     user: (state: UserState) => state.user,
+    username: (state: UserState) => state.user.username,
     checkingAuth: (state: UserState) => state.checkingAuth,
     profileImage: (state: UserState) => state.user.avatar,
     hasToken: (state: UserState) => state.hasToken,

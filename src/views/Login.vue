@@ -60,7 +60,7 @@
           </transition>
           <div class="py-8">
             Or
-            <router-link to="/register" class="font-black underline"
+            <router-link :to="{ path: 'register', query: route.query }" class="font-black underline"
               >Register New Account</router-link
             >
           </div>
@@ -73,8 +73,9 @@
 <script lang="ts">
 import { ref, defineComponent } from "vue";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import SvgLoader from "../components/SvgLoader.vue";
+import auth from "../services/authentication";
 
 export default defineComponent({
   name: "Login",
@@ -83,10 +84,12 @@ export default defineComponent({
   setup: () => {
     const store = useStore();
     const router = useRouter();
+    const route = useRoute();
     const name = ref("");
     const password = ref("");
     const authError = ref(false);
     const authenticating = ref(false);
+    const hasQueryToAddUserWallet = route.query.redirectUri && route.query.registerAddress
     async function sendLogin() {
       authError.value = false;
       authenticating.value = true;
@@ -99,7 +102,6 @@ export default defineComponent({
         body: formdata,
         credentials: "include",
       } as RequestInit;
-
       fetch(import.meta.env.VITE_BACKEND_URL + "/login", requestOptions)
         .then((response) => {
           if (response.status !== 200) {
@@ -111,14 +113,23 @@ export default defineComponent({
           if (!authError.value) {
             store.state.authenticated = true;
             store.commit("authUser/setUser", result);
-            router.push("/");
+            if (hasQueryToAddUserWallet) {
+              route.query.registerAddress && auth.addExternalWalletToAccount(
+                   route.query.registerAddress.toString()
+                )
+                .then(() => {
+                  route.query.redirectUri && router.push(decodeURI(route.query.redirectUri.toString()));
+                });
+            } else {
+              router.push("/" + name.value);
+            }
           }
           authenticating.value = false;
         })
         .catch((error) => console.log("error", error));
     }
 
-    return { name, password, sendLogin, authError, authenticating };
+    return { name, password, hasQueryToAddUserWallet, route, sendLogin, authError, authenticating };
   },
 });
 </script>

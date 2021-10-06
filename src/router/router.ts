@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import auth from "../services/authentication"
+import Landing from "../views/Landing.vue"
 import Dashboard from "../views/Dashboard.vue"
 import Login from "../views/Login.vue"
 import Register from "../views/Register.vue"
@@ -10,6 +11,11 @@ import store from "../vuex/store"
 const routes = [
   {
     path: "/",
+    name: "Landing",
+    component: Landing,
+  },
+  {
+    path: "/dashboard",
     name: "Dashboard",
     component: Dashboard,
   },
@@ -29,7 +35,7 @@ const routes = [
     component: EditProfilePage,
   },
   {
-    path: "/u/:username",
+    path: "/:username",
     name: "Show Profile",
     component: ProfilePage,
   },
@@ -40,12 +46,23 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicRoutes = ["Login", "Register", "Show Profile"]
+  const publicRoutes = ["Landing", "Login", "Register", "Show Profile"]
   let { name } = to
+  const { username } = to.params
   name = name?.toString() || ""
   const title = document.querySelector("head > title")
   if (title) {
-    title.innerHTML = name + " | Valorize"
+    switch (name) {
+      case "Show Profile":
+        title.innerHTML = `${username}'s Profile`
+        break
+      case "Landing":
+        title.innerHTML = "Valorize | Launch your own crypto in 1 click"
+        break
+      default:
+        title.innerHTML = name + " | Valorize"
+        break
+    }
   }
   const isAuthenticated = store.state.authenticated
   if (!publicRoutes.includes(name) && !isAuthenticated) {
