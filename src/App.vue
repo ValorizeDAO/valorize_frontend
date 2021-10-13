@@ -28,12 +28,12 @@
         </div>
         <div :class="showBlock ? '' : 'hidden'" class="absolute left-0 sm:relative bg-white border-b-2 border-black sm:border-0 sm:bg-transparent sm:block">
           <div @click="triggerBlock" v-if="!authenticated" class="w-screen sm:w-full left-0 px-10 py-4 sm:pr-6 flex flex-col sm:flex-row text-center">
-            <router-link class="pb-8 sm:pb-0 sm:pr-4" to="/login">Login</router-link>
-            <router-link to="/register">Register</router-link>
+            <router-link class="pb-8 sm:pb-0 sm:pr-4" id="login" to="/login">Login</router-link>
+            <router-link id="register" to="/register">Register</router-link>
           </div>
           <div v-else @click="triggerBlock" class="w-screen sm:w-full left-0 px-10 py-4 sm:pr-6 flex flex-col sm:flex-row text-center">
-            <router-link to="/edit-profile" class="px-4 py-2 sm:mr-4">Edit Profile</router-link>
-            <button @click="logout" class="px-4 py-2">Logout</button>
+            <router-link id="edit-profile" to="/edit-profile" class="px-4 py-2 sm:mr-4">Edit Profile</router-link>
+            <button id="logout" @click="logout" class="px-4 py-2">Logout</button>
           </div>
         </div>
       </div>
@@ -82,7 +82,6 @@ export default defineComponent({
     async logout() {
       await auth.logout();
       this.logoutState()
-      this.$router.push("/login");
     },
     triggerBlock() {
       this.showBlock = !this.showBlock
