@@ -5,13 +5,14 @@
         h-20
         bg-white
         border-b-2 border-black
-        absolute
+        fixed
+        top-0
         w-screen
         flex
         items-center
         px-4
         md:px-16
-        justify-between
+        justify-between z-10
       "
     >
       <router-link to="/">
