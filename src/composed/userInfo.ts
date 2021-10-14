@@ -10,6 +10,14 @@ interface TokenBalanceResponse {
     address: string;
     balance: number }>
 }
+interface Link {
+  id: number;
+  label: string;
+  icon: string;
+  url: string;
+  user_id: number;
+  description: string;
+}
 export default function composeUserInfo(username: string) {
   const store = useStore()
   const userStatuses = ["INIT", "LOADING", "SUCCESS", "FAIL"]
@@ -17,8 +25,9 @@ export default function composeUserInfo(username: string) {
   const userInfo = ref<User>(emptyUser)
   const tokenInfo = ref<Token>(<Token>{})
   const showImage = ref<boolean>(false)
-  store.dispatch("authUser/checkAuth")
   const userTokenBalance = ref<string>("")
+  const links = ref<Array<Link>>([])
+  store.dispatch("authUser/checkAuth")
 
   async function getUserTokenBalance(tokenId: number) {
     const formdata = new FormData();
@@ -49,6 +58,12 @@ export default function composeUserInfo(username: string) {
     if (store.getters["authUser/authenticated"]) {
       getUserTokenBalance(userResult.token.id)
     }
+    const linkResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/" + username + "/links")
+    if (linkResponse.status === 200) {
+      const linkResult = await linkResponse.json() as  { links: Array<Link> }
+      console.log(linkResult.links) 
+      links.value = [...linkResult.links]
+    }
   })
   return {
     username,
@@ -56,5 +71,6 @@ export default function composeUserInfo(username: string) {
     tokenInfo,
     userTokenBalance,
     showImage,
+    links
   }
 }
