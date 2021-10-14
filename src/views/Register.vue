@@ -20,13 +20,13 @@
             "
             v-model="email"
           />
-          <label for="name" class="">
+          <label for="username" class="">
             <span class="text-xl font-black">Username</span>
           </label>
           <input
             type="text"
             name="username"
-            id="name"
+            id="username"
             class="p-2 w-full border-0 border-b-2 border-black bg-purple-50"
             :value="displayValue"
             @input="debounceListener"
@@ -82,6 +82,7 @@
               <input
                 type="submit"
                 class="px-4 py-2 border-2 rounded-md font-black w-full"
+                id="submit-registration"
                 :class="
                   ready
                     ? 'text-black border-black bg-purple-50 cursor-pointer'
