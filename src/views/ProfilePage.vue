@@ -25,6 +25,10 @@
             <h2 class="text-2xl font-black mt-12 mb-6">Looks like this user has not deployed a token yet</h2>
           </div>
         </div>
+        <Modal>
+          <component :is="'script'" async data-uid="c7b0f198cc" src="https://fabulous-creator-6382.ck.page/c7b0f198cc/index.js">
+          </component>
+        </Modal>
     </div>
   </div>
 </template>
