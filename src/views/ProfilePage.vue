@@ -6,6 +6,10 @@
         <img class="h-52 w-52 object-cover" :src="userInfo.avatar" alt="">
       </ImageContainer>
       <p class="mt-8">{{ userInfo.about }}</p>
+      <div class="my-12 flex flex-col">
+        <h2 class="font-black text-xl mb-4">Links:</h2>
+        <a class="btn mb-4 text-center" v-for="link in links" :key="link.id" :href="link.url">{{ link.label }}</a>
+      </div>
     </div>
     <div class="pt-8 border-black px-4 col-span-12 md:col-span-7 md:px-16 md:min-h-screen">
       <div v-if="userInfo.hasDeployedToken">
