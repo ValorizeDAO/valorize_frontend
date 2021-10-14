@@ -14,42 +14,7 @@
         {{ tokenInfo.address && formatAddress(tokenInfo.address) }}
       </a>
     </p>
-    <div
-      id="token-info-actions"
-      class="mx-auto flex justify-center h-56 items-center"
-    >
-      <transition name="fade" mode="out-in">
-        <ImageContainer v-if="showImage">
-          <img
-            class="
-              rounded
-              border-2 border-black
-              h-52
-              w-52
-              p-6
-              bg-purple-100
-              mb-6
-              text-center
-              md:text-left
-            "
-            :src="
-              'https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=' +
-              tokenInfo.address +
-              '&choe=UTF-8'
-            "
-            alt=""
-          />
-        </ImageContainer>
-        <button
-          v-else
-          @click.prevent="showImage = true"
-          class="btn bg-burple-100 mb-4 w-48"
-        >
-          Show QR Code
-        </button>
-      </transition>
-    </div>
-    <div id="coin-data" v-if="tokenStatus === 'SUCCESS'">
+    <div class="mt-12" id="coin-data" v-if="tokenStatus === 'SUCCESS'">
       <div class="flex justify-between flex-wrap">
         <div>
           <h3 class="text-l mr-3">
@@ -91,7 +56,7 @@
           <div class="mt-2 mx-auto">
             <button
               @click="toggleBuyModal"
-              class="btn bg-purple-100 my-8 w-42 mr-4"
+              class="btn bg-purple-100 my-8 md:w-42 mr-4"
             >
               Buy {{ tokenInfo.symbol }}
             </button>
@@ -105,10 +70,13 @@
           :body-class="['bg-white', 'border', 'max-w-2xl']"
           @toggle="toggleBuyModal"
         >
-          <div class="border-black p-10">
+          <div class="border-black md:p-10">
             <div v-if="modalType == 'buy'">
-              <div class="flex justify-between w-100">
-                Ether to Stake:
+              <div class="mx-auto md:flex justify-center w-100 md:mb-0">
+                <p class="text-center mb-4 md:mb-0">
+                  Ether to Stake:
+                </p>
+                <div class="flex md:ml-6">
                 <button @click="ethToCheck -= 0.0001">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -130,7 +98,7 @@
                   @input="ethDebouncedListener"
                   step=".0001"
                   type="number"
-                  class="bg-transparent border-b-2 border-black"
+                  class="bg-transparent border-b-2 border-black w-24"
                 />
                 <button @click="ethToCheck += 0.0001">
                   <svg
@@ -148,6 +116,7 @@
                     />
                   </svg>
                 </button>
+                </div>
               </div>
               <div class="text-center">
                 <button

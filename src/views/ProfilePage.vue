@@ -1,10 +1,12 @@
 <template>
   <div id="profile-page" class="grid grid-cols-12">
-    <div id="user-info" class="col-span-12  px-4 pt-8 border-r-0 border-black md:bg-purple-200 md:border-r-2 md:px-16 md:col-span-5 md:min-h-screen">
+    <div id="user-info" class="col-span-12 px-4 pt-8 border-r-0 border-black md:bg-purple-200 md:border-r-2 md:px-16 md:col-span-5 md:min-h-screen">
       <h1 class="text-3xl font-black">{{ userInfo.username }}</h1>
-      <ImageContainer class="my-8">
-        <img class="h-52 w-52 object-cover" :src="userInfo.avatar" alt="">
-      </ImageContainer>
+      <div class="flex justify-center">
+        <ImageContainer class="my-8" :tailwindSize="'h-40 w-40 md:h-52 md:w-52'">
+          <img class="h-40 w-40 md:h-52 md:w-52 object-cover" :src="userInfo.avatar" alt="">
+        </ImageContainer>
+      </div>
       <p class="mt-8">{{ userInfo.about }}</p>
       <div class="my-12 flex flex-col">
         <h2 v-if="links.length" class="font-black text-xl mb-4">Links:</h2>
@@ -17,7 +19,7 @@
         <h2 class="text-2xl font-black mt-12 mb-6">What is this?</h2>
         <p class="mb-24">Creator Tokens are <a href="https://101blockchains.com/what-is-erc20/" class="underline">ERC20</a> tokens on Ethereum. 
         Each time you buy from the contract new tokens get generated. The more tokens there are the more expensive it is to generate new tokens.
-        Get yours today!
+        <router-link to="login" class="underline">Get early access!</router-link>
         </p>
         </div>
         <div v-else>
@@ -29,10 +31,6 @@
             <h2 class="text-2xl font-black mt-12 mb-6">Looks like this user has not deployed a token yet</h2>
           </div>
         </div>
-        <Modal>
-          <component :is="'script'" async data-uid="c7b0f198cc" src="https://fabulous-creator-6382.ck.page/c7b0f198cc/index.js">
-          </component>
-        </Modal>
     </div>
   </div>
 </template>
