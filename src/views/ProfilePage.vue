@@ -9,7 +9,7 @@
       </div>
       <p class="mt-8">{{ userInfo.about }}</p>
       <div class="my-12 flex flex-col">
-        <h2 class="font-black text-xl mb-4">Links:</h2>
+        <h2 v-if="links.length" class="font-black text-xl mb-4">Links:</h2>
         <a class="btn mb-4 text-center" v-for="link in links" :key="link.id" :href="link.url">{{ link.label }}</a>
       </div>
     </div>
