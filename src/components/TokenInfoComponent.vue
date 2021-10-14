@@ -56,7 +56,7 @@
           <div class="mt-2 mx-auto">
             <button
               @click="toggleBuyModal"
-              class="btn bg-purple-100 my-8 w-42 mr-4"
+              class="btn bg-purple-100 my-8 md:w-42 mr-4"
             >
               Buy {{ tokenInfo.symbol }}
             </button>
@@ -70,10 +70,13 @@
           :body-class="['bg-white', 'border', 'max-w-2xl']"
           @toggle="toggleBuyModal"
         >
-          <div class="border-black p-10">
+          <div class="border-black md:p-10">
             <div v-if="modalType == 'buy'">
-              <div class="flex justify-between w-100">
-                Ether to Stake:
+              <div class="mx-auto md:flex justify-center w-100 md:mb-0">
+                <p class="text-center mb-4 md:mb-0">
+                  Ether to Stake:
+                </p>
+                <div class="flex md:ml-6">
                 <button @click="ethToCheck -= 0.0001">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -95,7 +98,7 @@
                   @input="ethDebouncedListener"
                   step=".0001"
                   type="number"
-                  class="bg-transparent border-b-2 border-black"
+                  class="bg-transparent border-b-2 border-black w-24"
                 />
                 <button @click="ethToCheck += 0.0001">
                   <svg
@@ -113,6 +116,7 @@
                     />
                   </svg>
                 </button>
+                </div>
               </div>
               <div class="text-center">
                 <button
