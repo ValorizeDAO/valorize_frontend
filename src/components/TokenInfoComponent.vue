@@ -14,42 +14,7 @@
         {{ tokenInfo.address && formatAddress(tokenInfo.address) }}
       </a>
     </p>
-    <div
-      id="token-info-actions"
-      class="mx-auto flex justify-center h-56 items-center"
-    >
-      <transition name="fade" mode="out-in">
-        <ImageContainer v-if="showImage">
-          <img
-            class="
-              rounded
-              border-2 border-black
-              h-52
-              w-52
-              p-6
-              bg-purple-100
-              mb-6
-              text-center
-              md:text-left
-            "
-            :src="
-              'https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=' +
-              tokenInfo.address +
-              '&choe=UTF-8'
-            "
-            alt=""
-          />
-        </ImageContainer>
-        <button
-          v-else
-          @click.prevent="showImage = true"
-          class="btn bg-burple-100 mb-4 w-48"
-        >
-          Show QR Code
-        </button>
-      </transition>
-    </div>
-    <div id="coin-data" v-if="tokenStatus === 'SUCCESS'">
+    <div class="mt-12" id="coin-data" v-if="tokenStatus === 'SUCCESS'">
       <div class="flex justify-between flex-wrap">
         <div>
           <h3 class="text-l mr-3">

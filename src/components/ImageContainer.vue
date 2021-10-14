@@ -6,7 +6,7 @@
     </div>
     <img
       alt="dotted shadow"
-      class="h-52 w-52"
+      :class="tailwindSize"
       src="../assets/img/dotted_shadow.png"
     />
   </div>
