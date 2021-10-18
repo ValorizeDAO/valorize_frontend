@@ -10,14 +10,6 @@ interface TokenBalanceResponse {
     address: string;
     balance: number }>
 }
-interface Link {
-  id: number;
-  label: string;
-  icon: string;
-  url: string;
-  user_id: number;
-  description: string;
-}
 export default function composeUserInfo(username: string) {
   const store = useStore()
   const userStatuses = ["INIT", "LOADING", "SUCCESS", "FAIL"]
@@ -61,7 +53,6 @@ export default function composeUserInfo(username: string) {
     const linkResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/" + username + "/links")
     if (linkResponse.status === 200) {
       const linkResult = await linkResponse.json() as  { links: Array<Link> }
-      console.log(linkResult.links) 
       links.value = [...linkResult.links]
     }
   })

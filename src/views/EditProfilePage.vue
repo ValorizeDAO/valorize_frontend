@@ -115,11 +115,17 @@
                 />
               </label>
               <div class="text-center">
-                <button class="btn w-48 mt-24 bg-purple-100 mx-auto">
+                <button :disabled="profileUpdateStatus === 'UPLOADING'" class="btn w-48 mt-24 bg-purple-100 mx-auto disabled:border-gray-600 disabled:text-gray-600">
                   Update Info
                 </button>
               </div>
             </form>
+          </div>
+          <div>
+            <div v-for="link in links" :key="link.ID">
+              <input type="text" class="btn" v-bind="link.name">
+              <button>Delete</button>
+            </div>
           </div>
         </div>
       </div>
@@ -283,6 +289,7 @@ function composeProfileInfo() {
   const store = useStore();
   const fullName = ref(store.state.authUser.user.name);
   const about = ref(store.state.authUser.user.about);
+  const links = ref(store.state.authUser.user.links);
   const hasToken = store.getters["authUser/hasToken"];
   const isAllowedUser = ref(store.state.authUser.user.isAlphaUser);
 
@@ -312,6 +319,7 @@ function composeProfileInfo() {
     updateProfile,
     fullName,
     about,
+    links,
     profileUpdateStatus,
     hasToken,
     formatAddress,

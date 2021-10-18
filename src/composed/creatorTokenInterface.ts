@@ -48,7 +48,6 @@ export default function metamaskLogin() {
         method: "eth_requestAccounts",
       })) as string[];
       metamaskStatus.value = metamaskAuthStatuses[3];
-      console.log({ account });
       buyingAddress.value = account[0];
       Auth.addExternalWalletToAccount(account[0]);
 
@@ -56,12 +55,10 @@ export default function metamaskLogin() {
       token
         .buyNewTokens({ value: utils.parseEther(ethToBuy.toString()) })
         .then((tx) => {
-          console.log({ tx });
           buyTxHash.value = tx.hash;
           metamaskStatus.value = metamaskAuthStatuses[6];
         })
         .catch((err) => {
-          console.log({ err });
           if (err.code === 4001) {
             metamaskStatus.value = metamaskAuthStatuses[7];
           } else {
