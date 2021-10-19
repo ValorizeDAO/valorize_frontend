@@ -23,7 +23,7 @@
           </div>
         </div>
         <div class="grid lg:grid-cols-9 md:gap-6">
-          <div class="col-span-4">
+          <div class="col-span-9 md:col-span-4">
             <div class="relative mt-6 -ml-2">
               <ImageContainer>
                 <div v-if="pictureStatus === 'INIT'">
@@ -90,7 +90,7 @@
             <li class="font-black text-lg col-span-1">Investors</li>
           </ul> -->
           </div>
-          <div class="col-span-5 pt-8">
+          <div class="col-span-5 pt-8 md:pl-8">
             <form @submit.prevent="updateProfile">
               <label>
                 <p class="font-black mb-4">Your Name</p>
@@ -120,6 +120,35 @@
                 </button>
               </div>
             </form>
+          </div>
+          <div class="col-span-9 mt-12 md:mt-0">
+            <h3 class="font-black text-xl mb-4">Links:</h3>
+            <div v-for="link in links" :key="link.id" class="flex flex-col">
+              <label class="font-black">Label:
+                <input 
+                  type="text" 
+                  class="bg-purple-50 border-black border-b-2 w-full mb-4" 
+                  :value="link.label"
+                >
+              </label>
+              <label class="font-black">Address: 
+              <input type="text" class="bg-purple-50 border-black border-b-2 w-full" :value="link.url">
+              </label>
+              <div class="text-right my-4">
+                <bu1tton @click="deleteLink(link)" class="px-4 py-2 border-2 border-black rounded-lg font-black">Delete</bu1tton>
+              </div>
+            </div>
+            <div class="text-center">
+              <button class="text-center" @click="newLink">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10  mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg> 
+                Add New Link
+              </button>
+            </div>
+            <div class="text-center">
+              <button class="btn w-48 mt-8 bg-purple-100 mx-auto">Save Links</button>
+            </div>
           </div>
         </div>
       </div>
@@ -266,6 +295,7 @@ import SvgLoader from "../components/SvgLoader.vue";
 import ImageContainer from "../components/ImageContainer.vue";
 import TokenInfoComponent from "../components/TokenInfoComponent.vue";
 import Modal from "../components/Modal.vue";
+import { Link } from "../models/Link";
 export default defineComponent({
   name: "EditProfilePage",
   props: {},
@@ -284,6 +314,7 @@ function composeProfileInfo() {
   const fullName = ref(store.state.authUser.user.name);
   const about = ref(store.state.authUser.user.about);
   const hasToken = store.getters["authUser/hasToken"];
+  const links = ref(store.state.authUser.user.links);
   const isAllowedUser = ref(store.state.authUser.user.isAlphaUser);
 
   const profileUpdateStatuses = [
@@ -308,6 +339,27 @@ function composeProfileInfo() {
     const userData = (await response.json()) as Promise<User>;
     store.commit("authUser/setUser", userData);
   }
+  function newLink() {
+    links.value.push({
+      name: "",
+      url: "",
+    });
+  }
+  async function deleteLink(link: Link) {
+    if (link.id !== undefined) {
+      const response = await auth.links.delete(link);
+      if (!response.success) {
+        return;
+      }
+    }
+    links.value.splice(links.value.indexOf(link), 1);
+  }
+  function saveLinks() {
+    profileUpdateStatus.value = profileUpdateStatuses[2];
+    auth.links.update(links.value).then(() => {
+      profileUpdateStatus.value = profileUpdateStatuses[4];
+    });
+  }
   return {
     updateProfile,
     fullName,
@@ -316,6 +368,10 @@ function composeProfileInfo() {
     hasToken,
     formatAddress,
     isAllowedUser,
+    links,
+    newLink,
+    deleteLink,
+    saveLinks
   };
 }
 function composeUpdateImage() {
