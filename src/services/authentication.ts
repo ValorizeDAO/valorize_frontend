@@ -3,12 +3,14 @@ import { User, emptyUser } from "../models/User";
 
 interface success {
   success: String;
+  links?: Link[];
   error?: String;
 }
 
 interface error {
   error: String;
   success?: String;
+  links?: Link[];
 }
 
 type SuccessOrError = success | error;
@@ -107,7 +109,7 @@ export default {
     return users
   },
   links: {
-    async update(links: Array<Link>): Promise<Response> {
+    async update(links: Array<Link>): Promise<SuccessOrError> {
       const response = await fetch(
         import.meta.env.VITE_BACKEND_URL + "/api/v0/me/links",
         {
@@ -120,9 +122,9 @@ export default {
         } as RequestInit
       );
       if (response.status !== 200) {
-        return response.json();
+        throw new Error("Failed to update link");
       }
-      throw new Error("Failed to update link");
+      return response.json();
     },
     async delete(link: Link): Promise<SuccessOrError> {
       const response = await fetch(

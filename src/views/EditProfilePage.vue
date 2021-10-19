@@ -121,21 +121,36 @@
               </div>
             </form>
           </div>
-          <div class="col-span-9 mt-12 md:mt-0">
+          <div class="col-span-9 mt-12 md:mt-0" :class="{'opacity-70': linksDeployStatus === 'DEPLOYING'} ">
             <h3 class="font-black text-xl mb-4">Links:</h3>
-            <div v-for="link in links" :key="link.id" class="flex flex-col">
+            <div v-for="(link, i) in links" :key="link.id" class="flex flex-col">
               <label class="font-black">Label:
                 <input 
-                  type="text" 
+                  type="text"
                   class="bg-purple-50 border-black border-b-2 w-full mb-4" 
                   :value="link.label"
+                  @input="updateLabel"
+                  :data-index="i"
                 >
               </label>
               <label class="font-black">Address: 
-              <input type="text" class="bg-purple-50 border-black border-b-2 w-full" :value="link.url">
+              <input 
+                type="text" 
+                class="bg-purple-50 border-black border-b-2 w-full" 
+                :value="link.url"
+                @input="updateUrl"
+                :data-index="i"
+              >
               </label>
               <div class="text-right my-4">
-                <bu1tton @click="deleteLink(link)" class="px-4 py-2 border-2 border-black rounded-lg font-black">Delete</bu1tton>
+                <transition name=fade mode="out-in">
+                  <div v-if="showDelete">
+                    Do you want to delete this link?
+                    <button @click="() => showDelete = false" class="w-18 px-4 py-2 border-2 border-black rounded-lg font-black mr-4">No</button>
+                    <button @click="deleteLink(link)" class="w-18 px-4 py-2 border-2 border-black rounded-lg font-black">Yes</button>
+                  </div>
+                    <button v-else @click="() => showDelete = true" class="px-4 py-2 border-2 border-black rounded-lg font-black">Delete</button>
+                </transition>
               </div>
             </div>
             <div class="text-center">
@@ -146,8 +161,8 @@
                 Add New Link
               </button>
             </div>
-            <div class="text-center">
-              <button class="btn w-48 mt-8 bg-purple-100 mx-auto">Save Links</button>
+            <div class="text-center mb-24">
+              <button @click="saveLinks" class="btn w-48 mt-8 bg-purple-100 mx-auto">Save Links</button>
             </div>
           </div>
         </div>
@@ -306,6 +321,7 @@ export default defineComponent({
       ...composeProfileInfo(),
       ...composeUpdateImage(),
       ...composeDeployToken(),
+      ...composeLinks()
     };
   },
 });
@@ -314,7 +330,6 @@ function composeProfileInfo() {
   const fullName = ref(store.state.authUser.user.name);
   const about = ref(store.state.authUser.user.about);
   const hasToken = store.getters["authUser/hasToken"];
-  const links = ref(store.state.authUser.user.links);
   const isAllowedUser = ref(store.state.authUser.user.isAlphaUser);
 
   const profileUpdateStatuses = [
@@ -339,27 +354,7 @@ function composeProfileInfo() {
     const userData = (await response.json()) as Promise<User>;
     store.commit("authUser/setUser", userData);
   }
-  function newLink() {
-    links.value.push({
-      name: "",
-      url: "",
-    });
-  }
-  async function deleteLink(link: Link) {
-    if (link.id !== undefined) {
-      const response = await auth.links.delete(link);
-      if (!response.success) {
-        return;
-      }
-    }
-    links.value.splice(links.value.indexOf(link), 1);
-  }
-  function saveLinks() {
-    profileUpdateStatus.value = profileUpdateStatuses[2];
-    auth.links.update(links.value).then(() => {
-      profileUpdateStatus.value = profileUpdateStatuses[4];
-    });
-  }
+
   return {
     updateProfile,
     fullName,
@@ -368,10 +363,6 @@ function composeProfileInfo() {
     hasToken,
     formatAddress,
     isAllowedUser,
-    links,
-    newLink,
-    deleteLink,
-    saveLinks
   };
 }
 function composeUpdateImage() {
@@ -483,6 +474,60 @@ function composeDeployToken() {
     checkoutLink,
     onTestDeployButtonPress,
   };
+}
+function composeLinks() {
+  const store = useStore();
+  const links = ref(store.state.authUser.user.links);
+  const linksDeployStatuses = ["INIT", "DEPLOYING", "SUCCESS", "ERROR"];
+  const linksDeployStatus = ref(linksDeployStatuses[0]);
+  const showDelete = ref(false)
+  function newLink() {
+    links.value.push({
+      label: "",
+      url: "",
+    });
+  }
+  async function deleteLink(link: Link) {
+    if (link.id !== undefined) {
+      const response = await auth.links.delete(link);
+      if (!response.success) {
+        return;
+      }
+    }
+    links.value.splice(links.value.indexOf(link), 1);
+  }
+  async function saveLinks() {
+    linksDeployStatus.value = linksDeployStatuses[1];
+    const response = await auth.links.update(links.value);
+    if (response.success) {
+      links.value = response.links;
+      return;
+    } else {
+      linksDeployStatus.value = linksDeployStatuses[3];
+    }
+  }
+  function updateLabel(e:Event) {
+    if ((e.target as HTMLInputElement).dataset.index) {
+      const index = parseInt((e.target as HTMLInputElement).dataset.index as string);
+      links.value[index].label = (e.target as HTMLInputElement).value;
+    } 
+  }
+  function updateUrl(e:Event) {
+    if ((e.target as HTMLInputElement).dataset.index) {
+      const index = parseInt((e.target as HTMLInputElement).dataset.index as string);
+      links.value[index].url = (e.target as HTMLInputElement).value;
+    }
+  }
+  return {
+    links,
+    newLink,
+    showDelete,
+    deleteLink,
+    saveLinks,
+    updateLabel,
+    updateUrl,
+    linksDeployStatus
+    }
 }
 </script>
 
