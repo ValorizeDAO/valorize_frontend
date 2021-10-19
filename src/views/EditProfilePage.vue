@@ -143,14 +143,10 @@
               >
               </label>
               <div class="text-right my-4">
-                <transition name=fade mode="out-in">
-                  <div v-if="showDelete">
-                    Do you want to delete this link?
-                    <button @click="() => showDelete = false" class="w-18 px-4 py-2 border-2 border-black rounded-lg font-black mr-4">No</button>
-                    <button @click="deleteLink(link)" class="w-18 px-4 py-2 border-2 border-black rounded-lg font-black">Yes</button>
-                  </div>
-                    <button v-else @click="() => showDelete = true" class="px-4 py-2 border-2 border-black rounded-lg font-black">Delete</button>
-                </transition>
+                <DeleteLink 
+                  :index="i"
+                  @deleteLink="deleteLink"
+                />
               </div>
             </div>
             <div class="text-center">
@@ -161,9 +157,11 @@
                 Add New Link
               </button>
             </div>
-            <div class="text-center mb-24">
-              <button @click="saveLinks" class="btn w-48 mt-8 bg-purple-100 mx-auto">Save Links</button>
-            </div>
+            <transition name="fade">
+              <div v-if="links.length" class="text-center mb-24">
+                <button @click="saveLinks" class="btn w-48 mt-8 bg-purple-100 mx-auto">Save Links</button>
+              </div>
+            </transition>
           </div>
         </div>
       </div>
@@ -310,11 +308,13 @@ import SvgLoader from "../components/SvgLoader.vue";
 import ImageContainer from "../components/ImageContainer.vue";
 import TokenInfoComponent from "../components/TokenInfoComponent.vue";
 import Modal from "../components/Modal.vue";
+import DeleteLink from "../components/DeleteLink.vue";
 import { Link } from "../models/Link";
+import { log } from "console";
 export default defineComponent({
   name: "EditProfilePage",
   props: {},
-  components: { SvgLoader, ImageContainer, TokenInfoComponent, Modal },
+  components: { SvgLoader, ImageContainer, TokenInfoComponent, Modal, DeleteLink },
   setup() {
 
     return {
@@ -487,20 +487,22 @@ function composeLinks() {
       url: "",
     });
   }
-  async function deleteLink(link: Link) {
-    if (link.id !== undefined) {
-      const response = await auth.links.delete(link);
+  async function deleteLink(index: number) {
+    console.log({ index });
+    if (links.value[index].id !== undefined) {
+      const response = await auth.links.delete(links.value[index]);
       if (!response.success) {
         return;
       }
     }
-    links.value.splice(links.value.indexOf(link), 1);
+    links.value.splice(index, 1);
   }
   async function saveLinks() {
     linksDeployStatus.value = linksDeployStatuses[1];
     const response = await auth.links.update(links.value);
     if (response.success) {
       links.value = response.links;
+      linksDeployStatus.value = linksDeployStatuses[2];
       return;
     } else {
       linksDeployStatus.value = linksDeployStatuses[3];
