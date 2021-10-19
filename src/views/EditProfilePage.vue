@@ -121,7 +121,7 @@
               </div>
             </form>
           </div>
-          <div class="col-span-9 mt-12 md:mt-0" :class="{'opacity-70': linksDeployStatus === 'DEPLOYING'} ">
+          <div class="col-span-5 lg:col-span-5 lg:col-start-5 lg:pl-8 lg:mt-16 mt-12 md:mt-0" :class="{'opacity-70': linksDeployStatus === 'DEPLOYING'} ">
             <h3 class="font-black text-xl mb-4">Links:</h3>
             <div v-for="(link, i) in links" :key="link.id" class="flex flex-col">
               <label class="font-black">Label:
