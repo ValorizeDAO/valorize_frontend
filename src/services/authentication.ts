@@ -1,4 +1,19 @@
+import { Link } from "../models/Link";
 import { User, emptyUser } from "../models/User";
+
+interface success {
+  success: String;
+  links?: Link[];
+  error?: String;
+}
+
+interface error {
+  error: String;
+  success?: String;
+  links?: Link[];
+}
+
+type SuccessOrError = success | error;
 
 export default {
   async isLoggedIn(): Promise<{ isLoggedIn: boolean; user: User }> {
@@ -92,5 +107,34 @@ export default {
     const req = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/alpha")
     const users = await req.json() as User[]
     return users
+  },
+  links: {
+    async update(links: Array<Link>): Promise<SuccessOrError> {
+      const response = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/v0/me/links",
+        {
+          method: "PUT",
+          body: JSON.stringify({links:links}),
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        } as RequestInit
+      );
+      if (response.status !== 200) {
+        throw new Error("Failed to update link");
+      }
+      return response.json();
+    },
+    async delete(link: Link): Promise<SuccessOrError> {
+      const response = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/v0/me/links?id=" + link.id,
+        {
+          method: "DELETE",
+          credentials: "include",
+        } as RequestInit
+      );
+      return response.json();
+    }
   }
-};
+}

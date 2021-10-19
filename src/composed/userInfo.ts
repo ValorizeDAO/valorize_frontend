@@ -2,6 +2,7 @@ import { onMounted, ref } from "vue"
 import { useStore } from "vuex"
 import { User, emptyUser } from "../models/User"
 import {Token} from "../models/Token";
+import { Link } from "../models/Link";
 import { BigNumber, ethers } from "ethers";
 
 interface TokenBalanceResponse {
@@ -10,14 +11,7 @@ interface TokenBalanceResponse {
     address: string;
     balance: number }>
 }
-interface Link {
-  id: number;
-  label: string;
-  icon: string;
-  url: string;
-  user_id: number;
-  description: string;
-}
+
 export default function composeUserInfo(username: string) {
   const store = useStore()
   const userStatuses = ["INIT", "LOADING", "SUCCESS", "FAIL"]

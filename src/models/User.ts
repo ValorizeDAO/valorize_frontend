@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { Token } from "./Token"
+import { Link } from "./Link"
 export interface User {
   id: number,
   email: string,
@@ -10,7 +11,8 @@ export interface User {
   hasDeployedToken: boolean,
   hasVerifiedEmail: boolean,
   isAlphaUser: boolean,
-  token?: Token
+  token?: Token,
+  links?: Link[]
 }
 
 export const emptyUser: User = {
