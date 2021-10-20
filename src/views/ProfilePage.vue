@@ -19,6 +19,11 @@
         <h2 class="text-2xl font-black mt-12 mb-6">What is this?</h2>
         <p class="mb-24">Creator Tokens are <a href="https://101blockchains.com/what-is-erc20/" class="underline">ERC20</a> tokens on Ethereum. 
         Each time you buy from the contract new tokens get generated. The more tokens there are the more expensive it is to generate new tokens.
+        <p class="my-2">
+          <a class="underline" href="https://tokeneconomy.co/dynamic-token-bonding-curves-41d36e43befa">
+            Find out more about the math that generates the tokens
+          </a>
+        </p>
         <router-link to="login" class="underline">Get early access!</router-link>
         </p>
         </div>
