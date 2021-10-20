@@ -126,7 +126,10 @@ export default defineComponent({
           }
           authenticating.value = false;
         })
-        .catch((error) => console.log("error", error));
+        .catch((error) => {
+          console.log(error);
+          authenticating.value = false;
+        });
     }
 
     return { name, password, hasQueryToAddUserWallet, route, sendLogin, authError, authenticating };
