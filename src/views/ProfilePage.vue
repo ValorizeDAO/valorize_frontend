@@ -15,6 +15,7 @@
     </div>
     <div class="pt-8 border-black px-4 col-span-12 md:col-span-7 md:px-16 md:min-h-screen">
       <div v-if="userInfo.hasDeployedToken">
+        <h2 class="text-3xl font-black mb-4">Buy {{username}}'s Token</h2>
         <TokenInfoComponent :username="username"/>
         <h2 class="text-2xl font-black mt-12 mb-6">What is this?</h2>
         <p class="mb-24">Creator Tokens are <a href="https://101blockchains.com/what-is-erc20/" class="underline">ERC20</a> tokens on Ethereum. 
