@@ -1,86 +1,45 @@
 
 <template>
   <section id="hero" class="heroSection">
-    <div class="heroSection__main--left">
-      <h1 class="heroSection__mainCopy mb-8">
-        Launch a crypto token,<br />
-        Give your fans a new way to interact with your brand
+    <div class="flex flex-col items-center justify-center max-w-4xl mt-28">
+      <h1 class="text-5xl lg:text-7xl font-black mb-8">
+        Launch a Token, <br />
+        Turn a Community Into a DAO
       </h1>
       <div class="divider"></div>
       <h2 class="heroSection__supportCopy">
-        Launch a token which not only grows in value with more holders, but
-        gives fans access to unique content
+        Creating your own token <em class="font-black italic">WAS</em> the most
+        difficult part of turning a <em>discord</em> into a DAO.
       </h2>
-    </div>
-    <aside id="demo" class="heroSection__aside--right">
-      <div>
-        <p class="heroSection__supportCopy">Be the first to join:</p>
-        <div class="p-8 mx-auto flex justify-center">
-          <router-link to="Register" class="cta_button text-center"
-            >Sign Up</router-link
-          >
-        </div>
+      <h2 class="heroSection__supportCopy text-center mt-8">
+        With us, it is not.
+      </h2>
+      <div class="p-8 mx-auto flex justify-center">
+        <router-link to="Register" class="cta_button text-center font-bold text-2xl"
+          >Sign Up</router-link
+        >
       </div>
-    </aside>
+    </div>
   </section>
   <section id="describe" class="describeSection">
-    <div class="describeSection__imageContainer">
-      <div class="describeSection__imageContainer--slider" ref="container">
-        <img
-          src="/src/assets/describe-1.png"
-          alt="Guitar Player Singing to a mic"
-        />
-        <div class="describeSection__imageContainer--text" ref="desc">
-          <h3>Tim Lee</h3>
-          <p class="whitespace-nowrap">
-            <strong>$</strong><strong v-text="tokenSamplePrice"></strong> per
-            token
-          </p>
-          <p class="whitespace-nowrap">
-            <strong v-text="investors"></strong> investors
-          </p>
-        </div>
-        <div class="describeSection__imageContainer--chart">
-          <canvas id="myChart" width="300" height="100" ref="chart"></canvas>
-        </div>
-      </div>
-    </div>
     <div class="describeSection__heading mb-24">
-      <h2>Give your fans something that grows with you</h2>
-      <p>
-        Your Creator Token <strong>value will grow</strong> the more people want
-        to get it.
-      </p>
+      <h2 class="text-4xl">
+        Choose a smart contract template. Launch a token.
+        <br/>
+        <div class="mt-4">Multiply the power of your community. </div>
+      </h2>
     </div>
 
     <div class="describeSection__heading--right">
-      <h2>Make something that is yours, and yours forever</h2>
-      <p>
-        We are building on top of the future of the web with ethereum and web3,
-        you and your followers will ALWAYS have access to the Tokens you own.
-      </p>
-      <p>Your Creator Token IS <strong>YOUR OWN CRYPTOCURRENCY.</strong></p>
+      <h2 class="text-4xl">
+        Launching your own token is easier than ever, create and use tokens while maintaining complete
+        control of them.
+      </h2>
       <a
         href="https://www.notion.so/valorize/Valorize-White-Paper-58fa3161c09e4ec2807cb0ea5d581d8f"
         ><button class="cta_button mt-8">Find Out More</button></a
       >
     </div>
-  </section>
-  <section id="how-it-works" class="howItWorksSection">
-    <div class="divider"></div>
-    <h2 class="howItWorksSection__header">How It Works</h2>
-    <div class="howItWorksSection__body">
-      <p><strong>Step 1.</strong> Sign up and launch a token</p>
-      <p><strong>Step 2.</strong> Share with fans</p>
-      <p>
-        <strong>Step 3.</strong> Fans can deposit ETH into the contract to get
-        new tokens (And you get 10% of all new tokens generated!)
-      </p>
-    </div>
-    <h2 class="howItWorksSection__cta">
-      It's that easy! <br /><br />
-      <router-link to="Register" class="cta_button"> Sign Up </router-link>
-    </h2>
   </section>
   <section id="FAQ" class="faqSection">
     <h2>FAQ</h2>
@@ -95,10 +54,9 @@
           ></div>
         </button>
         <p class="faqSection__answer" v-show="!isHidden0" x-transition.fade>
-          Creator Tokens are your own cryptocurrency token that live on the
-          ethereum network. You can buy them, gift them, trade them sell them,
-          and use them to give your fans special access to feeds, voting rights,
-          and uncovering certain benefits of your choice.
+          Creator Tokens are the first type of cryptocurrency token we have developed. 
+          It works through a bonding curve, where people mint new tokens by depositing 
+          ETH into the conract, and can allways sell. 
         </p>
       </li>
       <div class="divider"></div>
@@ -111,8 +69,8 @@
           ></div>
         </button>
         <p class="faqSection__answer" v-show="!isHidden1" x-transition.fade>
-          Just sign up to valorize and we will let you know when you can create
-          your account
+          Join the waitlist by joining the platform. You can set up your profile. If you believe 
+          you are a great candidate for early access, please  <a class="underline" href="mailto:javier@valorize.app">send us an email </a>
           <br /><br /><router-link to="Register" class="cta_button">
             Sign Up
           </router-link>
@@ -128,33 +86,30 @@
           ></div>
         </button>
         <p class="faqSection__answer" v-show="!isHidden2" x-transition.fade>
-          Because Ethereum is a decentralized computer, you need to pay the
-          network for processing your request to create your own cryptocurrency
-          token.
-        </p>
-      </li>
-      <div class="divider"></div>
-      <li x-data="accordion" class="faqSection__accordion">
-        <button class="faqSection__question" @click="open3">
-          <h3 class="faqSection__questionTitle">How Do I Cash Out?</h3>
-          <div
-            class="faqSection__questionButton"
-            :class="isHidden3 ? '' : 'open'"
-          ></div>
-        </button>
-        <p class="faqSection__answer" v-show="!isHidden3" x-transition.fade>
-          Creator Tokens are created when someone puts money into the smart
-          contract, so you will always be able to cash out your tokens.
+          Yes, network fees as well as launching fees are required to launch a token.
+          Proceeds go to continue the development of Valorize and are managed by Valorize DAO.
         </p>
       </li>
     </ul>
+  </section>
+  <section id="footer" class="mb-4 p-24">
+    <!-- <h2 class="text-right">Links</h2>  -->
+    <div class="divider my-6"></div>
+    <div class="flex justify-end items-center">
+      <a href="https://twitter.com/valorizedao" target="_blank" class="mr-4 opacity-30 hover:opacity-40">
+        <img class="w-12" src="/src/assets/img/logos/twitter.svg" alt="Twitter" />
+      </a>
+      <a href="https://discord.gg/3PRMWrH9DT" target="_blank" class="opacity-30 hover:opacity-40">
+        <img class="w-12" src="/src/assets/img/logos/discord.svg" alt="Discord" />
+      </a>
+    </div>
   </section>
 </template>
 
 <script lang="ts">
 import { ref, defineComponent, onMounted, Ref } from "vue";
-import { useStore } from "vuex";
 import { Chart, ChartConfiguration, registerables } from "chart.js";
+import { useStore } from "vuex";
 Chart.register(...registerables);
 export default defineComponent({
   name: "Dashboard",
@@ -183,6 +138,8 @@ export default defineComponent({
     },
   },
   setup() {
+    const store = useStore()
+    store.dispatch("authUser/checkAuth")
     return { ...composeImageSlider(), ...composeChart() };
   },
 });
@@ -364,13 +321,11 @@ img {
   border: solid 2px #23123a;
   padding: 0.4em 0.6em;
   min-width: 7em;
-  font-size: 1em;
   cursor: pointer;
 }
 .cta_button--main {
   padding: 0.8em 1.2em;
   width: 10em;
-  font-size: 1.2em;
 }
 .cta_button.disabled,
 .disabled.cta_button--main {
@@ -429,13 +384,14 @@ img {
   }
 }
 .heroSection__main--left {
-  padding-top: 15vh;
+  padding-top: 5vh;
   text-align: left;
   max-width: 100vw;
   margin-right: 0;
 }
 @media (min-width: 920px) {
   .heroSection__main--left {
+    padding-top: 25vh;
     margin-right: 5em;
     max-width: 50vw;
   }
