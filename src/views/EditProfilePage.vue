@@ -46,7 +46,7 @@
               </ImageContainer>
             </div>
             <transform name="fade">
-              <div v-if="pictureStatus === 'INIT'">
+              <div v-if="pictureStatus === 'INIT' || pictureStatus === 'SUCCESS'">
                 <button
                   @click="changeProfile"
                   class="btn max-w-48 my-4 bg-purple-100"
@@ -371,7 +371,7 @@ function composeUpdateImage() {
   const store = useStore();
   const pictureFormUpload = ref(HTMLInputElement);
   const profileImage = ref(store.state.authUser.user.avatar);
-  const pictureStatuses = ["INIT", "PREVIEW", "UPLOADING", "ERROR"];
+  const pictureStatuses = ["INIT", "PREVIEW", "UPLOADING", "ERROR", "SUCCESS"];
   const pictureStatus = ref<string>(pictureStatuses[0]);
   const imageToUpload = ref<File>(new File([], ""));
   function changeProfile() {
@@ -398,7 +398,7 @@ function composeUpdateImage() {
     pictureStatus.value = pictureStatuses[2];
     const uploadRequest = await auth.uploadPicture(imageToUpload.value);
     if (uploadRequest.status == 200) {
-      pictureStatus.value = pictureStatuses[0];
+      pictureStatus.value = pictureStatuses[4];
       const responseJson = await ((await uploadRequest.json()) as Promise<{
         image: string;
       }>);
