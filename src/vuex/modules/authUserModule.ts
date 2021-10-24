@@ -61,6 +61,10 @@ export default {
       }
       state.checkingAuth = false
     },
+    async logout({ commit }: ActionContext<UserState, any>) {
+      await auth.logout()
+      commit("logout")
+    },
   },
 }
 
