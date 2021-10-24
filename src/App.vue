@@ -64,7 +64,7 @@
 </template>
 
 <script lang="ts">
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import { defineComponent } from "vue";
 import SvgLoader from "./components/SvgLoader.vue";
 import auth from "./services/authentication";
@@ -78,9 +78,8 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations({ logoutState : "authUser/logout" }),
+    ...mapActions({ logoutState : "authUser/logout" }),
     async logout() {
-      await auth.logout();
       this.logoutState()
     },
     triggerBlock() {
