@@ -92,6 +92,18 @@
       </li>
     </ul>
   </section>
+  <section id="footer" class="section mb-4">
+    <!-- <h2 class="text-right">Links</h2>  -->
+    <div class="divider my-6"></div>
+    <div class="flex justify-end items-center">
+      <a href="https://twitter.com/valorizedao" target="_blank" class="mr-4 opacity-30 hover:opacity-40">
+        <img class="w-12" src="/src/assets/img/logos/twitter.svg" alt="Twitter" />
+      </a>
+      <a href="https://discord.gg/3PRMWrH9DT" target="_blank" class="opacity-30 hover:opacity-40">
+        <img class="w-12" src="/src/assets/img/logos/discord.svg" alt="Discord" />
+      </a>
+    </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -319,6 +331,19 @@ img {
 .disabled.cta_button--main {
   cursor: default;
   pointer-events: none;
+}
+.section {
+  padding: 0 6em;
+}
+@media (max-width: 640px) {
+  .section {
+    padding: 0 3em;
+  }
+}
+@media (max-width: 420px) {
+  .section {
+    padding: 0 1em;
+  }
 }
 
 .heroSection {

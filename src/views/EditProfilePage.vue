@@ -290,8 +290,8 @@
       </transition>
       </Modal>
     </div>
-    <div v-else>
-      Deploy Your Token Soon!
+    <div v-else class="flex justify-center my-24">
+      You are on the waiting list for deploying tokens
     </div>
     </div>
   </div>
