@@ -92,7 +92,7 @@
       </li>
     </ul>
   </section>
-  <section id="footer" class="mb-4 p-24">
+  <section id="footer" class="section mb-4">
     <!-- <h2 class="text-right">Links</h2>  -->
     <div class="divider my-6"></div>
     <div class="flex justify-end items-center">
@@ -331,6 +331,19 @@ img {
 .disabled.cta_button--main {
   cursor: default;
   pointer-events: none;
+}
+.section {
+  padding: 0 6em;
+}
+@media (max-width: 640px) {
+  .section {
+    padding: 0 3em;
+  }
+}
+@media (max-width: 420px) {
+  .section {
+    padding: 0 1em;
+  }
 }
 
 .heroSection {
