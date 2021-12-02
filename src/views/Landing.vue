@@ -15,7 +15,7 @@
         With us, it is not.
       </h2>
       <div class="p-8 mx-auto flex justify-center">
-        <router-link to="Register" class="cta_button text-center font-bold text-2xl"
+        <router-link to="beta-signup" class="cta_button text-center font-bold text-2xl"
           >Sign Up</router-link
         >
       </div>
