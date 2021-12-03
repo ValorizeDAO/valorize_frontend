@@ -6,6 +6,7 @@ import Login from "../views/Login.vue"
 import Register from "../views/Register.vue"
 import EditProfilePage from "../views/EditProfilePage.vue"
 import ProfilePage from "../views/ProfilePage.vue"
+import Leadgen from "../views/Leadgen.vue"
 import store from "../vuex/store"
 
 const routes = [
@@ -30,6 +31,11 @@ const routes = [
     component: Register,
   },
   {
+    path: "/beta-signup",
+    name: "Join Beta",
+    component: Leadgen,
+  },
+  {
     path: "/edit-profile",
     name: "Edit Profile",
     component: EditProfilePage,
@@ -46,7 +52,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicRoutes = ["Landing", "Login", "Register", "Show Profile"]
+  const publicRoutes = ["Landing", "Login", "Register", "Show Profile", "Join Beta"]
   let { name } = to
   const { username } = to.params
   name = name?.toString() || ""
