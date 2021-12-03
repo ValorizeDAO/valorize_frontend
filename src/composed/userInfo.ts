@@ -24,15 +24,13 @@ export default function composeUserInfo(username: string) {
 
   async function getUserTokenBalance(tokenId: number) {
     const formdata = new FormData();
-    formdata.append("username", store.getters["authUser/username"])
     let requestOptions = {
-      method: 'POST',
-      body: formdata,
+      method: 'GET',
       redirect: 'follow',
       credentials: 'include',
     } as RequestInit
 
-    const request = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/tokens/" + tokenId + "/balance", requestOptions);
+    const request = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/me/tokens/" + tokenId + "/balance", requestOptions);
     if (request.status === 200) {
       const response = (await request.json()) as TokenBalanceResponse    
       userTokenBalance.value = ethers.utils.formatEther(response.total_balance)

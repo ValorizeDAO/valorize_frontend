@@ -15,7 +15,7 @@
         With us, it is not.
       </h2>
       <div class="p-8 mx-auto flex justify-center">
-        <router-link to="Register" class="cta_button text-center font-bold text-2xl"
+        <router-link to="beta-signup" class="cta_button text-center font-bold text-2xl"
           >Sign Up</router-link
         >
       </div>
@@ -71,8 +71,8 @@
         <p class="faqSection__answer" v-show="!isHidden1" x-transition.fade>
           Join the waitlist by joining the platform. You can set up your profile. If you believe 
           you are a great candidate for early access, please  <a class="underline" href="mailto:javier@valorize.app">send us an email </a>
-          <br /><br /><router-link to="Register" class="cta_button">
-            Sign Up
+          <br /><br /><router-link to="Join Beta" class="cta_button">
+            Get Early Access
           </router-link>
         </p>
       </li>
