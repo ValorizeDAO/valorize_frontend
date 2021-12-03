@@ -20,20 +20,25 @@
       </router-link>
       <div>
         <div class="sm:hidden">
-        <button @click="triggerBlock" class=" hamburger hamburger--slider" :class="showBlock ? 'is-active' : ''">
+        <button @click="triggerBlock" class=" hamburger hamburger--slider" :class="showMobileMenu ? 'is-active' : ''">
           <span class="hamburger-box">
             <span class="hamburger-inner"></span>
           </span>
         </button>
         </div>
-        <div :class="showBlock ? '' : 'hidden'" class="absolute left-0 sm:relative bg-white border-b-2 border-black sm:border-0 sm:bg-transparent sm:block">
+        <div :class="showMobileMenu ? '' : 'hidden'" class="absolute left-0 sm:relative bg-white border-b-2 border-black sm:border-0 sm:bg-transparent sm:block">
           <div @click="triggerBlock" v-if="!authenticated" class="w-screen sm:w-full left-0 px-10 py-4 sm:pr-6 flex flex-col sm:flex-row text-center">
-            <router-link class="pb-8 sm:pb-0 sm:pr-4" id="login" to="/login">Login</router-link>
+            <!-- <router-link class="pb-8 sm:pb-0 sm:pr-4" id="login" to="/login">Login</router-link>
             <router-link id="register" to="/register">Register</router-link>
           </div>
           <div v-else @click="triggerBlock" class="w-screen sm:w-full left-0 px-10 py-4 sm:pr-6 flex flex-col sm:flex-row text-center">
             <router-link id="edit-profile" to="/edit-profile" class="px-4 py-2 sm:mr-4">Edit Profile</router-link>
-            <button id="logout" @click="logout" class="px-4 py-2">Logout</button>
+            <button id="logout" @click="logout" class="px-4 py-2">Logout</button> -->
+          <router-link to="/beta-signup">
+            <button class="pb-8 sm:pb-0 sm:pr-4">
+              Sign Up
+            </button>
+          </router-link>
           </div>
         </div>
       </div>
@@ -74,7 +79,7 @@ export default defineComponent({
   components: { SvgLoader },
   data() {
     return {
-      showBlock: false
+      showMobileMenu: false
     }
   },
   methods: {
@@ -83,7 +88,7 @@ export default defineComponent({
       this.logoutState()
     },
     triggerBlock() {
-      this.showBlock = !this.showBlock
+      this.showMobileMenu = !this.showMobileMenu
     }
   },
   computed: {
@@ -97,6 +102,23 @@ export default defineComponent({
 </script>
 
 <style>
+.cta_button,
+.cta_button--main {
+  background-color: #d6c7e8;
+  border: solid 2px #23123a;
+  padding: 0.4em 0.6em;
+  min-width: 7em;
+  cursor: pointer;
+}
+.cta_button--main {
+  padding: 0.8em 1.2em;
+  width: 10em;
+}
+.cta_button.disabled,
+.disabled.cta_button--main {
+  cursor: default;
+  pointer-events: none;
+}
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
