@@ -16,7 +16,7 @@
               {{ user.username }}
             </h2>
           </div>
-          <div class="my-8">
+          <div class="">
             <router-link :to="user.username" class="btn min-h-12 pt-1">
               See Public Profile</router-link
             >
@@ -180,13 +180,13 @@
         md:bg-paper-light
       "
     >
-      <h2 class="text-3xl font-black mb-6 mt-24 sm:mt-0">Your Token</h2>
+      <!-- <h2 class="text-3xl font-black mb-6 mt-24 sm:mt-0">Your Token</h2> -->
     <div v-if="isAllowedUser">
       <TokenInfoComponent
         v-if="user.hasDeployedToken"
         :username="user.username"
       />
-      <div v-else>
+      <!-- <div v-else>
         <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
         ( not yet deployed )
         <label>
@@ -219,7 +219,63 @@
             Test Deploy {{ tokenSymbol }}
           </button>
         </div>
+      </div> -->
+      <div v-else>
+        <form @sumbit.prevent="submitToken">
+          <h2 class="text-3xl font-black">Launch A Token</h2>
+          <div class="flex space-between mt-24">
+            <label class="text-l font-black" for="">Name<input class="w-40 border-b-2 border-black bg-transparent" type="text"/></label>
+            <div class="mx-4"> </div>
+            <label class="text-l font-black" for="">Symbol<input class="w-40 border-b-2 border-black bg-transparent" type="text"/></label>
+          </div>
+          <div class="mt-8">
+            <label class="text-l font-black">Initial Supply<input class="w-full border-b-2 border-black bg-transparent" type="text"/></label>
+          </div>
+          <div class="mt-8">
+            <label class="text-l font-black" for="admin-addresses">Administrators' Addresses</label>
+            <p class="mb-4 text-s">Insert list separated by commas</p>
+            <input id="admin-addresses" name="adminAddresses" class="w-full border-b-2 border-black bg-transparent" type="text"/>
+          </div>
+          <div class="mt-8 flex justify-between">
+            <p class="text-l font-black" for="">Minting Allowed</p>
+            <div>
+              <input type="radio" id="minting-no" name="minting" v-model="tokenParams.minting" :checked="tokenParams.minting === 'false'" value="false"><label for="minting-no" class="mr-4">No</label>
+              <input type="radio" id="minting-yes" name="minting" v-model="tokenParams.minting" :checked="tokenParams.minting ==='true'" value="true"><label for="minting-yes">Yes</label>
+            </div>
+          </div>
+          <transition name="fade">
+            <div v-if="tokenParams.minting === 'true'">
+              <div class="mt-8">
+                <label class="text-l font-black">Max Supply
+                  <input id="admin-addresses" class="w-full border-b-2 border-black bg-transparent" type="text"/>
+                </label>
+              </div>
+            <div class="mt-8 flex justify-between">
+              <p class="text-l font-black">Timed Minting</p>
+              <div>
+                <input type="radio" id="timed-no" name="timed" v-model="tokenParams.timed" :checked="tokenParams.timed === 'false'" value="false"><label for="timed-no" class="mr-4">No</label>
+                <input type="radio" id="timed-yes" name="timed" v-model="tokenParams.timed" :checked="tokenParams.timed ==='true'" value="true"><label for="timed-yes">Yes</label>
+              </div>
+            </div>
+            <transition name="fade">
+              <div v-if="tokenParams.timed === 'true'">
+                <div class="mt-8">
+                  <label class="text-l font-black">Days Between Mints
+                    <input id="admin-addresses" class="w-full border-b-2 border-black bg-transparent" type="number"/>
+                  </label>
+                </div>
+              </div>
+            </transition>
+            </div>
+          </transition>
+          <div class="flex justify-center mt-8">
+            <button class="btn w-48 mt-4 bg-purple-50">
+              Submit
+            </button>
+          </div>
+        </form>
       </div>
+      
       <Modal :modal-is-open="modalIsOpen" @toggle="toggleModal" :body-class="['bg-paper-light']">
       <transition name="fade" mode="out-in">
         <div class="text-center" v-if="tokenDeployStatus === 'INIT'">
@@ -298,7 +354,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, onMounted, Ref } from "vue";
+import { ref, reactive, defineComponent, computed, onMounted, Ref } from "vue";
 import auth from "../services/authentication";
 import { formatAddress } from "../services/formatAddress";
 import { User } from "../models/User";
@@ -321,7 +377,8 @@ export default defineComponent({
       ...composeProfileInfo(),
       ...composeUpdateImage(),
       ...composeDeployToken(),
-      ...composeLinks()
+      ...composeLinks(),
+      ...composeDeploySimpleToken()
     };
   },
 });
@@ -423,6 +480,17 @@ function composeUpdateImage() {
     resetPhoto,
     user: store.state.authUser.user,
   };
+}
+
+function composeDeploySimpleToken() {
+  const tokenParams = reactive({
+    minting: 'true',
+    timed: 'true'
+  })
+  function submitToken() {
+    alert(tokenParams)
+  }
+  return { tokenParams, submitToken }
 }
 function composeDeployToken() {
   const store = useStore();
