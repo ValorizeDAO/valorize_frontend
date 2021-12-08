@@ -221,20 +221,20 @@
         </div>
       </div> -->
       <div v-else>
-        <form @sumbit.prevent="submitToken">
+        <form>
           <h2 class="text-3xl font-black">Launch A Token</h2>
-          <div class="flex space-between mt-24">
-            <label class="text-l font-black" for="">Name<input class="w-40 border-b-2 border-black bg-transparent" type="text"/></label>
+          <div class="flex space-between mt-20">
+            <label class="text-l font-black" for="">Name<input v-model="tokenParams.name" name="tokenName" class="w-40 border-b-2 border-black bg-transparent mt-4" type="text"/></label>
             <div class="mx-4"> </div>
-            <label class="text-l font-black" for="">Symbol<input class="w-40 border-b-2 border-black bg-transparent" type="text"/></label>
+            <label class="text-l font-black" for="">Symbol<input v-model="tokenParams.symbol" name="tokenSymbol" class="w-40 border-b-2 border-black bg-transparent mt-4" type="text"/></label>
           </div>
           <div class="mt-8">
-            <label class="text-l font-black">Initial Supply<input class="w-full border-b-2 border-black bg-transparent" type="text"/></label>
+            <label class="text-l font-black">Initial Supply<input v-model="tokenParams.initialSupply" name="initialSupply" class="w-full border-b-2 border-black bg-transparent" type="text"/></label>
           </div>
           <div class="mt-8">
             <label class="text-l font-black" for="admin-addresses">Administrators' Addresses</label>
             <p class="mb-4 text-s">Insert list separated by commas</p>
-            <input id="admin-addresses" name="adminAddresses" class="w-full border-b-2 border-black bg-transparent" type="text"/>
+            <input v-model="tokenParams.adminAddresses" id="admin-addresses" name="adminAddresses" class="w-full border-b-2 border-black bg-transparent" type="text"/>
           </div>
           <div class="mt-8 flex justify-between">
             <p class="text-l font-black" for="">Minting Allowed</p>
@@ -247,7 +247,7 @@
             <div v-if="tokenParams.minting === 'true'">
               <div class="mt-8">
                 <label class="text-l font-black">Max Supply
-                  <input id="admin-addresses" class="w-full border-b-2 border-black bg-transparent" type="text"/>
+                  <input v-model="tokenParams.maxSupply" id="maxSupply" name="maxSupply" class="w-full border-b-2 border-black bg-transparent" type="text"/>
                 </label>
               </div>
             <div class="mt-8 flex justify-between">
@@ -261,7 +261,7 @@
               <div v-if="tokenParams.timed === 'true'">
                 <div class="mt-8">
                   <label class="text-l font-black">Days Between Mints
-                    <input id="admin-addresses" class="w-full border-b-2 border-black bg-transparent" type="number"/>
+                    <input v-model="tokenParams.timeDelay" id="admin-addresses" name="timeDelay" class="w-full border-b-2 border-black bg-transparent" type="number"/>
                   </label>
                 </div>
               </div>
@@ -269,9 +269,7 @@
             </div>
           </transition>
           <div class="flex justify-center mt-8">
-            <button class="btn w-48 mt-4 bg-purple-50">
-              Submit
-            </button>
+            <input type="submit" class="btn w-48 mt-4 bg-purple-50" @click.prevent="submitToken">
           </div>
         </form>
       </div>
@@ -484,8 +482,14 @@ function composeUpdateImage() {
 
 function composeDeploySimpleToken() {
   const tokenParams = reactive({
+    name: '',
+    symbol: '',
+    initialSupply: '',
+    adminAddresses: '',
     minting: 'true',
-    timed: 'true'
+    maxSupply: '',
+    timed: 'true',
+    timeDelay: 0
   })
   function submitToken() {
     alert(tokenParams)
