@@ -1,6 +1,5 @@
 module.exports = {
-  purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
-  darkMode: false, // or 'media' or 'class'
+  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {
       fontFamily: {
@@ -32,13 +31,6 @@ module.exports = {
           darker: "#E0D7D1",
         },
       },
-    },
-  },
-  variants: {
-    extend: {
-      backgroundColor: ["disabled"],
-      textColor: ["disabled"],
-      borderColor: ["disabled"],
     },
   },
   plugins: [],
