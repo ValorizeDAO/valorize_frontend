@@ -223,18 +223,28 @@
       <div v-else>
         <form>
           <h2 class="text-3xl font-black">Launch A Token</h2>
-          <div class="flex space-between mt-20">
-            <label class="text-l font-black" for="">Name<input v-model="tokenParams.name" name="tokenName" class="w-40 border-b-2 border-black bg-transparent mt-4" type="text"/></label>
+          <div class="flex justify-between mt-20">
+            <label class="text-l font-black flex flex-col" for="">Name
+              <input v-model="tokenParams.name" name="tokenName" placeholder="Token" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
+            </label>
             <div class="mx-4"> </div>
-            <label class="text-l font-black" for="">Symbol<input v-model="tokenParams.symbol" name="tokenSymbol" class="w-40 border-b-2 border-black bg-transparent mt-4" type="text"/></label>
+            <label class="text-l font-black flex flex-col" for="">Symbol
+              <input v-model="tokenParams.symbol" name="tokenSymbol" placeholder="TKN" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
+            </label>
           </div>
           <div class="mt-8">
-            <label class="text-l font-black">Initial Supply<input v-model="tokenParams.initialSupply" name="initialSupply" class="w-full border-b-2 border-black bg-transparent" type="text"/></label>
+            <label class="text-l font-black">Supply For Vault<input v-model="tokenParams.initialSupply" name="initialSupply" placeholder="5,000,000" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
+          </div>
+          <div class="mt-8">
+            <label class="text-l font-black">Vault Address<input v-model="tokenParams.vaultAddress" name="vaultAddress" placeholder="0x..." class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
+          </div>
+          <div class="mt-8">
+            <label class="text-l font-black">Supply for Airdrop<input v-model="tokenParams.airdropSupply" name="airdropSupply" placeholder="5,000,000" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
           </div>
           <div class="mt-8">
             <label class="text-l font-black" for="admin-addresses">Administrators' Addresses</label>
             <p class="mb-4 text-s">Insert list separated by commas</p>
-            <input v-model="tokenParams.adminAddresses" id="admin-addresses" name="adminAddresses" class="w-full border-b-2 border-black bg-transparent" type="text"/>
+            <input v-model="tokenParams.adminAddresses" id="admin-addresses" name="adminAddresses" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/>
           </div>
           <div class="mt-8 flex justify-between">
             <p class="text-l font-black" for="">Minting Allowed</p>
@@ -485,6 +495,9 @@ function composeDeploySimpleToken() {
     name: '',
     symbol: '',
     initialSupply: '',
+    vaultAddress: '',
+    airdropSupply: '',
+    airdropSupply: '',
     adminAddresses: '',
     minting: 'true',
     maxSupply: '',
@@ -492,7 +505,7 @@ function composeDeploySimpleToken() {
     timeDelay: 0
   })
   function submitToken() {
-    alert(tokenParams)
+    alert(JSON.stringify(tokenParams))
   }
   return { tokenParams, submitToken }
 }
