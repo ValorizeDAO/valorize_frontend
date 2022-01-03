@@ -284,6 +284,9 @@
         </form>
       </div>
       
+      <Modal :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal" :body-class="['bg-paper-light']">
+        const
+      </Modal>
       <Modal :modal-is-open="modalIsOpen" @toggle="toggleModal" :body-class="['bg-paper-light']">
       <transition name="fade" mode="out-in">
         <div class="text-center" v-if="tokenDeployStatus === 'INIT'">
@@ -497,17 +500,21 @@ function composeDeploySimpleToken() {
     initialSupply: '',
     vaultAddress: '',
     airdropSupply: '',
-    airdropSupply: '',
     adminAddresses: '',
     minting: 'true',
     maxSupply: '',
     timed: 'true',
     timeDelay: 0
   })
-  function submitToken() {
-    alert(JSON.stringify(tokenParams))
+  const simpleTokenModalDisplayed = ref(false)
+  function toggleSimpleTokenModal() {
+    simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
   }
-  return { tokenParams, submitToken }
+  function submitToken() {
+    toggleSimpleTokenModal()
+    //alert(JSON.stringify(tokenParams))
+  }
+  return { tokenParams, submitToken, simpleTokenModalDisplayed, toggleSimpleTokenModal }
 }
 function composeDeployToken() {
   const store = useStore();
