@@ -225,67 +225,78 @@
           <h2 class="text-3xl font-black">Launch A Token</h2>
           <div class="flex justify-between mt-20">
             <label class="text-l font-black flex flex-col" for="">Name
-              <input v-model="tokenParams.name" name="tokenName" placeholder="Token" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
+              <input v-model="v$.name.$model" name="tokenName" placeholder="Token" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
             </label>
             <div class="mx-4"> </div>
             <label class="text-l font-black flex flex-col" for="">Symbol
-              <input v-model="tokenParams.symbol" name="tokenSymbol" placeholder="TKN" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
+              <input v-model="v$.symbol.$model" name="tokenSymbol" placeholder="TKN" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
             </label>
           </div>
           <div class="mt-8">
-            <label class="text-l font-black">Supply For Vault<input v-model="tokenParams.initialSupply" name="initialSupply" placeholder="5,000,000" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
+            <label class="text-l font-black">Supply For Vault<input v-model="v$.initialSupply.$model" name="initialSupply" placeholder="5,000,000" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
           </div>
           <div class="mt-8">
-            <label class="text-l font-black">Vault Address<input v-model="tokenParams.vaultAddress" name="vaultAddress" placeholder="0x..." class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
+            <label class="text-l font-black">Vault Address<input v-model="v$.vaultAddress.$model" name="vaultAddress" placeholder="0x..." class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
           </div>
           <div class="mt-8">
-            <label class="text-l font-black">Supply for Airdrop<input v-model="tokenParams.airdropSupply" name="airdropSupply" placeholder="5,000,000" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
+            <label class="text-l font-black">Supply for Airdrop<input v-model="v$.airdropSupply.$model" name="airdropSupply" placeholder="5,000,000" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
           </div>
           <div class="mt-8">
             <label class="text-l font-black" for="admin-addresses">Administrators' Addresses</label>
             <p class="mb-4 text-s">Insert list separated by commas</p>
-            <input v-model="tokenParams.adminAddresses" id="admin-addresses" name="adminAddresses" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/>
+            <input v-model="v$.adminAddresses.$model" id="admin-addresses" name="adminAddresses" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/>
           </div>
           <div class="mt-8 flex justify-between">
             <p class="text-l font-black" for="">Minting Allowed</p>
             <div>
-              <input type="radio" id="minting-no" name="minting" v-model="tokenParams.minting" :checked="tokenParams.minting === 'false'" value="false"><label for="minting-no" class="mr-4">No</label>
-              <input type="radio" id="minting-yes" name="minting" v-model="tokenParams.minting" :checked="tokenParams.minting ==='true'" value="true"><label for="minting-yes">Yes</label>
+              <input type="radio" id="minting-no" name="minting" v-model="v$.minting.$model" :checked="v$.minting.$model === 'false'" value="false"><label for="minting-no" class="mr-4">No</label>
+              <input type="radio" id="minting-yes" name="minting" v-model="v$.minting.$model" :checked="v$.minting.$model ==='true'" value="true"><label for="minting-yes">Yes</label>
             </div>
           </div>
           <transition name="fade">
-            <div v-if="tokenParams.minting === 'true'">
+            <div v-if="v$.minting.$model === 'true'">
               <div class="mt-8">
                 <label class="text-l font-black">Max Supply
-                  <input v-model="tokenParams.maxSupply" id="maxSupply" name="maxSupply" class="w-full border-b-2 border-black bg-transparent" type="text"/>
+                  <input 
+												v-model="v$.maxSupply.$model" 
+												id="maxSupply" 
+												name="maxSupply" 
+												class="w-full border-b-2 border-black bg-transparent" 
+												type="text"
+								/>
                 </label>
               </div>
             <div class="mt-8 flex justify-between">
               <p class="text-l font-black">Timed Minting</p>
               <div>
-                <input type="radio" id="timed-no" name="timed" v-model="tokenParams.timed" :checked="tokenParams.timed === 'false'" value="false"><label for="timed-no" class="mr-4">No</label>
-                <input type="radio" id="timed-yes" name="timed" v-model="tokenParams.timed" :checked="tokenParams.timed ==='true'" value="true"><label for="timed-yes">Yes</label>
+                <input type="radio" id="timed-no" name="timed" v-model="v$.timed.$model" :checked="v$.timed.$model === 'false'" value="false"><label for="timed-no" class="mr-4">No</label>
+                <input type="radio" id="timed-yes" name="timed" v-model="v$.timed.$model" :checked="v$.timed.$model ==='true'" value="true"><label for="timed-yes">Yes</label>
               </div>
             </div>
             <transition name="fade">
-              <div v-if="tokenParams.timed === 'true'">
+              <div v-if="v$.timed.$model === 'true'">
                 <div class="mt-8">
                   <label class="text-l font-black">Days Between Mints
-                    <input v-model="tokenParams.timeDelay" id="admin-addresses" name="timeDelay" class="w-full border-b-2 border-black bg-transparent" type="number"/>
+                    <input v-model="v$.timeDelay.$model" id="admin-addresses" name="timeDelay" class="w-full border-b-2 border-black bg-transparent" type="number"/>
                   </label>
                 </div>
               </div>
             </transition>
             </div>
           </transition>
-          <div class="flex justify-center mt-8">
-            <input type="submit" class="btn w-48 mt-4 bg-purple-50" @click.prevent="submitToken">
+          <div class="flex flex-col items-center mt-8">
+            <input type="submit" 
+									 class="btn w-48 mt-4 bg-purple-50 disabled:cursor-not-allowed" 
+									 :class="{'bg-gray-300 text-slate-600 border-slate-600': v$.$invalid}" 
+									 :disabled="v$.$invalid"
+									 @click.prevent="submitToken">
+						<span v-if="v$.$anyDirty && v$.$invalid" class="my-4">All Fields Required</span>
           </div>
         </form>
       </div>
       
       <Modal body-class="bg-white lg:w-5/12" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between pb-4 border-black border-b-2">
           <h2 class="text-xl font-black">
             Token Summary
           </h2>
@@ -300,7 +311,7 @@
             </button>
           </transition>
         </div>
-        <div>
+        <div class="mt-4">
           <h1 class="text-3xl font-black mb-8">{{ tokenParams.name }} ({{ tokenParams.symbol }})</h1>
           <div class="flex justify-between items-end border-b-2 border-black pb-2">
             <div>
@@ -421,7 +432,9 @@ import TokenInfoComponent from "../components/TokenInfoComponent.vue";
 import Modal from "../components/Modal.vue";
 import DeleteLink from "../components/DeleteLink.vue";
 import { Link } from "../models/Link";
-import { log } from "console";
+import useVuelidate from '@vuelidate/core'
+import { required, minLength } from '@vuelidate/validators'
+
 export default defineComponent({
   name: "EditProfilePage",
   props: {},
@@ -540,6 +553,7 @@ function composeUpdateImage() {
 function composeDeploySimpleToken() {
   const tokenStatuses = ['INIT', 'DEPLOYING_TEST', 'DEPLOYED_TEST']
   const tokenStatus = ref(tokenStatuses[0])
+  const simpleTokenModalDisplayed = ref(false)
   const tokenParams = reactive({
     name: '',
     symbol: '',
@@ -555,7 +569,6 @@ function composeDeploySimpleToken() {
   const totalSupply = computed(() => {
     return Number(tokenParams.initialSupply) + Number(tokenParams.airdropSupply)
   })
-  const simpleTokenModalDisplayed = ref(false)
   function toggleSimpleTokenModal() {
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
     if(tokenStatus.value === tokenStatuses[0]) {
@@ -569,13 +582,55 @@ function composeDeploySimpleToken() {
   function submitToken() {
     toggleSimpleTokenModal()
   }
+	const rules = computed(() => ({
+		name: {
+			required,
+			minLength: minLength(2)
+		},
+		symbol: {
+			required,
+			minLength: minLength(2)
+		},
+		initialSupply: {
+			required,
+			minLength: minLength(2)
+		},
+		vaultAddress: {
+			required,
+			minLength: minLength(42)
+		},
+		airdropSupply: {
+			required,
+			minLength: minLength(2)
+		},
+		adminAddresses: {
+			required,
+			minLength: minLength(2)
+		},
+		minting: {
+			required,
+		},
+		maxSupply: {
+			required,
+			minLength: minLength(2)
+		},
+		timed: {
+			required,
+		},
+		timeDelay: {
+			required,
+			minLength: minLength(2)
+		},
+	}))
+  const v$ = useVuelidate(rules, tokenParams)
   return { 
     tokenParams,
     totalSupply,
     submitToken,
     simpleTokenModalDisplayed,
     toggleSimpleTokenModal,
-    tokenStatus
+    tokenStatus,
+		v$
   }
 }
 function composeDeployToken() {
@@ -644,7 +699,6 @@ function composeLinks() {
     });
   }
   async function deleteLink(index: number) {
-    console.log({ index });
     if (links.value[index].id !== undefined) {
       const response = await auth.links.delete(links.value[index]);
       if (!response.success) {
