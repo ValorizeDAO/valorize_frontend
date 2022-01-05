@@ -236,7 +236,16 @@
             <label class="text-l font-black">Supply For Vault<input v-model="v$.initialSupply.$model" name="initialSupply" placeholder="5,000,000" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
           </div>
           <div class="mt-8">
-            <label class="text-l font-black">Vault Address<input v-model="v$.vaultAddress.$model" name="vaultAddress" placeholder="0x..." class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
+            <label class="text-l font-black">
+							Vault Address
+							<input 
+								v-model="v$.vaultAddress.$model" 
+								name="vaultAddress" 
+								placeholder="0x..." 
+								class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" 
+								type="text"
+							/></label>
+              <span v-if="v$.vaultAddress.$dirty && v$.vaultAddress.$invalid">Please enter a valid Ethereum address</span>
           </div>
           <div class="mt-8">
             <label class="text-l font-black">Supply for Airdrop<input v-model="v$.airdropSupply.$model" name="airdropSupply" placeholder="5,000,000" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/></label>
@@ -597,7 +606,9 @@ function composeDeploySimpleToken() {
 		},
 		vaultAddress: {
 			required,
-			minLength: minLength(42)
+			isEtherAddress: (value: string) => {
+          return value.substring(0,2) === "0x" && value.length === 42
+       }
 		},
 		airdropSupply: {
 			required,
@@ -605,7 +616,7 @@ function composeDeploySimpleToken() {
 		},
 		adminAddresses: {
 			required,
-			minLength: minLength(2)
+      isEtherAddress: (value) => value.substring(0,2)[0] === "0x" && minLength(42)
 		},
 		minting: {
 			required,
