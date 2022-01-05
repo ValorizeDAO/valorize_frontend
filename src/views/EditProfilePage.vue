@@ -284,7 +284,7 @@
         </form>
       </div>
       
-      <Modal :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
+      <Modal body-class="bg-white lg:w-5/12" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-black">
             Token Summary
@@ -302,7 +302,7 @@
         </div>
         <div>
           <h1 class="text-3xl font-black mb-8">{{ tokenParams.name }} ({{ tokenParams.symbol }})</h1>
-          <div class="flex justify-between border-b-2 border-black pb-2">
+          <div class="flex justify-between items-end border-b-2 border-black pb-2">
             <div>
               <h2 class="font-black text-xl">Initial Supply</h2>
               <span class="text-sm">To be sent to: "{{ tokenParams.vaultAddress }}"</span>
