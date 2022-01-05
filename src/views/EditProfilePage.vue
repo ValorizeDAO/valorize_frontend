@@ -284,8 +284,51 @@
         </form>
       </div>
       
-      <Modal :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal" :body-class="['bg-paper-light']">
-        const
+      <Modal :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-black">
+            Token Summary
+          </h2>
+          <transition name="fade" mode="out-in">
+            <div v-if="tokenStatus === 'DEPLOYING_TEST'">
+              <SvgLoader class="text-center mx-auto h-8" fill="#"></SvgLoader>
+            </div>
+            <button v-else-if="tokenStatus === 'DEPLOYED_TEST'" class="btn flex">View On Testnet
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </button>
+          </transition>
+        </div>
+        <div>
+          <h1 class="text-3xl font-black mb-8">{{ tokenParams.name }} ({{ tokenParams.symbol }})</h1>
+          <div class="flex justify-between border-b-2 border-black pb-2">
+            <div>
+              <h2 class="font-black text-xl">Initial Supply</h2>
+              <span class="text-sm">To be sent to: "{{ tokenParams.vaultAddress }}"</span>
+            </div>
+            <span>{{ totalSupply }}</span>
+          </div>
+          <div v-if="tokenParams.minting === 'true'">
+            <div class="flex justify-between border-b-2 border-black py-2">
+              <h2 class="text-xl font-black">Max Supply</h2>
+              <span>{{ initialSupply }}</span>
+            </div>
+            <div v-if="tokenParams.timed === 'true'" class="flex justify-between border-b-2 border-black py-2">
+              <h2 class="text-xl font-black">Time Between Minting</h2>
+              <span>{{ tokenParams.timeDelay }}</span>
+            </div>
+          </div>
+          <div class="justify-between border-b-2 border-black py-2">
+            <h2 class="text-xl font-black">Administrators</h2>
+            <ul class="flex flex-col" v-for="item in tokenParams.adminAddresses.split(',')">
+              <li class="w-100">{{ item }}</li>
+            </ul>
+          </div>
+        </div>
+        <div class="flex justify-center my-4">
+          <button class="btn text-center"><span class="px-8">Deploy</span></button>
+        </div>
       </Modal>
       <Modal :modal-is-open="modalIsOpen" @toggle="toggleModal" :body-class="['bg-paper-light']">
       <transition name="fade" mode="out-in">
@@ -297,6 +340,7 @@
             Test Deploy {{ tokenSymbol }}
           </button>
         </div>
+        
         <div
           v-else-if="tokenDeployStatus === 'ERROR'"
           class="text-center mb-12"
@@ -494,6 +538,8 @@ function composeUpdateImage() {
 }
 
 function composeDeploySimpleToken() {
+  const tokenStatuses = ['INIT', 'DEPLOYING_TEST', 'DEPLOYED_TEST']
+  const tokenStatus = ref(tokenStatuses[0])
   const tokenParams = reactive({
     name: '',
     symbol: '',
@@ -501,20 +547,36 @@ function composeDeploySimpleToken() {
     vaultAddress: '',
     airdropSupply: '',
     adminAddresses: '',
-    minting: 'true',
+    minting: 'false',
     maxSupply: '',
-    timed: 'true',
+    timed: 'false',
     timeDelay: 0
+  })
+  const totalSupply = computed(() => {
+    return Number(tokenParams.initialSupply) + Number(tokenParams.airdropSupply)
   })
   const simpleTokenModalDisplayed = ref(false)
   function toggleSimpleTokenModal() {
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
+    if(tokenStatus.value === tokenStatuses[0]) {
+      deployToTestnet()
+    }
+  }
+  function deployToTestnet(){
+    tokenStatus.value = tokenStatuses[1] 
+    setTimeout(() => tokenStatus.value = tokenStatuses[2], 1000)
   }
   function submitToken() {
     toggleSimpleTokenModal()
-    //alert(JSON.stringify(tokenParams))
   }
-  return { tokenParams, submitToken, simpleTokenModalDisplayed, toggleSimpleTokenModal }
+  return { 
+    tokenParams,
+    totalSupply,
+    submitToken,
+    simpleTokenModalDisplayed,
+    toggleSimpleTokenModal,
+    tokenStatus
+  }
 }
 function composeDeployToken() {
   const store = useStore();
