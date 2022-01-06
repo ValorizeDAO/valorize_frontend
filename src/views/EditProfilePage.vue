@@ -254,6 +254,7 @@
             <label class="text-l font-black" for="admin-addresses">Administrators' Addresses</label>
             <p class="mb-4 text-s">Insert list separated by commas</p>
             <input v-model="v$.adminAddresses.$model" id="admin-addresses" name="adminAddresses" class="w-full border-b-2 border-black bg-transparent placeholder:font-bold" type="text"/>
+            <span v-if="v$.adminAddresses.$dirty && v$.adminAddresses.$invalid">Please enter a valid Ethereum addresses separated by commas</span>
           </div>
           <div class="mt-8 flex justify-between">
             <p class="text-l font-black" for="">Minting Allowed</p>
@@ -584,12 +585,23 @@ function composeDeploySimpleToken() {
       deployToTestnet()
     }
   }
-  function deployToTestnet(){
+  async function deployToTestnet(){
     tokenStatus.value = tokenStatuses[1] 
-    setTimeout(() => tokenStatus.value = tokenStatuses[2], 1000)
+    await ethApi.deploySimpleTokenToTestNet({
+      freeSupply: tokenParams.initialSupply,
+      airdropSupply: tokenParams.airdropSupply,
+      vaultAddress: tokenParams.vaultAddress,
+      tokenName: tokenParams.name,
+      tokenSymbol: tokenParams.symbol,
+      adminAddresses: tokenParams.adminAddresses,
+    })
   }
   function submitToken() {
     toggleSimpleTokenModal()
+  }
+  function isEtherAddress(value: string) {
+    const trimmedAddress = value.trim()
+    return trimmedAddress.substring(0,2) === "0x" && trimmedAddress.length === 42
   }
 	const rules = computed(() => ({
 		name: {
@@ -606,9 +618,7 @@ function composeDeploySimpleToken() {
 		},
 		vaultAddress: {
 			required,
-			isEtherAddress: (value: string) => {
-          return value.substring(0,2) === "0x" && value.length === 42
-       }
+			isEtherAddress
 		},
 		airdropSupply: {
 			required,
@@ -616,21 +626,19 @@ function composeDeploySimpleToken() {
 		},
 		adminAddresses: {
 			required,
-      isEtherAddress: (value) => value.substring(0,2)[0] === "0x" && minLength(42)
+      isListOfAdminAddresses: (value) => {
+        return value.split(',').every(isEtherAddress)
+      }
 		},
 		minting: {
 			required,
 		},
 		maxSupply: {
-			required,
-			minLength: minLength(2)
 		},
 		timed: {
 			required,
 		},
 		timeDelay: {
-			required,
-			minLength: minLength(2)
 		},
 	}))
   const v$ = useVuelidate(rules, tokenParams)
