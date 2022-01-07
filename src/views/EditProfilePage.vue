@@ -304,8 +304,7 @@
           </div>
         </form>
       </div>
-
-      <Modal body-class="bg-white xl:w-5/12" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
+      <Modal body-class="bg-white xl:w-5/12 sm:mt-0" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
         <div class="flex items-center justify-between pb-4 border-black border-b-2">
           <h2 class="text-xl font-black">
             Token Summary
@@ -323,17 +322,17 @@
         </div>
         <div class="mt-4">
           <h1 class="text-3xl font-black mb-8">{{ tokenParams.name }} ({{ tokenParams.symbol }})</h1>
-          <div class="flex justify-between items-end border-b-2 border-black pb-2">
+          <div class="flex justify-between border-b-2 border-black pb-2">
             <div>
               <h2 class="font-black text-xl">Initial Supply</h2>
               <span class="text-sm">To be sent to: "{{ tokenParams.vaultAddress }}"</span>
             </div>
-            <span>{{ totalSupply }}</span>
+            <span class="text-xl font-black">{{ currency(totalSupply).format() }}</span>
           </div>
           <div v-if="tokenParams.minting === 'true'">
             <div class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Max Supply</h2>
-              <span>{{ initialSupply }}</span>
+              <span class="text-xl font-black">{{ currency(initialSupply).format() }}</span>
             </div>
             <div v-if="tokenParams.timed === 'true'" class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Time Between Minting</h2>
@@ -342,8 +341,28 @@
           </div>
           <div class="justify-between border-b-2 border-black py-2">
             <h2 class="text-xl font-black">Administrators</h2>
-            <ul class="flex flex-col" v-for="address in tokenParams.adminAddresses.split(',')">
-              <li class="w-100">{{ address }}</li>
+            <ul class="flex flex-col">
+              <div v-for="address in parsedAddresses.slice(0, 3)">
+                <li class="w-100">{{ address }}</li>
+              </div>
+              <div v-if="parsedAddresses.length > 3" >
+                <transition name="fade">
+                  <div v-if="showExpandedList">
+                    <li   
+                      class="w-100"
+                      v-for="address in parsedAddresses.slice(3)"
+                    >{{ address }}</li> 
+                  </div>
+                </transition>
+                <button @click="expandAddressList">
+                  <span v-if="!showExpandedList">
+                    +{{parsedAddresses.length - 3}} More... See All
+                  </span>
+                  <span v-else>
+                    See Less
+                  </span>
+                </button>
+              </div>
             </ul>
           </div>
         </div>
@@ -445,7 +464,8 @@ import { Link } from "../models/Link";
 import useVuelidate from '@vuelidate/core'
 import { required, minLength } from '@vuelidate/validators'
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory.ts"
-import { ethers, utils, BigNumber } from "ethers";
+import { ethers, utils, BigNumber, Provider } from "ethers";
+import currency from "currency.js";
 
 export default defineComponent({
   name: "EditProfilePage",
@@ -458,8 +478,9 @@ export default defineComponent({
       ...composeUpdateImage(),
       ...composeDeployToken(),
       ...composeLinks(),
-      ...composeDeploySimpleToken()
-    };
+      ...composeDeploySimpleToken(),
+      currency: value => currency(Number(value), { separator: ",", symbol:'', precision: 0 })
+    }
   },
 });
 function composeProfileInfo() {
@@ -563,6 +584,7 @@ function composeUpdateImage() {
 }
 
 function composeDeploySimpleToken() {
+  const showExpandedList = ref(false)
   const tokenStatuses = ['INIT', 'DEPLOYING_TEST', 'DEPLOYED_TEST', 'DEPLOYING_MAINNET']
   const tokenStatus = ref(tokenStatuses[0])
   const simpleTokenModalDisplayed = ref(false)
@@ -604,10 +626,14 @@ function composeDeploySimpleToken() {
       deployToTestnet()
     }
   }
+  function expandAddressList() {
+    showExpandedList.value = !showExpandedList.value
+  }
+  let ethereum: any = {}, provider: Provider;
   async function deployToTestnet(){
     tokenStatus.value = tokenStatuses[1] 
-    const ethereum: any = (window as any).ethereum;
-    const provider = new ethers.providers.Web3Provider(ethereum, "any");
+    ethereum = (window as any).ethereum;
+    provider = new ethers.providers.Web3Provider(ethereum, "any");
     const networkInfo = await provider.getNetwork();
     network.value = networkInfo.chainId;
     provider.on("network", (newNetwork, oldNetwork) => {
@@ -627,8 +653,6 @@ function composeDeploySimpleToken() {
     tokenStatus.value = tokenStatuses[2] 
   }
   async function deployToken(){
-    const ethereum: any = (window as any).ethereum;
-    const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     tokenStatus.value = tokenStatuses[3];
     simpleToken = await new SimpleTokenFactory(signer).deploy(
@@ -692,6 +716,8 @@ function composeDeploySimpleToken() {
     totalSupply,
     submitToken,
     parsedAddresses,
+    showExpandedList,
+    expandAddressList,
     simpleTokenModalDisplayed,
     toggleSimpleTokenModal,
     tokenStatus,
