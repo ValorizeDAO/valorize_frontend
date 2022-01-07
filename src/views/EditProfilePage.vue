@@ -45,7 +45,7 @@
                 </div>
               </ImageContainer>
             </div>
-            <transform name="fade">
+            <transition name="fade">
               <div v-if="pictureStatus === 'INIT' || pictureStatus === 'SUCCESS'">
                 <button
                   @click="changeProfile"
@@ -70,21 +70,21 @@
                   Cancel
                 </button>
               </div>
-              <div v-if="pictureStatus == 'ERROR'">
+              <div v-else-if="pictureStatus == 'ERROR'">
                 <span class="text-red-700 text-sm">
                   There was an error changing your photo. Try again or contact
                   us.
                 </span>
               </div>
-              <input
-                @change="changePic"
-                type="file"
-                name="picture"
-                id="picture-upload"
-                class="sr-only"
-                ref="pictureFormUpload"
-              />
-            </transform>
+            </transition>
+            <input
+              @change="changePic"
+              type="file"
+              name="picture"
+              id="picture-upload"
+              class="sr-only"
+              ref="pictureFormUpload"
+            />
             <!-- <ul class="flex justify-between">
             <li class="font-black mr-3 text-lg col-span-1">Followers</li>
             <li class="font-black text-lg col-span-1">Investors</li>
@@ -268,11 +268,11 @@
               <div class="mt-8">
                 <label class="text-l font-black">Max Supply
                   <input 
-												v-model="v$.maxSupply.$model" 
-												id="maxSupply" 
-												name="maxSupply" 
-												class="w-full border-b-2 border-black bg-transparent" 
-												type="text"
+                    v-model="v$.maxSupply.$model" 
+                    id="maxSupply" 
+                    name="maxSupply" 
+                    class="w-full border-b-2 border-black bg-transparent" 
+                    type="text"
 								/>
                 </label>
               </div>
@@ -304,8 +304,8 @@
           </div>
         </form>
       </div>
-      
-      <Modal body-class="bg-white lg:w-5/12" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
+
+      <Modal body-class="bg-white xl:w-5/12" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
         <div class="flex items-center justify-between pb-4 border-black border-b-2">
           <h2 class="text-xl font-black">
             Token Summary
@@ -342,13 +342,13 @@
           </div>
           <div class="justify-between border-b-2 border-black py-2">
             <h2 class="text-xl font-black">Administrators</h2>
-            <ul class="flex flex-col" v-for="item in tokenParams.adminAddresses.split(',')">
-              <li class="w-100">{{ item }}</li>
+            <ul class="flex flex-col" v-for="address in tokenParams.adminAddresses.split(',')">
+              <li class="w-100">{{ address }}</li>
             </ul>
           </div>
         </div>
         <div class="flex justify-center my-4">
-          <button class="btn text-center"><span class="px-8">Deploy</span></button>
+          <button class="btn text-center" @click="deployToken"><span class="px-8">Deploy to {{ networkName }}</span></button>
         </div>
       </Modal>
       <Modal :modal-is-open="modalIsOpen" @toggle="toggleModal" :body-class="['bg-paper-light']">
@@ -444,6 +444,8 @@ import DeleteLink from "../components/DeleteLink.vue";
 import { Link } from "../models/Link";
 import useVuelidate from '@vuelidate/core'
 import { required, minLength } from '@vuelidate/validators'
+import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory.ts"
+import { ethers, utils, BigNumber } from "ethers";
 
 export default defineComponent({
   name: "EditProfilePage",
@@ -561,9 +563,10 @@ function composeUpdateImage() {
 }
 
 function composeDeploySimpleToken() {
-  const tokenStatuses = ['INIT', 'DEPLOYING_TEST', 'DEPLOYED_TEST']
+  const tokenStatuses = ['INIT', 'DEPLOYING_TEST', 'DEPLOYED_TEST', 'DEPLOYING_MAINNET']
   const tokenStatus = ref(tokenStatuses[0])
   const simpleTokenModalDisplayed = ref(false)
+  const network = ref('')
   const tokenParams = reactive({
     name: '',
     symbol: '',
@@ -576,8 +579,24 @@ function composeDeploySimpleToken() {
     timed: 'false',
     timeDelay: 0
   })
+  const networkName = computed(() => {
+    const networks = {
+      "1": "Ethereum",
+      "137": "Polygon",
+      "10": "Optimism",
+      "421611": "Arbitrum",
+      "42161": "Arbitrum",
+    }
+    return networks[network.value] || "Unsuported";
+  })
   const totalSupply = computed(() => {
     return Number(tokenParams.initialSupply) + Number(tokenParams.airdropSupply)
+  })
+  const parsedAddresses = computed(() => {
+    const { adminAddresses } = tokenParams;
+    const addresses = adminAddresses.split(',')
+    if(addresses.length > 1) return addresses.map(val => val.trim())
+    return [adminAddresses]
   })
   function toggleSimpleTokenModal() {
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
@@ -587,6 +606,15 @@ function composeDeploySimpleToken() {
   }
   async function deployToTestnet(){
     tokenStatus.value = tokenStatuses[1] 
+    const ethereum: any = (window as any).ethereum;
+    const provider = new ethers.providers.Web3Provider(ethereum, "any");
+    const networkInfo = await provider.getNetwork();
+    network.value = networkInfo.chainId;
+    provider.on("network", (newNetwork, oldNetwork) => {
+      if(oldNetwork) {
+        network.value = newNetwork.chainId
+      }
+    })
     await ethApi.deploySimpleTokenToTestNet({
       freeSupply: tokenParams.initialSupply,
       airdropSupply: tokenParams.airdropSupply,
@@ -594,7 +622,24 @@ function composeDeploySimpleToken() {
       tokenName: tokenParams.name,
       tokenSymbol: tokenParams.symbol,
       adminAddresses: tokenParams.adminAddresses,
+      chainId: networkInfo.chainId,
     })
+    tokenStatus.value = tokenStatuses[2] 
+  }
+  async function deployToken(){
+    const ethereum: any = (window as any).ethereum;
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+    tokenStatus.value = tokenStatuses[3];
+    simpleToken = await new SimpleTokenFactory(signer).deploy(
+      BigNumber.from(tokenParams.initialSupply),
+      BigNumber.from(tokenParams.airdropSupply),
+      ethers.utils.getAddress(tokenParams.vaultAddress),
+      tokenParams.name,
+      tokenParams.symbol,
+      parsedAddresses.value.map(v => ethers.utils.getAddress(v))
+    );
+    await simpleToken.deployed(); 
   }
   function submitToken() {
     toggleSimpleTokenModal()
@@ -646,9 +691,13 @@ function composeDeploySimpleToken() {
     tokenParams,
     totalSupply,
     submitToken,
+    parsedAddresses,
     simpleTokenModalDisplayed,
     toggleSimpleTokenModal,
     tokenStatus,
+    deployToken,
+    network,
+    networkName,
 		v$
   }
 }
