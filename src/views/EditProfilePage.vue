@@ -322,21 +322,31 @@
         </div>
         <div class="mt-4">
           <h1 class="text-3xl font-black mb-8">{{ tokenParams.name }} ({{ tokenParams.symbol }})</h1>
-          <div class="flex justify-between border-b-2 border-black pb-2">
-            <div>
-              <h2 class="font-black text-xl">Initial Supply</h2>
-              <span class="text-sm">To be sent to: "{{ tokenParams.vaultAddress }}"</span>
-            </div>
+          <div class="flex justify-between">
+            <h2 class="font-black text-xl">Initial Supply</h2>
             <span class="text-xl font-black">{{ currency(totalSupply).format() }}</span>
+          </div>
+          Breakdown:
+          <div class="flex justify-between items-center">
+            <span class="text-sm ml-8">To be sent to: "{{ tokenParams.vaultAddress }}"</span>
+            <span class="text-l font-black">{{ currency(tokenParams.initialSupply).format() }}</span>
+          </div>
+          <div class="flex justify-between items-center">
+            <span class="text-sm ml-8">Reserved for Airdrops</span>
+            <span class="text-l font-black">{{ currency(tokenParams.airdropSupply).format() }}</span>
+          </div>
+          <div class="flex justify-between items-center border-b-2 border-black pb-2">
+            <span class="text-sm ml-8 font-black">Total</span>
+            <span class="text-l font-black border-t-2 border-black ">{{ currency(totalSupply).format() }}</span>
           </div>
           <div v-if="tokenParams.minting === 'true'">
             <div class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Max Supply</h2>
-              <span class="text-xl font-black">{{ currency(initialSupply).format() }}</span>
+              <span class="text-xl font-black">{{ currency(tokenParams.maxSupply).format() }}</span>
             </div>
             <div v-if="tokenParams.timed === 'true'" class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Time Between Minting</h2>
-              <span>{{ tokenParams.timeDelay }}</span>
+              <span class="text-xl font-black">{{ tokenParams.timeDelay }}</span>
             </div>
           </div>
           <div class="justify-between border-b-2 border-black py-2">
