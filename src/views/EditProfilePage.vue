@@ -1,4 +1,3 @@
-
 <template>
   <div
     id="edit-profile-page"
@@ -376,9 +375,41 @@
             </ul>
           </div>
         </div>
-        <div class="flex justify-center my-4">
-          <button class="btn text-center" @click="deployToken"><span class="px-8">Deploy to {{ networkName }}</span></button>
-        </div>
+        <transition name="fade" mode="out-in">
+          <div v-if="metamaskStatus === 'INIT'">
+            <div class="flex justify-center my-4">
+              <button class="btn text-center" @click="deployToken">
+                <span class="px-8">Deploy to {{ networkName }}</span>
+              </button>
+            </div>
+          </div>
+          <div v-else-if="metamaskStatus === 'REQUESTED'">
+            please enable metamask or a web3 provider
+          </div>
+          <div v-else-if="metamaskStatus === 'TIMEOUT'">timeout</div>
+          <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED'">
+            enabled
+          </div>
+          <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
+            To buy tokens, please enable a web3 provider such as
+            <a href="https://metamask.io/" class="font-black underline"
+              >Metamask</a
+            >
+          </div>
+          <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
+            Please confirm details in a web3 provider like Metamask
+          </div>
+          <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
+            Success
+          </div>
+          <div v-else-if="metamaskStatus === 'TX_REJECTED'">
+            Please verify the details and try again.
+          </div>
+          <div v-else-if="metamaskStatus === 'TX_ERROR'">
+            There was an error processing the request to buy
+            {{ tokenInfo.symbol }}.
+          </div>
+        </transition>
       </Modal>
       <Modal :modal-is-open="modalIsOpen" @toggle="toggleModal" :body-class="['bg-paper-light']">
       <transition name="fade" mode="out-in">
@@ -476,6 +507,8 @@ import { required, minLength } from '@vuelidate/validators'
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory.ts"
 import { ethers, utils, BigNumber, Provider } from "ethers";
 import currency from "currency.js";
+import detectEthereumProvider from '@metamask/detect-provider';
+
 
 export default defineComponent({
   name: "EditProfilePage",
@@ -596,6 +629,18 @@ function composeUpdateImage() {
 function composeDeploySimpleToken() {
   const showExpandedList = ref(false)
   const tokenStatuses = ['INIT', 'DEPLOYING_TEST', 'DEPLOYED_TEST', 'DEPLOYING_MAINNET']
+  const metamaskAuthStatuses = [
+    "INIT", //0
+    "REQUESTED", //1
+    "TIMEOUT", //2
+    "SUCCESSFULLY_ENABLED", //3
+    "UNAVAILABLE", //4
+    "TX_REQUESTED", //5
+    "TX_SUCCESS", //6
+    "TX_REJECTED", //7
+    "TX_ERROR", //8
+  ];
+  const metamaskStatus = ref(metamaskAuthStatuses[0]);
   const tokenStatus = ref(tokenStatuses[0])
   const simpleTokenModalDisplayed = ref(false)
   const network = ref('')
@@ -630,6 +675,7 @@ function composeDeploySimpleToken() {
     if(addresses.length > 1) return addresses.map(val => val.trim())
     return [adminAddresses]
   })
+  let ethereum: any = {}, provider: Provider;
   function toggleSimpleTokenModal() {
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
     if(tokenStatus.value === tokenStatuses[0]) {
@@ -639,28 +685,35 @@ function composeDeploySimpleToken() {
   function expandAddressList() {
     showExpandedList.value = !showExpandedList.value
   }
-  let ethereum: any = {}, provider: Provider;
   async function deployToTestnet(){
     tokenStatus.value = tokenStatuses[1] 
-    ethereum = (window as any).ethereum;
-    provider = new ethers.providers.Web3Provider(ethereum, "any");
-    const networkInfo = await provider.getNetwork();
-    network.value = networkInfo.chainId;
-    provider.on("network", (newNetwork, oldNetwork) => {
-      if(oldNetwork) {
-        network.value = newNetwork.chainId
-      }
-    })
-    await ethApi.deploySimpleTokenToTestNet({
-      freeSupply: tokenParams.initialSupply,
-      airdropSupply: tokenParams.airdropSupply,
-      vaultAddress: tokenParams.vaultAddress,
-      tokenName: tokenParams.name,
-      tokenSymbol: tokenParams.symbol,
-      adminAddresses: tokenParams.adminAddresses,
-      chainId: networkInfo.chainId,
-    })
-    tokenStatus.value = tokenStatuses[2] 
+    const hasEthProvider = await detectEthereumProvider();
+    if (hasEthProvider) {
+      console.log("detected")
+      ethereum = (window as any).ethereum;
+      provider = new ethers.providers.Web3Provider(ethereum, "any");
+      ethereum.request({ method: 'eth_requestAccounts' });
+      const networkInfo = await provider.getNetwork();
+      network.value = networkInfo.chainId;
+      provider.on("network", (newNetwork, oldNetwork) => {
+        if(oldNetwork) {
+          network.value = newNetwork.chainId
+        }
+      })
+      await ethApi.deploySimpleTokenToTestNet({
+        freeSupply: tokenParams.initialSupply,
+        airdropSupply: tokenParams.airdropSupply,
+        vaultAddress: tokenParams.vaultAddress,
+        tokenName: tokenParams.name,
+        tokenSymbol: tokenParams.symbol,
+        adminAddresses: tokenParams.adminAddresses,
+        chainId: networkInfo.chainId,
+      })
+      tokenStatus.value = tokenStatuses[2] 
+    } else {
+      console.log("FAIL")
+      metamaskStatus.value = metamaskAuthStatuses[4]
+    }
   }
   async function deployToken(){
     const signer = provider.getSigner();
@@ -734,7 +787,8 @@ function composeDeploySimpleToken() {
     deployToken,
     network,
     networkName,
-		v$
+		v$,
+    metamaskStatus
   }
 }
 function composeDeployToken() {

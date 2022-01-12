@@ -9,6 +9,7 @@
     "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore . --fix"
   },
   "dependencies": {
+    "@metamask/detect-provider": "^1.2.0",
     "@types/chartjs": "^0.0.31",
     "@types/node": "^16.9.4",
     "@vuelidate/core": "^2.0.0-alpha.33",
