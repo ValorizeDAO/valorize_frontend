@@ -136,5 +136,8 @@ export default {
       );
       return response.json();
     }
+  },
+  saveTokenData(data: TokenParams): Promise<SuccessOrError> {
+    return true;
   }
 }
