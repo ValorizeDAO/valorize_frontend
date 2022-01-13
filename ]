@@ -397,13 +397,11 @@
                 >Metamask</a
               >
             </div>
-            <div class="text-center" v-else-if="metamaskStatus === 'TX_REQUESTED'">
-              Transaction loading, <br>tx hash: {{ simpleTokenTxHash }}
-              <SvgLoader class="text-center mx-auto h-24" fill="#"></SvgLoader>
+            <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
+              Please confirm details in a web3 provider like Metamask
             </div>
             <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
-              Success! 
-              Your token now lives in address: {{ simpleTokenAddress }}
+              Success
             </div>
             <div v-else-if="metamaskStatus === 'TX_ERROR'">
               There was an error processing the request to buy
@@ -645,8 +643,6 @@ function composeDeploySimpleToken() {
   const metamaskStatus = ref(metamaskAuthStatuses[0]);
   const simpleTokenModalDisplayed = ref(false)
   const network = ref('')
-  const simpleTokenTxHash = ref('')
-  const simpleTokenAddress = ref('')
   const tokenParams = reactive({
     name: '',
     symbol: '',
@@ -692,6 +688,7 @@ function composeDeploySimpleToken() {
     tokenStatus.value = tokenStatuses[1] 
     const hasEthProvider = await detectEthereumProvider();
     if (hasEthProvider) {
+      console.log("detected")
       ethereum = (window as any).ethereum;
       provider = new ethers.providers.Web3Provider(ethereum, "any");
       ethereum.request({ method: 'eth_requestAccounts' });
@@ -714,12 +711,14 @@ function composeDeploySimpleToken() {
       })
       tokenStatus.value = tokenStatuses[2] 
     } else {
+      console.log("FAIL")
       metamaskStatus.value = metamaskAuthStatuses[4]
     }
   }
   async function deploySimpleToken(){
     const signer = provider.getSigner();
     tokenStatus.value = tokenStatuses[3];
+    metamaskStatus.value = metamaskAuthStatuses[5];
     const simpleToken = await new SimpleTokenFactory(signer).deploy(
       BigNumber.from(tokenParams.initialSupply),
       BigNumber.from(tokenParams.airdropSupply),
@@ -728,11 +727,8 @@ function composeDeploySimpleToken() {
       tokenParams.symbol,
       parsedAddresses.value.map(v => ethers.utils.getAddress(v))
     );
-    metamaskStatus.value = metamaskAuthStatuses[5];
-    simpleTokenTxHash.value = simpleToken.deployTransaction.hash
-    simpleTokenAddress.value = simpleToken.address
     await simpleToken.deployed(); 
-    metamaskStatus.value = metamaskAuthStatuses[6];
+    console.log("deployed")
   }
   function submitToken() {
     toggleSimpleTokenModal()
@@ -794,9 +790,7 @@ function composeDeploySimpleToken() {
     network,
     networkName,
 		v$,
-    metamaskStatus,
-    simpleTokenTxHash,
-    simpleTokenAddress
+    metamaskStatus
   }
 }
 function composeDeployToken() {
