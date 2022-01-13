@@ -303,7 +303,7 @@
           </div>
         </form>
       </div>
-      <Modal body-class="bg-white xl:w-5/12 sm:mt-0" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
+      <Modal body-class="bg-white xl:w-7/12 sm:mt-0" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
         <div class="flex items-center justify-between pb-4 border-black border-b-2">
           <h2 class="text-xl font-black">
             Token Summary
@@ -398,12 +398,27 @@
               >
             </div>
             <div class="text-center" v-else-if="metamaskStatus === 'TX_REQUESTED'">
-              Transaction loading, <br>tx hash: {{ simpleTokenTxHash }}
-              <SvgLoader class="text-center mx-auto h-24" fill="#"></SvgLoader>
+              Contract launching, <br>
+              <a 
+                v-if="isKnownNetwork"
+                :href="blockExplorer + 'tx/' + simpleTokenTxHash" 
+                target="_blank"
+                class="font-black border-black border-b-2 pt-2"
+              >See transaction: {{ formatAddress(simpleTokenTxHash) }}
+              </a>
+              <span v-else>Tx hash: {{ simpleTokenTxHash }}</span>
+              <SvgLoader class="text-center mx-auto h-12 pt-4" fill="#"></SvgLoader>
             </div>
-            <div v-else-if="metamaskStatus === 'TX_SUCCESS'">
-              Success! 
-              Your token now lives in address: {{ simpleTokenAddress }}
+            <div class="text-center" v-else-if="metamaskStatus === 'TX_SUCCESS'">
+              Success! <br>
+              <a 
+                v-if="isKnownNetwork"
+                :href="blockExplorer + 'address/' + simpleTokenAddress" 
+                target="_blank"
+                class="font-black border-black border-b-2"
+              >See your token: {{ formatAddress(simpleTokenAddress) }}
+              </a>
+              <span v-else>Your token is now live in address: {{simpleTokenAddress }}</span>
             </div>
             <div v-else-if="metamaskStatus === 'TX_ERROR'">
               There was an error processing the request to buy
@@ -438,7 +453,7 @@
             Coin will be on the Ropsten Ethereum test network, you will have a
             chance to confirm details there
           </p>
-          <SvgLoader class="text-center mx-auto h-24" fill="#"></SvgLoader>
+          <SvgLoader class="text-center mx-auto h-12" fill="#"></SvgLoader>
         </div>
         <div
           v-else-if="tokenDeployStatus === 'SUCCESS'"
@@ -659,15 +674,40 @@ function composeDeploySimpleToken() {
     timed: 'false',
     timeDelay: 0
   })
-  const networkName = computed(() => {
-    const networks = {
-      "1": "Ethereum",
-      "137": "Polygon",
-      "10": "Optimism",
-      "421611": "Arbitrum",
-      "42161": "Arbitrum",
+  const networks = {
+    "1": {
+      name: "Ethereum",
+      blockExplorer: "https://etherscan.io/"
+    },
+    "3": {
+      name: "Ropsten Testnet",
+      blockExplorer: "https://ropsten.etherscan.io/"
+    },
+    "137": {
+      name: "Polygon",
+      blockExplorer: "https://polygonscan.com/"
+    },
+    "10": {
+      name: "Optimism",
+      blockExplorer: "https://optimistic.etherscan.io/"
+    },
+    "421611": {
+      name: "Arbitrum Testnet",
+      blockExplorer: "https://arbiscan.io/"
+    }, 
+    "42161": {
+      name: "Arbitrum",
+      blockExplorer: "https://testnet.arbiscan.io/"
     }
-    return networks[network.value] || "Unsuported";
+  }
+  const networkName = computed(() => {
+    return networks[network.value]?.name || "Unsuported";
+  })
+  const isKnownNetwork = computed(() => {
+    return networks[network.value];
+  })
+  const blockExplorer = computed(() => {
+    return networks[network.value].blockExplorer;
   })
   const totalSupply = computed(() => {
     return Number(tokenParams.initialSupply) + Number(tokenParams.airdropSupply)
@@ -796,7 +836,9 @@ function composeDeploySimpleToken() {
 		v$,
     metamaskStatus,
     simpleTokenTxHash,
-    simpleTokenAddress
+    simpleTokenAddress,
+    blockExplorer,
+    isKnownNetwork
   }
 }
 function composeDeployToken() {
