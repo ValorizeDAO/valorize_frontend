@@ -181,10 +181,6 @@
     >
       <!-- <h2 class="text-3xl font-black mb-6 mt-24 sm:mt-0">Your Token</h2> -->
     <div v-if="isAllowedUser">
-      <TokenInfoComponent
-        v-if="user.hasDeployedToken"
-        :username="user.username"
-      />
       <!-- <div v-else>
         <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
         ( not yet deployed )
@@ -219,7 +215,7 @@
           </button>
         </div>
       </div> -->
-      <div v-else>
+      <div>
         <form>
           <h2 class="text-3xl font-black">Launch A Token</h2>
           <div class="flex justify-between mt-20">
@@ -506,6 +502,7 @@
 
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, onMounted, Ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import auth from "../services/authentication";
 import { formatAddress } from "../services/formatAddress";
 import { User } from "../models/User";
@@ -642,6 +639,7 @@ function composeUpdateImage() {
 }
 
 function composeDeploySimpleToken() {
+  const router = useRouter();
   const showExpandedList = ref(false)
   const tokenStatuses = ['INIT', 'DEPLOYING_TEST', 'DEPLOYED_TEST']
   const tokenStatus = ref(tokenStatuses[0])
@@ -692,11 +690,11 @@ function composeDeploySimpleToken() {
     },
     "421611": {
       name: "Arbitrum Testnet",
-      blockExplorer: "https://arbiscan.io/"
+      blockExplorer: "https://testnet.arbiscan.io/"
     }, 
     "42161": {
       name: "Arbitrum",
-      blockExplorer: "https://testnet.arbiscan.io/"
+      blockExplorer: "https://arbiscan.io/"
     }
   }
   const networkName = computed(() => {
@@ -770,13 +768,15 @@ function composeDeploySimpleToken() {
     metamaskStatus.value = metamaskAuthStatuses[5];
     simpleTokenTxHash.value = simpleToken.deployTransaction.hash
     simpleTokenAddress.value = simpleToken.address
-    await storeTokenData();
+    const tokenRequest = await storeTokenData();
+    console.log(await tokenRequest.json())
     await simpleToken.deployed(); 
-    metamaskStatus.value = metamaskAuthStatuses[6];
+    await router.push({ path: "/token-success" });
   }
   async function storeTokenData() {
-    await auth.saveTokenData({
-      tokenType: "simpleToken_v.0.1",
+    return await auth.saveTokenData({
+      tokenType: "simple",
+      contractVersion: "v0.1.0",
       freeSupply: tokenParams.initialSupply,
       airdropSupply: tokenParams.airdropSupply,
       vaultAddress: tokenParams.vaultAddress,
@@ -784,6 +784,8 @@ function composeDeploySimpleToken() {
       tokenSymbol: tokenParams.symbol,
       adminAddresses: tokenParams.adminAddresses,
       chainId: network.value,
+      txHash: simpleTokenTxHash.value,    
+      contractAddress: simpleTokenAddress.value
     })
   }
   function submitToken() {

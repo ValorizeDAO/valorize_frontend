@@ -48,12 +48,17 @@ export default {
 }
 
 export interface SimpleTokenParams {
+    tokenType: string;
+    contractVersion: string;
     freeSupply: string;
     airdropSupply: string;
     vaultAddress: string;
     tokenName: string;
     tokenSymbol: string;
     adminAddresses: string[];
+    chainId: string;
+    txHash: string;
+    contractAddress: string;
 }
 
 export interface TokenResponse {
