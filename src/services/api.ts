@@ -1,8 +1,7 @@
 import { Token } from "../models/Token"
 import { BigNumber } from "ethers"
 
-
-export default {
+class Api {
   async deployTokenToTestNet({ tokenName, tokenSymbol }: { tokenName: string, tokenSymbol: string }): Promise<any> {
     var formdata = new FormData();
     formdata.append("tokenName", tokenName);
@@ -18,7 +17,7 @@ export default {
     const apiResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/deploy", requestOptions) as Response;
 
     return apiResponse;
-  },
+  }
   async deploySimpleTokenToTestNet({ 
     freeSupply,
     airdropSupply,
@@ -45,7 +44,15 @@ export default {
     const apiResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/deploy/simpletoken", requestOptions) as Response;
     return apiResponse;
   }
+  async getTokenData(id: number) {
+    const req = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/token/" + id)
+    return await req.json()
+  }
+
 }
+
+const api = new Api()
+export default api
 
 export interface SimpleTokenParams {
     tokenType: string;
