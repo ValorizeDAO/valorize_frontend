@@ -6,6 +6,7 @@ import Login from "../views/Login.vue"
 import Register from "../views/Register.vue"
 import EditProfilePage from "../views/EditProfilePage.vue"
 import ProfilePage from "../views/ProfilePage.vue"
+import TokenSuccess from "../views/TokenSuccess.vue"
 import Leadgen from "../views/Leadgen.vue"
 import store from "../vuex/store"
 
@@ -44,6 +45,11 @@ const routes = [
     path: "/:username",
     name: "Show Profile",
     component: ProfilePage,
+  },
+  {
+    path: "/token-success",
+    name: "Token Success",
+    component: TokenSuccess,
   },
 ]
 const router = createRouter({
