@@ -319,25 +319,25 @@
           <h1 class="text-3xl font-black mb-8">{{ tokenParams.name }} ({{ tokenParams.symbol }})</h1>
           <div class="flex justify-between">
             <h2 class="font-black text-xl">Initial Supply</h2>
-            <span class="text-xl font-black">{{ currency(totalSupply).format() }}</span>
+            <span class="text-xl font-black">{{ c(totalSupply).format() }}</span>
           </div>
           Breakdown:
           <div class="flex justify-between items-center">
             <span class="text-sm ml-8">To be sent to: "{{ tokenParams.vaultAddress }}"</span>
-            <span class="text-l font-black">{{ currency(tokenParams.initialSupply).format() }}</span>
+            <span class="text-l font-black">{{ c(tokenParams.initialSupply).format() }}</span>
           </div>
           <div class="flex justify-between items-center">
             <span class="text-sm ml-8">Reserved for Airdrops</span>
-            <span class="text-l font-black">{{ currency(tokenParams.airdropSupply).format() }}</span>
+            <span class="text-l font-black">{{ c(tokenParams.airdropSupply).format() }}</span>
           </div>
           <div class="flex justify-between items-center border-b-2 border-black pb-2">
             <span class="text-sm ml-8 font-black">Total</span>
-            <span class="text-l font-black border-t-2 border-black ">{{ currency(totalSupply).format() }}</span>
+            <span class="text-l font-black border-t-2 border-black ">{{ c(totalSupply).format() }}</span>
           </div>
           <div v-if="tokenParams.minting === 'true'">
             <div class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Max Supply</h2>
-              <span class="text-xl font-black">{{ currency(tokenParams.maxSupply).format() }}</span>
+              <span class="text-xl font-black">{{ c(tokenParams.maxSupply).format() }}</span>
             </div>
             <div v-if="tokenParams.timed === 'true'" class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Time Between Minting</h2>
@@ -506,7 +506,7 @@ import { useRoute, useRouter } from "vue-router";
 import auth from "../services/authentication";
 import { formatAddress } from "../services/formatAddress";
 import { User } from "../models/User";
-import ethApi, { TokenResponse } from "../services/ethApi";
+import api, { TokenResponse } from "../services/api";
 import { useStore } from "vuex";
 import SvgLoader from "../components/SvgLoader.vue";
 import ImageContainer from "../components/ImageContainer.vue";
@@ -534,7 +534,7 @@ export default defineComponent({
       ...composeDeployToken(),
       ...composeLinks(),
       ...composeDeploySimpleToken(),
-      currency: value => currency(Number(value), { separator: ",", symbol:'', precision: 0 })
+      c: value => currency(Number(value), { separator: ",", symbol:'', precision: 0 })
     }
   },
 });
@@ -740,7 +740,7 @@ function composeDeploySimpleToken() {
         }
       })
       metamaskStatus.value = metamaskAuthStatuses[3];
-      await ethApi.deploySimpleTokenToTestNet({
+      await api.deploySimpleTokenToTestNet({
         freeSupply: tokenParams.initialSupply,
         airdropSupply: tokenParams.airdropSupply,
         vaultAddress: tokenParams.vaultAddress,
@@ -769,9 +769,10 @@ function composeDeploySimpleToken() {
     simpleTokenTxHash.value = simpleToken.deployTransaction.hash
     simpleTokenAddress.value = simpleToken.address
     const tokenRequest = await storeTokenData();
-    console.log(await tokenRequest.json())
+    const { id } = await tokenRequest.json()
+    console.log({ id })
     await simpleToken.deployed(); 
-    await router.push({ path: "/token-success" });
+    await router.push({ path: "/token-success", query: { tokenId: id } });
   }
   async function storeTokenData() {
     return await auth.saveTokenData({
@@ -879,7 +880,7 @@ function composeDeployToken() {
   }
   async function deployToTestNet() {
     tokenDeployStatus.value = tokenDeployStatuses[1];
-    const apiResponse = await ethApi.deployTokenToTestNet({
+    const apiResponse = await api.deployTokenToTestNet({
       tokenName: tokenName.value,
       tokenSymbol: tokenSymbol.value,
     });

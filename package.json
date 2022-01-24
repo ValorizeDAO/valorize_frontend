@@ -19,6 +19,7 @@
     "currency.js": "^2.0.4",
     "cypress": "^8.5.0",
     "ethers": "^5.4.6",
+    "js-confetti": "^0.10.2",
     "vite-ssr": "^0.10.5",
     "vue": "3",
     "vue-router": "4",
