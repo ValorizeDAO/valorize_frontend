@@ -1,6 +1,6 @@
 import { Link } from "../models/Link";
 import { User, emptyUser } from "../models/User";
-import { SimpleTokenParams } from "./ethApi";
+import { SimpleTokenParams } from "./api";
 
 interface success {
   success: String;
@@ -147,7 +147,9 @@ export default {
     tokenName,
     tokenSymbol,
     adminAddresses,
-    chainId
+    chainId,
+    txHash,
+    contractAddress
   }: SimpleTokenParams): Promise<Response> {
     const formdata = new FormData();
     formdata.append("tokenType", tokenType);
@@ -159,6 +161,8 @@ export default {
     formdata.append("tokenTicker", tokenSymbol);
     formdata.append("adminAddresses", JSON.stringify(adminAddresses));
     formdata.append("chainId", chainId);
+    formdata.append("txHash", txHash);
+    formdata.append("contractAddress", contractAddress);
 
     const requestOptions = {
       method: 'PUT',
