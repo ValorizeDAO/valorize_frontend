@@ -21,6 +21,9 @@
         <span class="text-2xl">Next Mint Time: </span>
         <span>{{ tokenData.nextAllowedMint }}</span>
       </div>
+      <div class="my-6 flex justify-center text-center" v-if="tokenData.tokenType == 'timed_mint'">
+        <button class="btn" @click="mintToken">Mint Now</button>
+      </div>
     </div>
     <div class="border-b-2 border-black pb-2 mt-8">
       <div class="flex justify-between">
@@ -39,7 +42,9 @@ import { ref, computed, toRefs, defineComponent, onMounted, Ref, reactive } from
 import { useRoute } from "vue-router";
 import api from "../services/api"
 import currency from "currency.js";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
+import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
+import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
 
 export default defineComponent({
   name: "Token Admin",
@@ -54,7 +59,8 @@ export default defineComponent({
         chainId: '',
         tokenType: '',
         nextMintAllowance: '',
-        nextAllowedMint: ''
+        nextAllowedMint: '',
+        address: ''
       },
       tokenAdmins: [] as string[]
     })
@@ -68,7 +74,8 @@ export default defineComponent({
         chainId,
         tokenType,
         nextMintAllowance,
-        nextAllowedMint
+        nextAllowedMint,
+        address
       } = await api.getTokenData(route.params.id)
       state.tokenData.name = name
       state.tokenData.symbol = symbol
@@ -78,11 +85,21 @@ export default defineComponent({
       state.tokenData.tokenType = tokenType
       state.tokenData.nextMintAllowance = nextMintAllowance
       state.tokenData.nextAllowedMint = new Date(parseInt(nextAllowedMint)*1000).toDateString();
+      state.tokenData.address = address
       const response = await api.getTokenAdmins(route.params.id)
       state.tokenAdmins = [...response.administrators]
     })
+    function mintToken() {
+      const ethereum: any = (window as any).ethereum;
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const tokenContract = new TimedMintTokenFactory(signer);
+      const token = tokenContract.attach(state.tokenData.address);
+      token.mint(BigNumber.from(state.tokenData.nextMintAllowance).mul(BigNumber.from("1000000000000000000")))
+    }
     return {
       ...toRefs(state),
+      mintToken,
       c: (value: string) => currency(Number(value), { separator: ",", precision: 0, symbol: "" }).format()
     };
   },
