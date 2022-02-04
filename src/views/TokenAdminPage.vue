@@ -17,6 +17,10 @@
         <span class="text-2xl">Next Minting Allowance: </span>
         <span>{{ c(tokenData.nextMintAllowance) }}</span>
       </div>
+      <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
+        <span class="text-2xl">Next Mint Time: </span>
+        <span>{{ tokenData.nextAllowedMint }}</span>
+      </div>
     </div>
     <div class="border-b-2 border-black pb-2 mt-8">
       <div class="flex justify-between">
@@ -49,9 +53,10 @@ export default defineComponent({
         maxSupply: '',
         chainId: '',
         tokenType: '',
-        nextMintingAllowance: '',
+        nextMintAllowance: '',
+        nextAllowedMint: ''
       },
-      tokenAdmins: []
+      tokenAdmins: [] as string[]
     })
     const { formatEther } = ethers.utils
     onMounted(async () => {
@@ -62,7 +67,8 @@ export default defineComponent({
         maxSupply,
         chainId,
         tokenType,
-        nextMintAllowance
+        nextMintAllowance,
+        nextAllowedMint
       } = await api.getTokenData(route.params.id)
       state.tokenData.name = name
       state.tokenData.symbol = symbol
@@ -71,13 +77,13 @@ export default defineComponent({
       state.tokenData.chainId = chainId
       state.tokenData.tokenType = tokenType
       state.tokenData.nextMintAllowance = nextMintAllowance
-
+      state.tokenData.nextAllowedMint = new Date(parseInt(nextAllowedMint)*1000).toDateString();
       const response = await api.getTokenAdmins(route.params.id)
       state.tokenAdmins = [...response.administrators]
     })
     return {
       ...toRefs(state),
-      c: value => currency(Number(value), { separator: ",", precision: 0, symbol: "" }).format()
+      c: (value: string) => currency(Number(value), { separator: ",", precision: 0, symbol: "" }).format()
     };
   },
 });
