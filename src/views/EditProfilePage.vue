@@ -319,29 +319,33 @@
           <h1 class="text-3xl font-black mb-8">{{ tokenParams.name }} ({{ tokenParams.symbol }})</h1>
           <div class="flex justify-between">
             <h2 class="font-black text-xl">Initial Supply</h2>
-            <span class="text-xl font-black">{{ c(totalSupply).format() }}</span>
+            <span class="text-xl font-black">{{ c(totalSupply) }}</span>
           </div>
           Breakdown:
           <div class="flex justify-between items-center">
             <span class="text-sm ml-8">To be sent to: "{{ tokenParams.vaultAddress }}"</span>
-            <span class="text-l font-black">{{ c(tokenParams.initialSupply).format() }}</span>
+            <span class="text-l font-black text-gray-700">{{ c(tokenParams.initialSupply) }}</span>
           </div>
           <div class="flex justify-between items-center">
             <span class="text-sm ml-8">Reserved for Airdrops</span>
-            <span class="text-l font-black">{{ c(tokenParams.airdropSupply).format() }}</span>
+            <span class="text-l font-black text-gray-700">{{ c(tokenParams.airdropSupply) }}</span>
           </div>
           <div class="flex justify-between items-center border-b-2 border-black pb-2">
             <span class="text-sm ml-8 font-black">Total</span>
-            <span class="text-l font-black border-t-2 border-black ">{{ c(totalSupply).format() }}</span>
+            <span class="text-l font-black border-t-2 border-black ">{{ c(totalSupply) }}</span>
           </div>
           <div v-if="tokenParams.minting === 'true'">
             <div class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Max Supply</h2>
-              <span class="text-xl font-black">{{ c(tokenParams.maxSupply).format() }}</span>
+              <span class="text-xl font-black">{{ c(tokenParams.maxSupply) }}</span>
             </div>
-            <div v-if="tokenParams.timed === 'true'" class="flex justify-between border-b-2 border-black py-2">
-              <h2 class="text-xl font-black">Time Between Minting</h2>
-              <span class="text-xl font-black">{{ tokenParams.timeDelay }}</span>
+            <div v-if="tokenParams.minting === 'true'" class="flex justify-between border-b-2 border-black py-2">
+              <h2 class="text-xl font-black">Time Between Minting Periods</h2>
+              <span class="text-xl font-black">{{ tokenParams.timeDelay }} Days</span>
+            </div>
+            <div v-if="tokenParams.minting === 'true'" class="flex justify-between border-b-2 border-black py-2">
+              <h2 class="text-xl font-black">Tokens to Mint Per Minting Periods</h2>
+              <span class="text-xl font-black">{{ c(tokenParams.mintCap) }}</span>
             </div>
           </div>
           <div class="justify-between border-b-2 border-black py-2">
@@ -533,8 +537,7 @@ export default defineComponent({
       ...composeUpdateImage(),
       ...composeDeployToken(),
       ...composeLinks(),
-      ...composeDeploySimpleToken(),
-      c: value => currency(Number(value), { separator: ",", symbol:'', precision: 0 })
+      c: (value: currency) => currency(Number(value), { separator: ",", symbol:'', precision: 0 }).format()
     }
   },
 });
