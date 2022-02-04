@@ -778,23 +778,26 @@ function composeDeployGovToken() {
     }
   }
   async function deployToken(){
-    const signer = provider.getSigner();
     tokenStatus.value = tokenStatuses[3];
+    const signer = provider.getSigner();
 		let token: SimpleToken | TimedMintToken;
     if (tokenParams.minting === 'false') {
       token = await deploySimpleToken(signer);
-    } else (tokenParams.minting === 'true') {
+    } else if (tokenParams.minting === 'true') {
       token = await deployTimedMintToken(signer);
+    } else {
+      return
     }
-    metamaskStatus.value = metamaskAuthStatuses[5];
     const tokenRequest = await storeTokenData();
-    const { id } = await tokenRequest.json()
-    console.log({ id })
-    await token.deployed(); 
-    await router.push({ path: "/token-success", query: { tokenId: id } });
+    const tokenResponse = await tokenRequest.json()
+    metamaskStatus.value = metamaskAuthStatuses[5];
+    await token.deployed();
+    await router.push({ path: "/token-success", query: { tokenId: tokenResponse.token.id } });
   }
   
   async function deploySimpleToken(signer: Signer) {
+    console.groupCollapsed("tokenInfo")
+    console.log("Deploying Simple Token v0.1.0")
     const simpleToken = await new SimpleTokenFactory(signer).deploy(
       BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),
       BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),
@@ -805,10 +808,13 @@ function composeDeployGovToken() {
     );
     tokenTxHash.value = simpleToken.deployTransaction.hash
     deployedTokenAddress.value = simpleToken.address
+    console.groupEnd()
     return simpleToken
   }
 
   async function deployTimedMintToken(signer: Signer) {
+    console.groupCollapsed("tokenInfo")
+    console.log("Deploying Timed Mint Token v0.1.0")
     const timedMintToken = await new TimedMintTokenFactory(signer).deploy(
       BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),//vault
       BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),//airdrop
@@ -822,12 +828,13 @@ function composeDeployGovToken() {
     );
     tokenTxHash.value = timedMintToken.deployTransaction.hash
     deployedTokenAddress.value = timedMintToken.address
+    console.groupEnd()
     return timedMintToken
   }
 
   async function storeTokenData() {
     return await auth.saveTokenData({
-      tokenType: "simple",
+      tokenType: tokenParams.minting == 'true' ? "timed_mint": "simple",
       contractVersion: "v0.1.0",
       freeSupply: tokenParams.initialSupply,
       airdropSupply: tokenParams.airdropSupply,
@@ -848,8 +855,11 @@ function composeDeployGovToken() {
     return trimmedAddress.substring(0,2) === "0x" && trimmedAddress.length === 42
   }
   function isNumberString(value: string) {
-    const trimmedString = value.trim()
-    return parseInt(trimmedString) != 'Nan'
+    if (value) {
+      const trimmedString = value.trim()
+      return parseInt(trimmedString) != 'Nan'
+    }
+    return true
   }
 	const rules = computed(() => ({
 		name: {
@@ -874,7 +884,7 @@ function composeDeployGovToken() {
 		},
 		adminAddresses: {
 			required,
-      isListOfAdminAddresses: (value) => {
+      isListOfAdminAddresses: (value: string) => {
         return value.split(',').every(isEtherAddress)
       }
 		},
