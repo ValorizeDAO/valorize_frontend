@@ -674,7 +674,14 @@ function composeDeploySimpleToken() {
     timed: 'false',
     timeDelay: 0
   })
-  const networks = {
+  interface networks {
+    [id: string]: network 
+  }
+  interface network {
+    name: string;
+    blockExplorer: string;
+  }
+  const networks: networks = {
     "1": {
       name: "Ethereum",
       blockExplorer: "https://etherscan.io/"
@@ -700,13 +707,13 @@ function composeDeploySimpleToken() {
       blockExplorer: "https://arbiscan.io/"
     }
   }
-  const networkName = computed(() => {
-    return networks[network.value]?.name || "Unsuported";
+  const networkName = computed((): string => {
+    return networks[network.value].name||"Unsuported"
   })
-  const isKnownNetwork = computed(() => {
+  const isKnownNetwork = computed((): network => {
     return networks[network.value];
   })
-  const blockExplorer = computed(() => {
+  const blockExplorer = computed((): string => {
     return networks[network.value].blockExplorer;
   })
   const totalSupply = computed(() => {
