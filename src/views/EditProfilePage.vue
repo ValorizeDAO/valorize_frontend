@@ -271,23 +271,29 @@
 								/>
                 </label>
               </div>
-            <div class="mt-8 flex justify-between">
-              <p class="text-l font-black">Timed Minting</p>
-              <div>
-                <input type="radio" id="timed-no" name="timed" v-model="v$.timed.$model" :checked="v$.timed.$model === 'false'" value="false"><label for="timed-no" class="mr-4">No</label>
-                <input type="radio" id="timed-yes" name="timed" v-model="v$.timed.$model" :checked="v$.timed.$model ==='true'" value="true"><label for="timed-yes">Yes</label>
-              </div>
-            </div>
-            <transition name="fade">
-              <div v-if="v$.timed.$model === 'true'">
-                <div class="mt-8">
-                  <label class="text-l font-black">Days Between Mints
-                    <input v-model="v$.timeDelay.$model" id="admin-addresses" name="timeDelay" class="w-full border-b-2 border-black bg-transparent" type="number"/>
-                  </label>
-                </div>
-              </div>
-            </transition>
-            </div>
+							<div class="mt-8">
+								<label class="text-l font-black">Days Between Mints
+									<input
+										v-model="v$.timeDelay.$model"
+										id="time-delay"
+										name="timeDelay"
+										class="w-full border-b-2 border-black bg-transparent"
+										type="number"
+									/>
+								</label>
+							</div>
+							<div class="mt-8">
+								<label class="text-l font-black">Tokens to Mint Per Mint Period
+									<input
+										v-model="v$.mintCap.$model"
+										id="mint-cap"
+										name="mintCap"
+										class="w-full border-b-2 border-black bg-transparent"
+										type="number"
+									/>
+								</label>
+							</div>
+						</div>
           </transition>
           <div class="flex flex-col items-center mt-8">
             <input type="submit" 
@@ -390,7 +396,7 @@
               There was an error, please check the parameters and try again <br>
             </div>
             <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED' || metamaskStatus === 'Tx_REJECTED'">
-              <button class="btn text-center" @click="deploySimpleToken">
+              <button class="btn text-center" @click="deployToken">
                 <span class="px-8">Deploy to {{ networkName }}</span>
               </button>
             </div>
@@ -404,24 +410,24 @@
               Contract launching, <br>
               <a 
                 v-if="isKnownNetwork"
-                :href="blockExplorer + 'tx/' + simpleTokenTxHash" 
+                :href="blockExplorer + 'tx/' + tokenTxHash" 
                 target="_blank"
                 class="font-black border-black border-b-2 pt-2"
-              >See transaction: {{ formatAddress(simpleTokenTxHash) }}
+              >See transaction: {{ formatAddress(tokenTxHash) }}
               </a>
-              <span v-else>Tx hash: {{ simpleTokenTxHash }}</span>
+              <span v-else>Tx hash: {{ tokenTxHash }}</span>
               <SvgLoader class="text-center mx-auto h-12 pt-4" fill="#"></SvgLoader>
             </div>
             <div class="text-center" v-else-if="metamaskStatus === 'TX_SUCCESS'">
               Success! <br>
               <a 
                 v-if="isKnownNetwork"
-                :href="blockExplorer + 'address/' + simpleTokenAddress" 
+                :href="blockExplorer + 'address/' + deployedTokenAddress" 
                 target="_blank"
                 class="font-black border-black border-b-2"
-              >See your token: {{ formatAddress(simpleTokenAddress) }}
+              >See your token: {{ formatAddress(deployedTokenAddress) }}
               </a>
-              <span v-else>Your token is now live in address: {{simpleTokenAddress }}</span>
+              <span v-else>Your token is now live in address: {{deployedTokenAddress }}</span>
             </div>
           </transition>
         </div>
@@ -520,10 +526,13 @@ import DeleteLink from "../components/DeleteLink.vue";
 import { Link } from "../models/Link";
 import useVuelidate from '@vuelidate/core'
 import { required, minLength } from '@vuelidate/validators'
-import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory.ts"
-import { ethers, utils, BigNumber, Provider } from "ethers";
+import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
+import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
+import { ethers, utils, BigNumber, Signer, providers } from "ethers";
 import currency from "currency.js";
 import detectEthereumProvider from '@metamask/detect-provider';
+import { TimedMintToken } from "../contracts/TimedMintToken";
+import { SimpleToken } from "../contracts/SimpleToken";
 
 
 export default defineComponent({
@@ -537,6 +546,7 @@ export default defineComponent({
       ...composeUpdateImage(),
       ...composeDeployToken(),
       ...composeLinks(),
+      ...composeDeployGovToken(),
       c: (value: currency) => currency(Number(value), { separator: ",", symbol:'', precision: 0 }).format()
     }
   },
@@ -641,7 +651,7 @@ function composeUpdateImage() {
   };
 }
 
-function composeDeploySimpleToken() {
+function composeDeployGovToken() {
   const router = useRouter();
   const showExpandedList = ref(false)
   const tokenStatuses = ['INIT', 'DEPLOYING_TEST', 'DEPLOYED_TEST']
@@ -660,8 +670,8 @@ function composeDeploySimpleToken() {
   const metamaskStatus = ref(metamaskAuthStatuses[0]);
   const simpleTokenModalDisplayed = ref(false)
   const network = ref('')
-  const simpleTokenTxHash = ref('')
-  const simpleTokenAddress = ref('')
+  const tokenTxHash = ref('')
+  const deployedTokenAddress = ref('')
   const tokenParams = reactive({
     name: '',
     symbol: '',
@@ -671,8 +681,8 @@ function composeDeploySimpleToken() {
     adminAddresses: '',
     minting: 'false',
     maxSupply: '',
-    timed: 'false',
-    timeDelay: 0
+    timeDelay: 0,
+    mintCap: ''
   })
   interface networks {
     [id: string]: network 
@@ -723,9 +733,10 @@ function composeDeploySimpleToken() {
     const { adminAddresses } = tokenParams;
     const addresses = adminAddresses.split(',')
     if(addresses.length > 1) return addresses.map(val => val.trim())
-    return [adminAddresses]
+    return [adminAddresses].map(v => ethers.utils.getAddress(v))
   })
-  let ethereum: any = {}, provider: Provider;
+  let ethereum: any = {}, provider: providers.Provider;
+	const decimalsMultiplyer = BigNumber.from("1000000000000000000")
   function toggleSimpleTokenModal() {
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
     if(tokenStatus.value === tokenStatuses[0]) {
@@ -743,7 +754,7 @@ function composeDeploySimpleToken() {
       provider = new ethers.providers.Web3Provider(ethereum, "any");
       ethereum.request({ method: 'eth_requestAccounts' });
       const networkInfo = await provider.getNetwork();
-      network.value = networkInfo.chainId;
+      network.value = networkInfo.chainId.toString();
       provider.on("network", (newNetwork, oldNetwork) => {
         if(oldNetwork) {
           network.value = newNetwork.chainId
@@ -756,7 +767,9 @@ function composeDeploySimpleToken() {
         vaultAddress: tokenParams.vaultAddress,
         tokenName: tokenParams.name,
         tokenSymbol: tokenParams.symbol,
-        adminAddresses: tokenParams.adminAddresses,
+        tokenType: tokenParams.symbol,
+        contractVersion: tokenParams.symbol,
+        adminAddresses: parsedAddresses.value,
         chainId: network.value
       })
       tokenStatus.value = tokenStatuses[2] 
@@ -764,26 +777,54 @@ function composeDeploySimpleToken() {
       metamaskStatus.value = metamaskAuthStatuses[4]
     }
   }
-  async function deploySimpleToken(){
+  async function deployToken(){
     const signer = provider.getSigner();
     tokenStatus.value = tokenStatuses[3];
+		let token: SimpleToken | TimedMintToken;
+    if (tokenParams.minting === 'false') {
+      token = await deploySimpleToken(signer);
+    } else (tokenParams.minting === 'true') {
+      token = await deployTimedMintToken(signer);
+    }
+    metamaskStatus.value = metamaskAuthStatuses[5];
+    const tokenRequest = await storeTokenData();
+    const { id } = await tokenRequest.json()
+    console.log({ id })
+    await token.deployed(); 
+    await router.push({ path: "/token-success", query: { tokenId: id } });
+  }
+  
+  async function deploySimpleToken(signer: Signer) {
     const simpleToken = await new SimpleTokenFactory(signer).deploy(
-      BigNumber.from(tokenParams.initialSupply).mul(BigNumber.from("1000000000000000000")),
-      BigNumber.from(tokenParams.airdropSupply).mul(BigNumber.from("1000000000000000000")),
+      BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),
+      BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),
       ethers.utils.getAddress(tokenParams.vaultAddress),
       tokenParams.name,
       tokenParams.symbol,
       parsedAddresses.value.map(v => ethers.utils.getAddress(v))
     );
-    metamaskStatus.value = metamaskAuthStatuses[5];
-    simpleTokenTxHash.value = simpleToken.deployTransaction.hash
-    simpleTokenAddress.value = simpleToken.address
-    const tokenRequest = await storeTokenData();
-    const { id } = await tokenRequest.json()
-    console.log({ id })
-    await simpleToken.deployed(); 
-    await router.push({ path: "/token-success", query: { tokenId: id } });
+    tokenTxHash.value = simpleToken.deployTransaction.hash
+    deployedTokenAddress.value = simpleToken.address
+    return simpleToken
   }
+
+  async function deployTimedMintToken(signer: Signer) {
+    const timedMintToken = await new TimedMintTokenFactory(signer).deploy(
+      BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),//vault
+      BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),//airdrop
+      BigNumber.from(tokenParams.maxSupply).mul(decimalsMultiplyer),	  //supplycap
+      ethers.utils.getAddress(tokenParams.vaultAddress),							  //vault
+      BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
+      BigNumber.from(tokenParams.mintCap),                              //mintCap
+      tokenParams.name,
+      tokenParams.symbol,
+      parsedAddresses.value.map(v => ethers.utils.getAddress(v))
+    );
+    tokenTxHash.value = timedMintToken.deployTransaction.hash
+    deployedTokenAddress.value = timedMintToken.address
+    return timedMintToken
+  }
+
   async function storeTokenData() {
     return await auth.saveTokenData({
       tokenType: "simple",
@@ -795,8 +836,8 @@ function composeDeploySimpleToken() {
       tokenSymbol: tokenParams.symbol,
       adminAddresses: tokenParams.adminAddresses,
       chainId: network.value,
-      txHash: simpleTokenTxHash.value,    
-      contractAddress: simpleTokenAddress.value
+      txHash: tokenTxHash.value,    
+      contractAddress: deployedTokenAddress.value
     })
   }
   function submitToken() {
@@ -805,6 +846,10 @@ function composeDeploySimpleToken() {
   function isEtherAddress(value: string) {
     const trimmedAddress = value.trim()
     return trimmedAddress.substring(0,2) === "0x" && trimmedAddress.length === 42
+  }
+  function isNumberString(value: string) {
+    const trimmedString = value.trim()
+    return parseInt(trimmedString) != 'Nan'
   }
 	const rules = computed(() => ({
 		name: {
@@ -837,11 +882,13 @@ function composeDeploySimpleToken() {
 			required,
 		},
 		maxSupply: {
-		},
-		timed: {
-			required,
+			isNumberString
 		},
 		timeDelay: {
+			isNumberString
+		},
+		mintCap: {
+			isNumberString
 		},
 	}))
   const v$ = useVuelidate(rules, tokenParams)
@@ -855,13 +902,13 @@ function composeDeploySimpleToken() {
     simpleTokenModalDisplayed,
     toggleSimpleTokenModal,
     tokenStatus,
-    deploySimpleToken,
+    deployToken,
     network,
     networkName,
 		v$,
     metamaskStatus,
-    simpleTokenTxHash,
-    simpleTokenAddress,
+    tokenTxHash,
+    deployedTokenAddress,
     blockExplorer,
     isKnownNetwork
   }
