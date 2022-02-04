@@ -528,11 +528,11 @@ import useVuelidate from '@vuelidate/core'
 import { required, minLength } from '@vuelidate/validators'
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
+import { TimedMintToken } from "../contracts/TimedMintToken";
+import { SimpleToken } from "../contracts/SimpleToken";
 import { ethers, utils, BigNumber, Signer, providers } from "ethers";
 import currency from "currency.js";
 import detectEthereumProvider from '@metamask/detect-provider';
-import { TimedMintToken } from "../contracts/TimedMintToken";
-import { SimpleToken } from "../contracts/SimpleToken";
 
 
 export default defineComponent({
