@@ -780,7 +780,7 @@ function composeDeployGovToken() {
   async function deployToken(){
     tokenStatus.value = tokenStatuses[3];
     const signer = provider.getSigner();
-		let token: SimpleToken | TimedMintToken;
+		let token: SimpleToken | TimedMintToken | undefined;
     if (tokenParams.minting === 'false') {
       token = await deploySimpleToken(signer);
     } else if (tokenParams.minting === 'true') {
@@ -791,45 +791,63 @@ function composeDeployGovToken() {
     const tokenRequest = await storeTokenData();
     const tokenResponse = await tokenRequest.json()
     metamaskStatus.value = metamaskAuthStatuses[5];
-    await token.deployed();
-    await router.push({ path: "/token-success", query: { tokenId: tokenResponse.token.id } });
+    if(token){
+      await token.deployed();
+      await router.push({ path: "/token-success", query: { tokenId: tokenResponse.token.id } });
+    }
   }
   
   async function deploySimpleToken(signer: Signer) {
     console.groupCollapsed("tokenInfo")
     console.log("Deploying Simple Token v0.1.0")
-    const simpleToken = await new SimpleTokenFactory(signer).deploy(
-      BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),
-      BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),
-      ethers.utils.getAddress(tokenParams.vaultAddress),
-      tokenParams.name,
-      tokenParams.symbol,
-      parsedAddresses.value.map(v => ethers.utils.getAddress(v))
-    );
-    tokenTxHash.value = simpleToken.deployTransaction.hash
-    deployedTokenAddress.value = simpleToken.address
-    console.groupEnd()
-    return simpleToken
+    let simpleToken: SimpleToken
+    try {
+      simpleToken = await new SimpleTokenFactory(signer).deploy(
+        BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),
+        BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),
+        ethers.utils.getAddress(tokenParams.vaultAddress),
+        tokenParams.name,
+        tokenParams.symbol,
+        parsedAddresses.value.map(v => ethers.utils.getAddress(v))
+      );
+      tokenTxHash.value = simpleToken.deployTransaction.hash
+      deployedTokenAddress.value = simpleToken.address
+      console.groupEnd()
+      return simpleToken
+    } 
+    catch (err: any) {
+      console.error(err)
+      tokenStatus.value = tokenStatuses[8]
+      console.groupEnd()
+    }
   }
 
   async function deployTimedMintToken(signer: Signer) {
     console.groupCollapsed("tokenInfo")
     console.log("Deploying Timed Mint Token v0.1.0")
-    const timedMintToken = await new TimedMintTokenFactory(signer).deploy(
-      BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),//vault
-      BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),//airdrop
-      BigNumber.from(tokenParams.maxSupply).mul(decimalsMultiplyer),	  //supplycap
-      ethers.utils.getAddress(tokenParams.vaultAddress),							  //vault
-      BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
-      BigNumber.from(tokenParams.mintCap),                              //mintCap
-      tokenParams.name,
-      tokenParams.symbol,
-      parsedAddresses.value.map(v => ethers.utils.getAddress(v))
-    );
-    tokenTxHash.value = timedMintToken.deployTransaction.hash
-    deployedTokenAddress.value = timedMintToken.address
-    console.groupEnd()
-    return timedMintToken
+    let timedMintToken: TimedMintToken
+    try {
+      timedMintToken = await new TimedMintTokenFactory(signer).deploy(
+        BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),//vault
+        BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),//airdrop
+        BigNumber.from(tokenParams.maxSupply).mul(decimalsMultiplyer),	  //supplycap
+        ethers.utils.getAddress(tokenParams.vaultAddress),							  //vault
+        BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
+        BigNumber.from(tokenParams.mintCap),                              //mintCap
+        tokenParams.name,
+        tokenParams.symbol,
+        parsedAddresses.value.map(v => ethers.utils.getAddress(v))
+      );
+      tokenTxHash.value = timedMintToken.deployTransaction.hash
+      deployedTokenAddress.value = timedMintToken.address
+      console.groupEnd()
+      return timedMintToken
+    } 
+    catch (err: any) {
+      console.error(err)
+      tokenStatus.value = tokenStatuses[8]
+      console.groupEnd()
+    }
   }
 
   async function storeTokenData() {
