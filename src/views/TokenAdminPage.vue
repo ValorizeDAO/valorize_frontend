@@ -21,8 +21,19 @@
         <span class="text-2xl">Next Mint Time: </span>
         <span>{{ tokenData.nextAllowedMint }}</span>
       </div>
-      <div class="my-6 flex justify-center text-center" v-if="tokenData.tokenType == 'timed_mint'">
-        <button class="btn" @click="mintToken">Mint Now</button>
+      <div class="row items-center" v-if="tokenData.tokenType == 'timed_mint'">
+          <span class="text-2xl">Minter</span>
+          <span v-if="hasSetMinter">{{ formatAddress(tokenData.minter) }}</span>
+          <span v-else class="font-normal">None Set</span>
+      </div>
+      <div class="my-6 flex flex-col justify-center text-center" v-if="tokenData.tokenType == 'timed_mint'">
+        <div>
+          <button v-if="hasSetMinter" class="btn mx-auto" @click="mintToken">Mint Now</button>
+          <button v-else class="btn mx-auto" @click="setMinter">Set Minter</button>
+        </div>
+        <div class="my-6 text-base font-medium justify-centerflex justify-center text-center" v-if="mintingError.length">
+          {{ mintingError }}
+        </div>
       </div>
     </div>
     <div class="border-b-2 border-black pb-2 mt-8">
@@ -43,6 +54,7 @@ import { useRoute } from "vue-router";
 import api from "../services/api"
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
+import { formatAddress } from "../services/formatAddress";
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
 
@@ -60,9 +72,15 @@ export default defineComponent({
         tokenType: '',
         nextMintAllowance: '',
         nextAllowedMint: '',
+        minter: '',
         address: ''
       },
       tokenAdmins: [] as string[]
+    })
+    const mintingError = ref('')
+    const hasSetMinter = computed(() => {
+      console.log(state.tokenData.minter)
+      return state.tokenData.minter != "0x0000000000000000000000000000000000000000"
     })
     const { formatEther } = ethers.utils
     onMounted(async () => {
@@ -75,7 +93,8 @@ export default defineComponent({
         tokenType,
         nextMintAllowance,
         nextAllowedMint,
-        address
+        address,
+        minter
       } = await api.getTokenData(route.params.id)
       state.tokenData.name = name
       state.tokenData.symbol = symbol
@@ -86,20 +105,59 @@ export default defineComponent({
       state.tokenData.nextMintAllowance = nextMintAllowance
       state.tokenData.nextAllowedMint = new Date(parseInt(nextAllowedMint)*1000).toDateString();
       state.tokenData.address = address
+      state.tokenData.minter = minter
       const response = await api.getTokenAdmins(route.params.id)
       state.tokenAdmins = [...response.administrators]
     })
-    function mintToken() {
+
+    async function mintToken() {
+      const token = getToken()
+      try {
+        await token.mint(
+          BigNumber.from(state.tokenData.nextMintAllowance).mul(BigNumber.from("1000000000000000000"))
+        )
+        state.tokenData.totalSupply = await token.totalSupply().toString()
+      }
+      catch(err: any) {
+        if (err.error.code == -32603) {
+          mintingError.value = "Only minting address can call this function"
+        }
+        else {
+          mintingError.value = "Cannot mint: " + err.error.message
+        }
+      }
+    }
+    function getToken() {
       const ethereum: any = (window as any).ethereum;
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
       const tokenContract = new TimedMintTokenFactory(signer);
-      const token = tokenContract.attach(state.tokenData.address);
-      token.mint(BigNumber.from(state.tokenData.nextMintAllowance).mul(BigNumber.from("1000000000000000000")))
+      return tokenContract.attach(state.tokenData.address);
+    }
+    async function setMinter() {
+      const token = getToken()
+      try {
+        await token.setMinter("0xCAdC6f201822C40D1648792C6A543EdF797e7D65")
+        state.tokenData.minter = await token.minter()
+      }
+      catch(err: any) {
+        if (err) {
+          console.log({ err });
+          
+          mintingError.value = err.error.message
+        }
+        else {
+          mintingError.value = "Cannot mint: " + err.error.message
+        }
+      }
     }
     return {
       ...toRefs(state),
       mintToken,
+      setMinter,
+      mintingError,
+      hasSetMinter,
+      formatAddress,
       c: (value: string) => currency(Number(value), { separator: ",", precision: 0, symbol: "" }).format()
     };
   },
