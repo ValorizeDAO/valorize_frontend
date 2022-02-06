@@ -281,6 +281,11 @@
                         </label>
                     </div>
                   </transition>
+                  <transition name="fade">
+                    <p v-if="v$.maxSupply.$dirty && v$.maxSupply.isValidMaxSupply.$invalid" class="mt-4">
+                      Should be greater than innitial supply + airdrop supply
+                    </p>
+                  </transition>
               </div>
 							<div class="mt-8">
 								<label class="text-l font-black">Days Between Mints
@@ -308,7 +313,7 @@
           </transition>
           <div class="flex flex-col items-center mt-8">
             <input type="submit" 
-									 class="btn w-48 mt-4 bg-purple-50 disabled:cursor-not-allowed" 
+									 class="btn w-48 mt-4 mb-24 bg-purple-50 disabled:cursor-not-allowed" 
 									 :class="{'bg-gray-300 text-slate-600 border-slate-600': v$.$invalid}" 
 									 :disabled="v$.$invalid"
 									 @click.prevent="submitToken">
@@ -697,7 +702,7 @@ function composeDeployGovToken() {
     adminAddresses: '',
     minting: 'false',
     supplyCap: 'false',
-    maxSupply: '',
+    maxSupply: '0',
     timeDelay: 0,
     mintCap: ''
   })
@@ -908,7 +913,7 @@ function composeDeployGovToken() {
 		maxSupply: {
 			isValidMaxSupply: (value: string) => {
         return isNumberString(value) && (
-          parseInt(value) > parseInt(tokenParams.initialSupply) + parseInt(tokenParams.airdropSupply)
+          value == "0" || (parseInt(value) > parseInt(tokenParams.initialSupply) + parseInt(tokenParams.airdropSupply))
         )
       }
 		},
