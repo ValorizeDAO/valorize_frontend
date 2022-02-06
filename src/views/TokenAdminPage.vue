@@ -112,6 +112,16 @@
         </div>
       </div>
     </div>
+          <div class="mx-auto flex-col mt-24 max-w-2xl">
+        <div class="flex flex-wrap justify-between">
+          <span>Deployed To:</span>
+          <span>{{ networkName }}</span>
+        </div>
+        <div class="flex flex-wrap justify-between">
+          <span>Contract Version:</span>
+          <span>{{ tokenData.contractVersion }}</span>
+        </div>
+      </div>
   </div>
   <div class="mx-auto my-48 text-center" v-else>Loading Data</div>
 </template>
@@ -128,7 +138,7 @@ import {
 } from "vue";
 import { useRoute } from "vue-router";
 import api from "../services/api";
-import { networks, networkInfo } from "../services/network";
+import { networkInfo } from "../services/network";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
 import { formatAddress } from "../services/formatAddress";
@@ -151,6 +161,7 @@ export default defineComponent({
         nextAllowedMint: "",
         minter: "",
         address: "",
+        contractVersion: ""
       },
       tokenAdmins: [] as string[],
     });
@@ -163,6 +174,9 @@ export default defineComponent({
       "0x0000000000000000000000000000000000000000"
     );
     const blockExplorerUrl = ref("");
+    const networkName = computed(() => {
+      return networkInfo[state.tokenData.chainId].name
+    })
     const hasSetMinter = computed(() => {
       console.log(state.tokenData.minter);
       return (
@@ -185,6 +199,7 @@ export default defineComponent({
         nextAllowedMint,
         address,
         minter,
+        contractVersion
       } = await api.getTokenData(route.params.id);
       const nextAllowedMintDateObject = new Date(
         parseInt(nextAllowedMint) * 1000
@@ -214,6 +229,7 @@ export default defineComponent({
       state.tokenData.nextAllowedMint = nextAllowedMintTimeDisplay;
       state.tokenData.address = address;
       state.tokenData.minter = minter;
+      state.tokenData.contractVersion = contractVersion;
       const response = await api.getTokenAdmins(route.params.id);
       state.tokenAdmins = [...response.administrators];
       status.value = statuses[2];
@@ -266,6 +282,7 @@ export default defineComponent({
       settingMinter,
       blockExplorerUrl,
       canMintNow,
+      networkName,
       formatAddress,
       c: (value: string) =>
         currency(Number(value), {
