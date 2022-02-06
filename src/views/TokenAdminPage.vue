@@ -114,6 +114,13 @@ export default defineComponent({
         address,
         minter
       } = await api.getTokenData(route.params.id)
+      const nextAllowedMintDateObject = new Date(parseInt(nextAllowedMint)*1000)
+      let nextAllowedMintTimeDisplay 
+      if(nextAllowedMintDateObject.toDateString() == new Date().toDateString()) {
+        nextAllowedMintTimeDisplay = "Today at " + nextAllowedMintDateObject.toLocaleTimeString()
+      } else {
+        nextAllowedMintTimeDisplay = nextAllowedMintDateObject.toDateString()
+      }
       state.tokenData.name = name
       state.tokenData.symbol = symbol
       state.tokenData.totalSupply = formatEther(totalSupply)
@@ -121,7 +128,7 @@ export default defineComponent({
       state.tokenData.chainId = chainId
       state.tokenData.tokenType = tokenType
       state.tokenData.nextMintAllowance = nextMintAllowance
-      state.tokenData.nextAllowedMint = new Date(parseInt(nextAllowedMint)*1000).toDateString();
+      state.tokenData.nextAllowedMint = nextAllowedMintTimeDisplay
       state.tokenData.address = address
       state.tokenData.minter = minter
       const response = await api.getTokenAdmins(route.params.id)
