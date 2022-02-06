@@ -527,6 +527,7 @@ import TokenInfoComponent from "../components/TokenInfoComponent.vue";
 import Modal from "../components/Modal.vue";
 import DeleteLink from "../components/DeleteLink.vue";
 import { Link } from "../models/Link";
+import { networkInfo, network } from "../services/network"
 import useVuelidate from '@vuelidate/core'
 import { required, minLength } from '@vuelidate/validators'
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
@@ -688,39 +689,7 @@ function composeDeployGovToken() {
     timeDelay: 0,
     mintCap: ''
   })
-  interface networks {
-    [id: string]: network 
-  }
-  interface network {
-    name: string;
-    blockExplorer: string;
-  }
-  const networks: networks = {
-    "1": {
-      name: "Ethereum",
-      blockExplorer: "https://etherscan.io/"
-    },
-    "3": {
-      name: "Ropsten Testnet",
-      blockExplorer: "https://ropsten.etherscan.io/"
-    },
-    "137": {
-      name: "Polygon",
-      blockExplorer: "https://polygonscan.com/"
-    },
-    "10": {
-      name: "Optimism",
-      blockExplorer: "https://optimistic.etherscan.io/"
-    },
-    "421611": {
-      name: "Arbitrum Testnet",
-      blockExplorer: "https://testnet.arbiscan.io/"
-    }, 
-    "42161": {
-      name: "Arbitrum",
-      blockExplorer: "https://arbiscan.io/"
-    }
-  }
+  const networks = { ...networkInfo }
   const networkName = computed((): string => {
     return networks[network.value].name||"Unsuported"
   })
