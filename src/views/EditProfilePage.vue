@@ -260,16 +260,27 @@
           </div>
           <transition name="fade">
             <div v-if="v$.minting.$model === 'true'">
-              <div class="mt-8">
-                <label class="text-l font-black">Max Supply
-                  <input 
-                    v-model="v$.maxSupply.$model" 
-                    id="maxSupply" 
-                    name="maxSupply" 
-                    class="w-full border-b-2 border-black bg-transparent" 
-                    type="text"
-								/>
-                </label>
+              <div>
+                <div class="mt-8 flex justify-between">
+                  <label class="text-l font-black" for="supplyCap">Total Supply Cap</label>
+                    <div>
+                      <input type="radio" id="mint-cap-no" name="supplyCap" v-model="v$.supplyCap.$model" :checked="v$.supplyCap.$model === 'false'" value="false"><label for="mint-cap-no" class="mr-4">No</label>
+                      <input type="radio" id="mint-cap-yes" name="supplyCap" v-model="v$.supplyCap.$model" :checked="v$.supplyCap.$model ==='true'" value="true"><label for="mint-cap-yes">Yes</label>
+                    </div>
+                </div>
+                  <transition name="fade">
+                    <div v-if="v$.supplyCap.$model === 'true'" class="mt-8">
+                      <label class="text-l font-black">Max Supply
+                          <input 
+                            v-model="v$.maxSupply.$model" 
+                            id="maxSupply" 
+                            name="maxSupply" 
+                            class="w-full border-b-2 border-black bg-transparent" 
+                            type="text"
+                        />
+                        </label>
+                    </div>
+                  </transition>
               </div>
 							<div class="mt-8">
 								<label class="text-l font-black">Days Between Mints
@@ -685,6 +696,7 @@ function composeDeployGovToken() {
     airdropSupply: '',
     adminAddresses: '',
     minting: 'false',
+    supplyCap: 'false',
     maxSupply: '',
     timeDelay: 0,
     mintCap: ''
@@ -799,15 +811,21 @@ function composeDeployGovToken() {
   async function deployTimedMintToken(signer: Signer) {
     console.groupCollapsed("tokenInfo")
     console.log("Deploying Timed Mint Token v0.1.0")
-    let timedMintToken: TimedMintToken
+    let timedMintToken: TimedMintToken;
+    let maxSupply: BigNumber;
+    if (tokenParams.supplyCap === 'false') {
+      maxSupply = BigNumber.from(0)
+    } else {
+      maxSupply = BigNumber.from(tokenParams.maxSupply).mul(decimalsMultiplyer)
+    }
     try {
       timedMintToken = await new TimedMintTokenFactory(signer).deploy(
         BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),//vault
         BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),//airdrop
-        BigNumber.from(tokenParams.maxSupply).mul(decimalsMultiplyer),	  //supplycap
+        maxSupply,	                                                      //supplycap
         ethers.utils.getAddress(tokenParams.vaultAddress),							  //vault
         BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
-        BigNumber.from(tokenParams.mintCap),                              //mintCap
+        BigNumber.from(tokenParams.mintCap).mul(decimalsMultiplyer),      //mintCap                                                //mintCap
         tokenParams.name,
         tokenParams.symbol,
         parsedAddresses.value.map(v => ethers.utils.getAddress(v))
@@ -882,6 +900,9 @@ function composeDeployGovToken() {
       }
 		},
 		minting: {
+			required,
+		},
+		supplyCap: {
 			required,
 		},
 		maxSupply: {
