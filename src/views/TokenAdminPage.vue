@@ -31,11 +31,12 @@
         </div>
         <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
           <span class="text-2xl">Max Supply: </span>
-          <span>{{ c(tokenData.maxSupply) }}</span>
+          <span v-if="maxSupplySet">{{ c(formatEther(tokenData.maxSupply)) }}</span>
+          <span v-else>Unlimited</span>
         </div>
         <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
           <span class="text-2xl">Next Minting Allowance: </span>
-          <span>{{ c(tokenData.nextMintAllowance) }}</span>
+          <span>{{ c(formatEther(tokenData.nextMintAllowance)) }}</span>
         </div>
         <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
           <span class="text-2xl">Next Mint Time: </span>
@@ -178,13 +179,17 @@ export default defineComponent({
       return networkInfo[state.tokenData.chainId].name
     })
     const hasSetMinter = computed(() => {
-      console.log(state.tokenData.minter);
       return (
         state.tokenData.minter != "0x0000000000000000000000000000000000000000"
       );
     });
     const adminRole =
       "0x0000000000000000000000000000000000000000000000000000000000000000";
+    // If token is set to not have a max supply cap, the maxsupply returns to this constant (2**256 - 1)
+    const maxSupplyConstant = "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+    const maxSupplySet = computed(() => {
+      return state.tokenData.maxSupply === formatEther(maxSupplyConstant)
+    })
     const { formatEther } = ethers.utils;
     onMounted(async () => {
       status.value = statuses[1];
@@ -204,25 +209,26 @@ export default defineComponent({
       const nextAllowedMintDateObject = new Date(
         parseInt(nextAllowedMint) * 1000
       );
-      const today = new Date()
+      const now = new Date()
       let nextAllowedMintTimeDisplay;
       if (
-        nextAllowedMintDateObject < today
-      ) {
-        nextAllowedMintTimeDisplay = nextAllowedMintDateObject.toDateString();
-      } else if (
-        nextAllowedMintDateObject.toDateString() == today.toDateString()
+        nextAllowedMintDateObject.toDateString() == now.toDateString()
       ){
-        nextAllowedMintTimeDisplay =
-          "Today at " + nextAllowedMintDateObject.toLocaleTimeString();
+        nextAllowedMintTimeDisplay =  "Today at " + nextAllowedMintDateObject.toLocaleTimeString();
+        if (nextAllowedMintDateObject < now) {
+          canMintNow.value = true
+        }
       } else {
-        nextAllowedMintTimeDisplay = "Can mint now"
-        canMintNow.value = true
-      }
+        if (nextAllowedMintDateObject < now) {
+          nextAllowedMintTimeDisplay = "Can Mint Now"
+        } else {
+          nextAllowedMintTimeDisplay = nextAllowedMintDateObject.toDateString()
+        }
+      } 
       state.tokenData.name = name;
       state.tokenData.symbol = symbol;
       state.tokenData.totalSupply = formatEther(totalSupply);
-      state.tokenData.maxSupply = formatEther(maxSupply);
+      state.tokenData.maxSupply = maxSupply;
       state.tokenData.chainId = chainId;
       state.tokenData.tokenType = tokenType;
       state.tokenData.nextMintAllowance = nextMintAllowance;
@@ -241,13 +247,15 @@ export default defineComponent({
       const token = getTMToken();
       try {
         await token.mint(
-          BigNumber.from(state.tokenData.nextMintAllowance).mul(
-            BigNumber.from("1000000000000000000")
-          )
+          BigNumber.from(state.tokenData.nextMintAllowance)
         );
         state.tokenData.totalSupply = await token.totalSupply().toString();
       } catch (err: any) {
-        mintingError.value = "Error: " + err.error.message;
+        if(err.error?.message) {
+          mintingError.value = "Error: " + err.error.message;
+        } else {
+          mintingError.value = err
+        }
       }
     }
     function getTMToken() {
@@ -283,7 +291,9 @@ export default defineComponent({
       blockExplorerUrl,
       canMintNow,
       networkName,
+      maxSupplySet,
       formatAddress,
+      formatEther,
       c: (value: string) =>
         currency(Number(value), {
           separator: ",",
