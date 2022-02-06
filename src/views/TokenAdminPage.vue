@@ -70,14 +70,14 @@
             </button>
           </div>
           <div v-if="settingMinter">
-            <div class="row">
+            <div class="flex justify-between items-center">
               <label
                 class="pl-8 text-sm font-normal"
                 for="minter-address-to-set"
-                >Minter Address</label
+                >Set Minter Address:</label
               ><br />
               <input
-                class="bg-transparent text-sm font-normal w-[32em]"
+                class="bg-transparent text-sm font-normal w-[32em] border-b-2 border-black mr-8"
                 type="text"
                 id="minter-address-to-set"
                 v-model="minterAddressToSet"
