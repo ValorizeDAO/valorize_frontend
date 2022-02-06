@@ -359,7 +359,8 @@
           <div v-if="tokenParams.minting === 'true'">
             <div class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Max Supply</h2>
-              <span class="text-xl font-black">{{ c(tokenParams.maxSupply) }}</span>
+              <span class="text-xl font-black" v-if="tokenParams.supplyCap ==='true'">{{ c(tokenParams.maxSupply) }}</span>
+              <span class="text-xl font-black" v-if="tokenParams.supplyCap ==='false'">Unlimited</span>
             </div>
             <div v-if="tokenParams.minting === 'true'" class="flex justify-between border-b-2 border-black py-2">
               <h2 class="text-xl font-black">Time Between Minting Periods</h2>
