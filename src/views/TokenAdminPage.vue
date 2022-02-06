@@ -49,7 +49,7 @@
       <div class="border-b-2 border-black pb-2 mt-8">
         <div class="flex justify-between">
           <span class="text-2xl font-black">Administrators</span>
-          <button class="btn">Add New Administrators</button>
+          <!-- <button class="btn">Add New Administrators</button> -->
         </div>
         <div class="mt-4">
           <div class="text-xl" v-for="admin in tokenAdmins">{{ admin.address }}</div>
