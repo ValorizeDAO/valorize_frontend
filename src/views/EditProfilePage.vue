@@ -365,7 +365,8 @@
                   <div v-if="showExpandedList">
                     <li   
                       class="w-100"
-                      v-for="address in parsedAddresses.slice(3)"
+                      v-for="address, i in parsedAddresses.slice(3)"
+                      :key="i"
                     >{{ address }}</li> 
                   </div>
                 </transition>
@@ -392,10 +393,12 @@
             <div v-else-if="metamaskStatus === 'REQUESTED'">
               please enable metamask or a web3 provider
             </div>
-            <div v-else-if="metamaskStatus === 'TX_ERROR'">
-              There was an error, please check the parameters and try again <br>
-            </div>
-            <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED' || metamaskStatus === 'Tx_REJECTED'">
+            <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED' || metamaskStatus === 'TX_REJECTED'">
+              <div class="text-center" v-if="metamaskStatus === 'TX_ERROR'">
+                There was an error creating your token <br>
+                <p>{{ errorText }}</p>
+                <p>Try Again?</p>
+              </div>
               <button class="btn text-center" @click="deployToken">
                 <span class="px-8">Deploy to {{ networkName }}</span>
               </button>
@@ -667,6 +670,7 @@ function composeDeployGovToken() {
     "TX_REJECTED", //7
     "TX_ERROR", //8
   ];
+  const errorText = ref('')
   const metamaskStatus = ref(metamaskAuthStatuses[0]);
   const simpleTokenModalDisplayed = ref(false)
   const network = ref('')
@@ -817,7 +821,8 @@ function composeDeployGovToken() {
     } 
     catch (err: any) {
       console.error(err)
-      tokenStatus.value = tokenStatuses[8]
+      metamaskStatus.value = metamaskAuthStatuses[8];
+      errorText.value = err
       console.groupEnd()
     }
   }
@@ -845,7 +850,8 @@ function composeDeployGovToken() {
     } 
     catch (err: any) {
       console.error(err)
-      tokenStatus.value = tokenStatuses[8]
+      metamaskStatus.value = metamaskAuthStatuses[8];
+      errorText.value = err
       console.groupEnd()
     }
   }
@@ -938,7 +944,8 @@ function composeDeployGovToken() {
     tokenTxHash,
     deployedTokenAddress,
     blockExplorer,
-    isKnownNetwork
+    isKnownNetwork,
+    errorText
   }
 }
 function composeDeployToken() {
