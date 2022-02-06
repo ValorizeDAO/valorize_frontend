@@ -916,7 +916,11 @@ function composeDeployGovToken() {
 			required,
 		},
 		maxSupply: {
-			isNumberString
+			isValidMaxSupply: (value: string) => {
+        return isNumberString(value) && (
+          parseInt(value) > parseInt(tokenParams.initialSupply) + parseInt(tokenParams.airdropSupply)
+        )
+      }
 		},
 		timeDelay: {
 			isNumberString
