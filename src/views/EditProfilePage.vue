@@ -375,7 +375,7 @@
           <div class="justify-between border-b-2 border-black py-2">
             <h2 class="text-xl font-black">Administrators</h2>
             <ul class="flex flex-col">
-              <div v-for="address in parsedAddresses.slice(0, 3)">
+              <div v-for="address in parsedAddresses.slice(0, 3)" :key="address">
                 <li class="w-100">{{ address }}</li>
               </div>
               <div v-if="parsedAddresses.length > 3" >
@@ -934,8 +934,9 @@ function composeDeployGovToken() {
   //@ts-ignore
   const v$ = useVuelidate(rules, tokenParams)
   const isMaxSupplyValid = computed(() => {
+    console.log(v$.value)
     //@ts-ignore
-    return v$.maxSupply.$dirty && v$.maxSupply.isValidMaxSupply.$invalid
+    return v$.value.maxSupply.$dirty && v$.value.maxSupply.isValidMaxSupply.$invalid
   })
   return { 
     tokenParams,
