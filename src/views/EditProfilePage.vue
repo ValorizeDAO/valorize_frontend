@@ -148,6 +148,9 @@
                 />
               </div>
             </div>
+              <pre>
+                  {{ v$ }}
+              </pre>
             <div class="text-center">
               <button class="text-center" @click="newLink">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10  mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,6 +158,7 @@
                 </svg> 
                 Add New Link
               </button>
+
             </div>
             <transition name="fade">
               <div v-if="links.length" class="text-center mb-24">
@@ -220,11 +224,11 @@
           <h2 class="text-3xl font-black">Launch A Token</h2>
           <div class="flex justify-between mt-20">
             <label class="text-l font-black flex flex-col" for="">Name
-              <input v-model="v$.name.$model" name="tokenName" placeholder="Token" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
+              <input v-model="v$.tokenName.$model" name="tokenName" placeholder="Token" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
             </label>
             <div class="mx-4"> </div>
             <label class="text-l font-black flex flex-col" for="">Symbol
-              <input v-model="v$.symbol.$model" name="tokenSymbol" placeholder="TKN" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
+              <input v-model="v$.tokenSymbol.$model" name="tokenSymbol" placeholder="TKN" class="w-full border-b-2 border-black bg-transparent mt-4 placeholder:font-bold" type="text"/>
             </label>
           </div>
           <div class="mt-8">
@@ -282,7 +286,7 @@
                     </div>
                   </transition>
                   <transition name="fade">
-                    <p v-if="v$.maxSupply.$dirty && v$.maxSupply.isValidMaxSupply.$invalid" class="mt-4">
+                    <p v-if="isMaxSupplyValid" class="mt-4">
                       Should be greater than innitial supply + airdrop supply
                     </p>
                   </transition>
@@ -321,7 +325,7 @@
           </div>
         </form>
       </div>
-      <Modal body-class="bg-white xl:w-7/12 sm:mt-0" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
+      <Modal :body-class="['bg-white xl:w-7/12 sm:mt-0']" :modal-is-open="simpleTokenModalDisplayed" @toggle="toggleSimpleTokenModal">
         <div class="flex items-center justify-between pb-4 border-black border-b-2">
           <h2 class="text-xl font-black">
             Token Summary
@@ -338,7 +342,7 @@
           </transition>
         </div>
         <div class="mt-4">
-          <h1 class="text-3xl font-black mb-8">{{ tokenParams.name }} ({{ tokenParams.symbol }})</h1>
+          <h1 class="text-3xl font-black mb-8">{{ tokenParams.tokenName }} ({{ tokenParams.tokenSymbol }})</h1>
           <div class="flex justify-between">
             <h2 class="font-black text-xl">Initial Supply</h2>
             <span class="text-xl font-black">{{ c(totalSupply) }}</span>
@@ -410,7 +414,7 @@
             <div v-else-if="metamaskStatus === 'REQUESTED'">
               please enable metamask or a web3 provider
             </div>
-            <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED' || metamaskStatus === 'TX_REJECTED'">
+            <div v-else-if="metamaskStatus === 'SUCCESSFULLY_ENABLED' || metamaskStatus === 'TX_REJECTED' || metamaskStatus === 'TX_ERROR'">
               <div class="text-center" v-if="metamaskStatus === 'TX_ERROR'">
                 There was an error creating your token <br>
                 <p>{{ errorText }}</p>
@@ -568,7 +572,7 @@ export default defineComponent({
       ...composeDeployToken(),
       ...composeLinks(),
       ...composeDeployGovToken(),
-      c: (value: currency) => currency(Number(value), { separator: ",", symbol:'', precision: 0 }).format()
+      c: (value: string | number) => currency(Number(value), { separator: ",", symbol:'', precision: 0 }).format()
     }
   },
 });
@@ -695,8 +699,8 @@ function composeDeployGovToken() {
   const tokenTxHash = ref('')
   const deployedTokenAddress = ref('')
   const tokenParams = reactive({
-    name: '',
-    symbol: '',
+    tokenName: '',
+    tokenSymbol: '',
     initialSupply: '',
     vaultAddress: '',
     airdropSupply: '',
@@ -756,12 +760,14 @@ function composeDeployGovToken() {
         freeSupply: tokenParams.initialSupply,
         airdropSupply: tokenParams.airdropSupply,
         vaultAddress: tokenParams.vaultAddress,
-        tokenName: tokenParams.name,
-        tokenSymbol: tokenParams.symbol,
-        tokenType: tokenParams.symbol,
-        contractVersion: tokenParams.symbol,
-        adminAddresses: parsedAddresses.value,
-        chainId: network.value
+        tokenName: tokenParams.tokenName,
+        tokenSymbol: tokenParams.tokenSymbol,
+        tokenType: tokenParams.minting == 'true' ? 'timed_mint' : 'simple',
+        contractVersion: "v0.1.0",
+        adminAddresses: parsedAddresses.value.toString(),
+        chainId: network.value,
+        txHash: '',
+        contractAddress: ''
       })
       tokenStatus.value = tokenStatuses[2] 
     } else {
@@ -770,6 +776,7 @@ function composeDeployGovToken() {
   }
   async function deployToken(){
     tokenStatus.value = tokenStatuses[3];
+    //@ts-ignore the lies
     const signer = provider.getSigner();
 		let token: SimpleToken | TimedMintToken | undefined;
     if (tokenParams.minting === 'false') {
@@ -797,8 +804,8 @@ function composeDeployGovToken() {
         BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),
         BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),
         ethers.utils.getAddress(tokenParams.vaultAddress),
-        tokenParams.name,
-        tokenParams.symbol,
+        tokenParams.tokenName,
+        tokenParams.tokenSymbol,
         parsedAddresses.value.map(v => ethers.utils.getAddress(v))
       );
       tokenTxHash.value = simpleToken.deployTransaction.hash
@@ -832,8 +839,8 @@ function composeDeployGovToken() {
         ethers.utils.getAddress(tokenParams.vaultAddress),							  //vault
         BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
         BigNumber.from(tokenParams.mintCap).mul(decimalsMultiplyer),      //mintCap                                                //mintCap
-        tokenParams.name,
-        tokenParams.symbol,
+        tokenParams.tokenName,
+        tokenParams.tokenSymbol,
         parsedAddresses.value.map(v => ethers.utils.getAddress(v))
       );
       tokenTxHash.value = timedMintToken.deployTransaction.hash
@@ -856,8 +863,8 @@ function composeDeployGovToken() {
       freeSupply: tokenParams.initialSupply,
       airdropSupply: tokenParams.airdropSupply,
       vaultAddress: tokenParams.vaultAddress,
-      tokenName: tokenParams.name,
-      tokenSymbol: tokenParams.symbol,
+      tokenName: tokenParams.tokenName,
+      tokenSymbol: tokenParams.tokenSymbol,
       adminAddresses: tokenParams.adminAddresses,
       chainId: network.value,
       txHash: tokenTxHash.value,    
@@ -874,16 +881,17 @@ function composeDeployGovToken() {
   function isNumberString(value: string) {
     if (value) {
       const trimmedString = value.trim()
+      //@ts-ignore because TS doesn't know the idiosyncrasies (dumb design decisions) of JS
       return parseInt(trimmedString) != 'Nan'
     }
     return true
   }
 	const rules = computed(() => ({
-		name: {
+		tokenName: {
 			required,
 			minLength: minLength(2)
 		},
-		symbol: {
+		tokenSymbol: {
 			required,
 			minLength: minLength(2)
 		},
@@ -925,7 +933,13 @@ function composeDeployGovToken() {
 			isNumberString
 		},
 	}))
+
+  //@ts-ignore
   const v$ = useVuelidate(rules, tokenParams)
+  const isMaxSupplyValid = computed(() => {
+    //@ts-ignore
+    return v$.maxSupply.$dirty && v$.maxSupply.isValidMaxSupply.$invalid
+  })
   return { 
     tokenParams,
     totalSupply,
@@ -940,6 +954,7 @@ function composeDeployGovToken() {
     network,
     networkName,
 		v$,
+    isMaxSupplyValid,
     metamaskStatus,
     tokenTxHash,
     deployedTokenAddress,

@@ -161,8 +161,8 @@ export default {
     formdata.append("tokenTicker", tokenSymbol);
     formdata.append("adminAddresses", JSON.stringify(adminAddresses));
     formdata.append("chainId", chainId);
-    formdata.append("txHash", txHash);
-    formdata.append("contractAddress", contractAddress);
+    formdata.append("txHash", txHash.toString());
+    formdata.append("contractAddress", contractAddress.toString());
 
     const requestOptions = {
       method: 'PUT',
