@@ -49,6 +49,11 @@ class Api {
     return await req.json()
   }
 
+  async getTokenAdmins(id: number) {
+    const req = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v0/token/${id}/admins`)
+    return await req.json()
+  }
+
 }
 
 const api = new Api()
@@ -64,8 +69,8 @@ export interface SimpleTokenParams {
     tokenSymbol: string;
     adminAddresses: string[];
     chainId: string;
-    txHash: string;
-    contractAddress: string;
+    txHash?: string;
+    contractAddress?: string;
 }
 
 export interface TokenResponse {
