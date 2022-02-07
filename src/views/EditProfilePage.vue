@@ -934,7 +934,6 @@ function composeDeployGovToken() {
   //@ts-ignore
   const v$ = useVuelidate(rules, tokenParams)
   const isMaxSupplyValid = computed(() => {
-    console.log(v$.value)
     //@ts-ignore
     return v$.value.maxSupply.$dirty && v$.value.maxSupply.isValidMaxSupply.$invalid
   })
