@@ -31,7 +31,7 @@
         </div>
         <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
           <span class="text-2xl">Max Supply: </span>
-          <span v-if="maxSupplySet">{{ c(formatEther(tokenData.maxSupply)) }}</span>
+          <span v-if="!maxSupplySet">{{ c(formatEther(tokenData.maxSupply)) }}</span>
           <span v-else>Unlimited</span>
         </div>
         <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
