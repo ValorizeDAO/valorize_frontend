@@ -2,9 +2,9 @@
   <div class="font-black text-4xl text-center py-48">
     Congratulations, Your token is live!!
     <div class="text-center my-8">
-      <router-link :to="{ name: 'Token Admin', params: { id: route }}" class="btn bg-purple-200 text-lg">
-        Go To Admin Panel
-      </router-link>
+      <p class="btn bg-purple-200 text-lg">
+        Redirecting you to admin page...
+      </p>
     </div>
   </div>
 </template>

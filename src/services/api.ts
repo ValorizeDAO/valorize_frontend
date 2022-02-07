@@ -1,49 +1,49 @@
-import { Token } from "../models/Token"
-import { BigNumber } from "ethers"
 
 class Api {
   async deployTokenToTestNet({ tokenName, tokenSymbol }: { tokenName: string, tokenSymbol: string }): Promise<any> {
-    var formdata = new FormData();
-    formdata.append("tokenName", tokenName);
-    formdata.append("tokenTicker", tokenSymbol);
+    const formdata = new FormData()
+    formdata.append("tokenName", tokenName)
+    formdata.append("tokenTicker", tokenSymbol)
 
-    var requestOptions = {
-      method: 'POST',
+    const requestOptions: RequestInit = {
+      method: "POST",
       body: formdata,
-      redirect: 'follow',
-      credentials: 'include',
-    } as RequestInit;
+      redirect: "follow",
+      credentials: "include",
+    }
 
-    const apiResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/deploy", requestOptions) as Response;
+    const apiResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/deploy", requestOptions)
 
-    return apiResponse;
+    return apiResponse
   }
-  async deploySimpleTokenToTestNet({ 
+
+  async deploySimpleTokenToTestNet({
     freeSupply,
     airdropSupply,
     vaultAddress,
     tokenName,
     tokenSymbol,
-    adminAddresses
-  }: SimpleTokenParams): Promise<any> {
-    var formdata = new FormData();
-    formdata.append("freeSupply", freeSupply);
-    formdata.append("airdropSupply", airdropSupply);
-    formdata.append("vaultAddress", vaultAddress);
-    formdata.append("tokenName", tokenName);
-    formdata.append("tokenTicker", tokenSymbol);
-    formdata.append("adminAddresses", JSON.stringify(adminAddresses));
+    adminAddresses,
+  }: SimpleTokenParams): Promise<Response> {
+    const formdata = new FormData()
+    formdata.append("freeSupply", freeSupply)
+    formdata.append("airdropSupply", airdropSupply)
+    formdata.append("vaultAddress", vaultAddress)
+    formdata.append("tokenName", tokenName)
+    formdata.append("tokenTicker", tokenSymbol)
+    formdata.append("adminAddresses", adminAddresses)
 
-    var requestOptions = {
-      method: 'POST',
+    const requestOptions = {
+      method: "POST",
       body: formdata,
-      redirect: 'follow',
-      credentials: 'include',
+      redirect: "follow",
+      credentials: "include",
     } as RequestInit;
 
-    const apiResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/deploy/simpletoken", requestOptions) as Response;
-    return apiResponse;
+    const apiResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/deploy/simpletoken", requestOptions)
+    return apiResponse
   }
+
   async getTokenData(id: number) {
     const req = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/token/" + id)
     return await req.json()
@@ -53,7 +53,6 @@ class Api {
     const req = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v0/token/${id}/admins`)
     return await req.json()
   }
-
 }
 
 const api = new Api()
@@ -67,10 +66,10 @@ export interface SimpleTokenParams {
     vaultAddress: string;
     tokenName: string;
     tokenSymbol: string;
-    adminAddresses: string[];
+    adminAddresses: string;
     chainId: string;
-    txHash?: string;
-    contractAddress?: string;
+    txHash: string;
+    contractAddress: string;
 }
 
 export interface TokenResponse {

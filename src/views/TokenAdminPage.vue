@@ -107,7 +107,7 @@
           <!-- <button class="btn">Add New Administrators</button> -->
         </div>
         <div class="mt-4">
-          <div class="text-xl" v-for="admin in tokenAdmins">
+          <div class="text-xl" v-for="admin in tokenAdmins" :key="admin.address">
             {{ admin.address }}
           </div>
         </div>
@@ -164,7 +164,7 @@ export default defineComponent({
         address: "",
         contractVersion: ""
       },
-      tokenAdmins: [] as string[],
+      tokenAdmins: [] as { address: string, user: number }[],
     });
     const statuses = ["INIT", "LOADING", "LOADED", "ERROR"];
     const status = ref(statuses[0]);
@@ -192,6 +192,12 @@ export default defineComponent({
     })
     const { formatEther } = ethers.utils;
     onMounted(async () => {
+      let tokenId
+      if (typeof route.params.id === 'string') {
+        tokenId = parseInt(route.params.id)
+      } else {
+        tokenId = parseInt(route.params.id[0])
+      }
       status.value = statuses[1];
       const {
         name,
@@ -205,7 +211,7 @@ export default defineComponent({
         address,
         minter,
         contractVersion
-      } = await api.getTokenData(route.params.id);
+      } = await api.getTokenData(tokenId);
       const nextAllowedMintDateObject = new Date(
         parseInt(nextAllowedMint) * 1000
       );
@@ -236,7 +242,7 @@ export default defineComponent({
       state.tokenData.address = address;
       state.tokenData.minter = minter;
       state.tokenData.contractVersion = contractVersion;
-      const response = await api.getTokenAdmins(route.params.id);
+      const response = await api.getTokenAdmins(tokenId);
       state.tokenAdmins = [...response.administrators];
       status.value = statuses[2];
       blockExplorerUrl.value =
@@ -266,7 +272,7 @@ export default defineComponent({
       return tokenContract.attach(state.tokenData.address);
     }
     async function setMinter() {
-      const token = getToken();
+      const token = getTMToken();
       try {
         await token.setMinter(minterAddressToSet.value);
         state.tokenData.minter = await token.minter();
