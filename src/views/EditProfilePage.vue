@@ -148,9 +148,6 @@
                 />
               </div>
             </div>
-              <pre>
-                  {{ v$ }}
-              </pre>
             <div class="text-center">
               <button class="text-center" @click="newLink">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10  mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
