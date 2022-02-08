@@ -164,7 +164,7 @@ export default defineComponent({
         address: "",
         contractVersion: ""
       },
-      tokenAdmins: [] as { address: string, user: number }[],
+      tokenAdmins: [] as Array<{ address: string, user: number }>,
     });
     const statuses = ["INIT", "LOADING", "LOADED", "ERROR"];
     const status = ref(statuses[0]);
