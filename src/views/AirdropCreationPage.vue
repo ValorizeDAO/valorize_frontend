@@ -1,26 +1,18 @@
 <template>
-  <div class="font-black text-4xl text-center py-48">
-    Congratulations, Your token is live!!
+  <div class="px-16 pt-8 font-black">
+    {{ c(totalSupply) }} Available for Airdrop
     <div class="text-center my-8">
-      <div class="text-lg max-w-xs mx-auto">
-        Redirecting you to admin page...
-      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, Ref } from "vue";
-import JSConfetti from 'js-confetti'
-import { useRoute, useRouter } from "vue-router";
+import { defineComponent, onMounted } from "vue";
 
 export default defineComponent({
   name: "Token Success",
-  setup: () => {
-    const route = useRoute();
-    const router = useRouter();
-    onMounted(() => {
-    })
+  props: ['state'],
+  setup: (props) => {
     return {
     };
   },

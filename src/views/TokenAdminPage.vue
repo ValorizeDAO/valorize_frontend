@@ -1,5 +1,4 @@
 <template>
-  <div v-if="status == 'LOADED'">
     <h1 class="font-black text-4xl px-16 pt-4">Manage Token</h1>
     <div class="max-w-2xl mx-auto mt-24">
       <div class="flex justify-between flex-wrap items-center">
@@ -27,7 +26,7 @@
       <div class="font-black text-2xl flex flex-col mt-8">
         <div class="row">
           <span class="text-2xl"> Current Supply: </span>
-          <span>{{ c(tokenData.totalSupply) }}</span>
+          <span>{{ c(formatEther(tokenData.totalSupply)) }}</span>
         </div>
         <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
           <span class="text-2xl">Max Supply: </span>
@@ -40,7 +39,7 @@
         </div>
         <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
           <span class="text-2xl">Next Mint Time: </span>
-          <span>{{ tokenData.nextAllowedMint }}</span>
+          <span>{{ mintTimeDisplay }}</span>
         </div>
         <div
           class="row items-center"
@@ -123,8 +122,6 @@
           <span>{{ tokenData.contractVersion }}</span>
         </div>
       </div>
-  </div>
-  <div class="mx-auto my-48 text-center" v-else>Loading Data</div>
 </template>
 
 <script lang="ts">
@@ -133,87 +130,33 @@ import {
   computed,
   toRefs,
   defineComponent,
-  onMounted,
-  Ref,
-  reactive,
+  defineEmits,
 } from "vue";
-import { useRoute } from "vue-router";
-import api from "../services/api";
 import { networkInfo } from "../services/network";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
 import { formatAddress } from "../services/formatAddress";
-import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory";
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory";
 
 export default defineComponent({
   name: "Token Admin",
-  setup: () => {
-    const route = useRoute();
-    const state = reactive({
-      tokenData: {
-        name: "",
-        symbol: "",
-        totalSupply: "",
-        maxSupply: "",
-        chainId: "",
-        tokenType: "",
-        nextMintAllowance: "",
-        nextAllowedMint: "",
-        minter: "",
-        address: "",
-        contractVersion: ""
-      },
-      tokenAdmins: [] as Array<{ address: string, user: number }>,
-    });
-    const statuses = ["INIT", "LOADING", "LOADED", "ERROR"];
-    const status = ref(statuses[0]);
+  props: [
+    'state'
+  ],
+  setup: (props) => {
+    const { state } = props
+    const { formatEther } = ethers.utils;
     const mintingError = ref("");
     const settingMinter = ref(false);
     const canMintNow = ref(false)
+    const emit = defineEmits(['change:state'])
     const minterAddressToSet = ref(
       "0x0000000000000000000000000000000000000000"
     );
-    const blockExplorerUrl = ref("");
-    const networkName = computed(() => {
-      return networkInfo[state.tokenData.chainId].name
-    })
-    const hasSetMinter = computed(() => {
-      return (
-        state.tokenData.minter != "0x0000000000000000000000000000000000000000"
-      );
-    });
-    const adminRole =
-      "0x0000000000000000000000000000000000000000000000000000000000000000";
-    // If token is set to not have a max supply cap, the maxsupply returns to this constant (2**256 - 1)
-    const maxSupplyConstant = "115792089237316195423570985008687907853269984665640564039457584007913129639935"
-    const maxSupplySet = computed(() => {
-      return state.tokenData.maxSupply === formatEther(maxSupplyConstant)
-    })
-    const { formatEther } = ethers.utils;
-    onMounted(async () => {
-      let tokenId
-      if (typeof route.params.id === 'string') {
-        tokenId = parseInt(route.params.id)
-      } else {
-        tokenId = parseInt(route.params.id[0])
-      }
-      status.value = statuses[1];
-      const {
-        name,
-        symbol,
-        totalSupply,
-        maxSupply,
-        chainId,
-        tokenType,
-        nextMintAllowance,
-        nextAllowedMint,
-        address,
-        minter,
-        contractVersion
-      } = await api.getTokenData(tokenId);
+    const mintTimeDisplay = computed(() => {
+      if (!state.tokenData?.nextAllowedMint) return 
       const nextAllowedMintDateObject = new Date(
-        parseInt(nextAllowedMint) * 1000
+        parseInt(state.tokenData.nextAllowedMint) * 1000
       );
       const now = new Date()
       let nextAllowedMintTimeDisplay;
@@ -230,24 +173,27 @@ export default defineComponent({
         } else {
           nextAllowedMintTimeDisplay = nextAllowedMintDateObject.toDateString()
         }
-      } 
-      state.tokenData.name = name;
-      state.tokenData.symbol = symbol;
-      state.tokenData.totalSupply = formatEther(totalSupply);
-      state.tokenData.maxSupply = maxSupply;
-      state.tokenData.chainId = chainId;
-      state.tokenData.tokenType = tokenType;
-      state.tokenData.nextMintAllowance = nextMintAllowance;
-      state.tokenData.nextAllowedMint = nextAllowedMintTimeDisplay;
-      state.tokenData.address = address;
-      state.tokenData.minter = minter;
-      state.tokenData.contractVersion = contractVersion;
-      const response = await api.getTokenAdmins(tokenId);
-      state.tokenAdmins = [...response.administrators];
-      status.value = statuses[2];
-      blockExplorerUrl.value =
-        networkInfo[chainId].blockExplorer + "address/" + address;
+      }
+      return nextAllowedMintTimeDisplay
+    })
+    const blockExplorerUrl = computed(() => {
+      return networkInfo[state.tokenData.chainId].blockExplorer + "address/" + state.tokenData.address;
     });
+    const networkName = computed(() => {
+      return networkInfo[state.tokenData.chainId].name
+    })
+    const hasSetMinter = computed(() => {
+      return (
+        state.tokenData.minter != "0x0000000000000000000000000000000000000000"
+      );
+    });
+    const adminRole =
+      "0x0000000000000000000000000000000000000000000000000000000000000000";
+    // If token is set to not have a max supply cap, the maxsupply returns to this constant (2**256 - 1)
+    const maxSupplyConstant = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
+    const maxSupplySet = computed(() => {
+      return state.tokenData.maxSupply === formatEther(maxSupplyConstant)
+    })
 
     async function mintToken() {
       const token = getTMToken();
@@ -275,7 +221,9 @@ export default defineComponent({
       const token = getTMToken();
       try {
         await token.setMinter(minterAddressToSet.value);
-        state.tokenData.minter = await token.minter();
+        const newState = { ...state }
+        newState.tokenData.minter = await token.minter()
+        emit('change:state', newState)
         mintingError.value = "";
       } catch (err: any) {
         if (err.error?.message.includes(adminRole)) {
@@ -285,13 +233,14 @@ export default defineComponent({
         }
       }
     }
+
     return {
       ...toRefs(state),
       mintToken,
       setMinter,
-      status,
       mintingError,
       hasSetMinter,
+      mintTimeDisplay,
       minterAddressToSet,
       settingMinter,
       blockExplorerUrl,
