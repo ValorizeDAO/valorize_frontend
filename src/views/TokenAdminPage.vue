@@ -12,7 +12,7 @@
           class="h-6 w-6 ml-2"
           fill="none"
           viewBox="0 0 24 24"
-          stroke="currentColor" 
+          stroke="currentColor"
         >
           <path
             stroke-linecap="round"
@@ -130,28 +130,27 @@
   </div>
 </template>
 
+<script lang="ts">
+import { defineComponent } from "vue";
+export default defineComponent({
+  name: "Token Admin",
+});
+</script>
+
 <script setup lang="ts">
-import { ref, computed, toRefs, defineComponent, defineEmits } from "vue";
+import { ref, computed, defineEmits } from "vue";
 import { networkInfo } from "../services/network";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
 import { formatAddress } from "../services/formatAddress";
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory";
 
-// export default defineComponent({
-//   name: "Token Admin",
-//   props: [
-//     'state'
-//   ],
-//   setup: (props) => {
 const props = defineProps<{
   state: any;
 }>();
 const emit = defineEmits(["change:state"]);
 const { state } = props;
 const { tokenData, tokenAdmins } = state;
-console.log(props.state);
-console.log(state);
 const { formatEther } = ethers.utils;
 const mintingError = ref("");
 const settingMinter = ref(false);
