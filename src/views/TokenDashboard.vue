@@ -13,7 +13,20 @@
         </div>
       </router-link>
     </div>
-    <router-view></router-view>
+    <router-view v-slot="{ Component, route }">
+      <transition :name="route.meta.transition || 'fade'" mode="out-in">
+        <keep-alive>
+          <suspense>
+            <template #default>
+              <component
+                :is="Component"
+              />
+            </template>
+            <template #fallback> Loading... </template>
+          </suspense>
+        </keep-alive>
+      </transition>
+    </router-view>
   </div>
 
 </template>
@@ -22,15 +35,8 @@
 import { ref, defineComponent } from "vue";
 import {useStore} from "vuex";
 export default defineComponent({
-  name: "Dashboard",
-  props: {
-
-  },
-  setup: () => {
-    const store = useStore();
-    const user = store.getters["authUser/user"]
-    return { store, user };
-  },
+  name: "Token Dashboard",
+  setup: () => ({}),
 });
 </script>
 
