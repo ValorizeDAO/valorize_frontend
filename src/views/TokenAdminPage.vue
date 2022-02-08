@@ -119,12 +119,12 @@
         </div>
         <div class="flex flex-wrap justify-between">
           <span>Contract Version:</span>
-          <span>{{ tokenData.contractVersion }}</span>
+          <span>{{tokenData.tokenType}} {{ tokenData.contractVersion }}</span>
         </div>
       </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import {
   ref,
   computed,
@@ -138,25 +138,31 @@ import { ethers, BigNumber } from "ethers";
 import { formatAddress } from "../services/formatAddress";
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory";
 
-export default defineComponent({
-  name: "Token Admin",
-  props: [
-    'state'
-  ],
-  setup: (props) => {
+// export default defineComponent({
+//   name: "Token Admin",
+//   props: [
+//     'state'
+//   ],
+//   setup: (props) => {
+    const props = defineProps<{
+      state: any,
+    }>();
+    const emit = defineEmits(['change:state'])
     const { state } = props
+    const { tokenData, tokenAdmins } = state
+    console.log(props.state)
+    console.log(state)
     const { formatEther } = ethers.utils;
     const mintingError = ref("");
     const settingMinter = ref(false);
     const canMintNow = ref(false)
-    const emit = defineEmits(['change:state'])
     const minterAddressToSet = ref(
       "0x0000000000000000000000000000000000000000"
     );
     const mintTimeDisplay = computed(() => {
-      if (!state.tokenData?.nextAllowedMint) return 
+      if (!tokenData?.nextAllowedMint) return 
       const nextAllowedMintDateObject = new Date(
-        parseInt(state.tokenData.nextAllowedMint) * 1000
+        parseInt(tokenData.nextAllowedMint) * 1000
       );
       const now = new Date()
       let nextAllowedMintTimeDisplay;
@@ -177,14 +183,14 @@ export default defineComponent({
       return nextAllowedMintTimeDisplay
     })
     const blockExplorerUrl = computed(() => {
-      return networkInfo[state.tokenData.chainId].blockExplorer + "address/" + state.tokenData.address;
+      return networkInfo[tokenData.chainId].blockExplorer + "address/" + tokenData.address;
     });
     const networkName = computed(() => {
-      return networkInfo[state.tokenData.chainId].name
+      return networkInfo[tokenData.chainId].name
     })
     const hasSetMinter = computed(() => {
       return (
-        state.tokenData.minter != "0x0000000000000000000000000000000000000000"
+        tokenData.minter != "0x0000000000000000000000000000000000000000"
       );
     });
     const adminRole =
@@ -192,16 +198,16 @@ export default defineComponent({
     // If token is set to not have a max supply cap, the maxsupply returns to this constant (2**256 - 1)
     const maxSupplyConstant = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
     const maxSupplySet = computed(() => {
-      return state.tokenData.maxSupply === formatEther(maxSupplyConstant)
+      return tokenData.maxSupply === formatEther(maxSupplyConstant)
     })
 
     async function mintToken() {
       const token = getTMToken();
       try {
         await token.mint(
-          BigNumber.from(state.tokenData.nextMintAllowance)
+          BigNumber.from(tokenData.nextMintAllowance)
         );
-        state.tokenData.totalSupply = await token.totalSupply().toString();
+        tokenData.totalSupply = await token.totalSupply().toString();
       } catch (err: any) {
         if(err.error?.message) {
           mintingError.value = "Error: " + err.error.message;
@@ -215,7 +221,7 @@ export default defineComponent({
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
       const tokenContract = new TimedMintTokenFactory(signer);
-      return tokenContract.attach(state.tokenData.address);
+      return tokenContract.attach(tokenData.address);
     }
     async function setMinter() {
       const token = getTMToken();
@@ -234,30 +240,13 @@ export default defineComponent({
       }
     }
 
-    return {
-      ...toRefs(state),
-      mintToken,
-      setMinter,
-      mintingError,
-      hasSetMinter,
-      mintTimeDisplay,
-      minterAddressToSet,
-      settingMinter,
-      blockExplorerUrl,
-      canMintNow,
-      networkName,
-      maxSupplySet,
-      formatAddress,
-      formatEther,
-      c: (value: string) =>
-        currency(Number(value), {
-          separator: ",",
-          precision: 0,
-          symbol: "",
-        }).format(),
-    };
-  },
-});
+    function c(value: string) {
+      return currency(Number(value), {
+        separator: ",",
+        precision: 0,
+        symbol: "",
+      }).format()
+    }
 </script>
 
 <style scoped lang="postcss">
