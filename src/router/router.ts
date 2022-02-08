@@ -96,16 +96,19 @@ router.beforeEach(async (to, from, next) => {
         break
     }
   }
-  const isAuthenticated = store.state.authenticated
+  const isAuthenticated = store.state.authUser.authenticated
   if (!publicRoutes.includes(name) && !isAuthenticated) {
+    if (isAuthenticated) {
+      return next()
+    }
     store.state.checkingAuth = true
-    const { isLoggedIn, user } = await auth.isLoggedIn()
-    if (!isLoggedIn) {
-      store.state.checkingAuth = false
-      next({ name: "Login" })
-    } else {
+    const { isLoggedIn: isReturnUser, user } = await auth.isLoggedIn()
+    store.state.checkingAuth = false
+    if (isReturnUser) {
       store.commit("authUser/setUser", user)
       next()
+    } else {
+      next({ name: "Login" })
     }
   } else {
     next()
