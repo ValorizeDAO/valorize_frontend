@@ -138,7 +138,7 @@ export default defineComponent({
 </script>
 
 <script setup lang="ts">
-import { ref, computed, defineEmits } from "vue";
+import { ref, computed } from "vue";
 import { networkInfo } from "../services/network";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
