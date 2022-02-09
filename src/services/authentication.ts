@@ -143,6 +143,25 @@ export default {
       return response.json();
     },
   },
+  async saveAirdropInfo(id: string, data: string[][]) {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const requestOptions = {
+      headers: myHeaders,
+      method: "PUT",
+      body: JSON.stringify({ payload: data }),
+      redirect: "follow",
+      credentials: "include",
+    } as RequestInit;
+
+    const req = await fetch(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/v0/me/tokens/${id}/airdrop/create`,
+      requestOptions
+    );
+    return await req.json();
+  },
   async saveTokenData({
     tokenType,
     contractVersion,

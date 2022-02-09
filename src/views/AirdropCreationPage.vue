@@ -103,6 +103,7 @@ import { MerkleTree } from "merkletreejs";
 import { keccak_256 } from "js-sha3";
 import api from "../services/api";
 import { useRoute } from "vue-router";
+import authentication from "../services/authentication";
 
 const props = defineProps<{
   state: any;
@@ -157,7 +158,7 @@ onMounted(async () => {
 async function saveAirdropInfo() {
   const { id } = route.params;
   if (typeof id == "string") {
-    await api.saveAirdropInfo(id, airdropData.value);
+    await authentication.saveAirdropInfo(id, airdropData.value);
   }
 }
 function triggerUploadForm() {
