@@ -102,12 +102,14 @@ import type { SimpleToken } from "../contracts/SimpleToken";
 import { MerkleTree } from "merkletreejs";
 import { keccak_256 } from "js-sha3";
 import api from "../services/api";
+import { useRoute } from "vue-router";
 
 const props = defineProps<{
   state: any;
 }>();
 
 const uploadButton = ref<HTMLInputElement | null>(null);
+const route = useRoute();
 const { state } = props;
 const { tokenData, tokenAdmins } = state;
 const contractTokenBalance = ref("");
@@ -153,7 +155,10 @@ onMounted(async () => {
   contractTokenBalance.value = formatEther(balance.toString());
 });
 async function saveAirdropInfo() {
-  await api.saveAirdropInfo(airdropData.value);
+  const { id } = route.params;
+  if (typeof id == "string") {
+    await api.saveAirdropInfo(id, airdropData.value);
+  }
 }
 function triggerUploadForm() {
   if (uploadButton.value) {

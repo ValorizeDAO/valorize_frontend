@@ -1,3 +1,5 @@
+import { json } from "stream/consumers";
+
 class Api {
   async deployTokenToTestNet({
     tokenName,
@@ -65,6 +67,24 @@ class Api {
   async getTokenAdmins(id: number) {
     const req = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/v0/token/${id}/admins`
+    );
+    return await req.json();
+  }
+
+  async saveAirdropInfo(id: string, data: string[][]) {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const requestOptions = {
+      headers: myHeaders,
+      method: "PUT",
+      body: JSON.stringify({ payload: data }),
+      redirect: "follow",
+      credentials: "include",
+    } as RequestInit;
+
+    const req = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v0/token/${id}/airdrop/create`,
+      requestOptions
     );
     return await req.json();
   }
