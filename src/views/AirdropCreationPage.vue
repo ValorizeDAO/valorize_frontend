@@ -75,9 +75,12 @@
             </h2>
           </div>
         </div>
-        {{ merkleRoot }}
-        <button @click="getMerkleRootFromLeaves" class="">get root</button>
-        {{ merkleLeaves }}
+        <div class="text-center">
+          <button class="btn bg-purple-200 my-4" @click="saveAirdropInfo">
+            Confirm Data</button
+          ><br />
+          (Once confirmed, this cannot be changed)
+        </div>
       </div>
     </transition>
   </div>
@@ -98,6 +101,7 @@ import { ethers, BigNumber } from "ethers";
 import type { SimpleToken } from "../contracts/SimpleToken";
 import { MerkleTree } from "merkletreejs";
 import { keccak_256 } from "js-sha3";
+import api from "../services/api";
 
 const props = defineProps<{
   state: any;
@@ -148,6 +152,9 @@ onMounted(async () => {
   const balance = await token.value.balanceOf(tokenData.address);
   contractTokenBalance.value = formatEther(balance.toString());
 });
+async function saveAirdropInfo() {
+  await api.saveAirdropInfo(airdropData.value);
+}
 function triggerUploadForm() {
   if (uploadButton.value) {
     uploadButton.value.click();
