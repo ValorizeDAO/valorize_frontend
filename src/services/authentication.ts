@@ -1,5 +1,6 @@
 import { Link } from "../models/Link";
 import { User, emptyUser } from "../models/User";
+import { SimpleTokenParams } from "./api";
 
 interface success {
   success: String;
@@ -136,5 +137,43 @@ export default {
       );
       return response.json();
     }
+  },
+  async saveTokenData({ 
+    tokenType,
+    contractVersion,
+    freeSupply,
+    airdropSupply,
+    vaultAddress,
+    tokenName,
+    tokenSymbol,
+    adminAddresses,
+    chainId,
+    txHash,
+    contractAddress
+  }: SimpleTokenParams): Promise<Response> {
+    const formdata = new FormData();
+    formdata.append("tokenType", tokenType);
+    formdata.append("contractVersion", contractVersion);
+    formdata.append("freeSupply", freeSupply);
+    formdata.append("airdropSupply", airdropSupply);
+    formdata.append("vaultAddress", vaultAddress);
+    formdata.append("tokenName", tokenName);
+    formdata.append("tokenTicker", tokenSymbol);
+    formdata.append("adminAddresses", JSON.stringify(adminAddresses));
+    formdata.append("chainId", chainId);
+    formdata.append("txHash", txHash.toString());
+    formdata.append("contractAddress", contractAddress.toString());
+
+    const requestOptions = {
+      method: 'PUT',
+      body: formdata,
+      redirect: 'follow',
+      credentials: 'include',
+    } as RequestInit;
+
+    const apiResponse = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/v0/me/tokendata", requestOptions
+    ) as Response;
+    return apiResponse;
   }
 }

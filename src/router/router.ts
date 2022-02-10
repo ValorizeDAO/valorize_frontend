@@ -5,8 +5,11 @@ import Dashboard from "../views/Dashboard.vue"
 import Login from "../views/Login.vue"
 import Register from "../views/Register.vue"
 import EditProfilePage from "../views/EditProfilePage.vue"
+import TokenAdminPage from "../views/TokenAdminPage.vue"
 import ProfilePage from "../views/ProfilePage.vue"
+import TokenSuccess from "../views/TokenSuccess.vue"
 import Leadgen from "../views/Leadgen.vue"
+import AirdropCreationPage from "../views/AirdropCreationPage.vue"
 import store from "../vuex/store"
 
 const routes = [
@@ -44,6 +47,21 @@ const routes = [
     path: "/:username",
     name: "Show Profile",
     component: ProfilePage,
+  },
+  {
+    path: "/token-success",
+    name: "Token Success",
+    component: TokenSuccess,
+  },
+  {
+    path: "/token/:id",
+    name: "Token Admin",
+    component: TokenAdminPage,
+  },
+  {
+    path: "/token/:id/airdrop/create",
+    name: "Create Airdrop",
+    component: AirdropCreationPage,
   },
 ]
 const router = createRouter({
