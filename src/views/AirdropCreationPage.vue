@@ -54,7 +54,7 @@
               "
             >
               <p class="mr-6">{{ data[0] }}</p>
-              <p>{{ c(data[1]) }}</p>
+              <p>{{ c(formatEther(data[1])) }}</p>
             </div>
           </div>
           <div
@@ -89,7 +89,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, computed } from "vue";
 export default defineComponent({
-  name: "Token Success",
+  name: "Create Airdrop",
 });
 </script>
 
@@ -116,13 +116,17 @@ const { tokenData, tokenAdmins } = state;
 const contractTokenBalance = ref("");
 const token = ref<SimpleToken | null>(null);
 const ethereum: any = (window as any).ethereum;
-const { formatEther } = ethers.utils;
+const { formatEther, parseUnits } = ethers.utils;
 const csvDump = ref("");
 const merkleRoot = ref("");
 const airdropData = computed(() => {
   const csvSplit = csvDump.value.split("\r\n");
   const airdropTuple = csvSplit.map((item) => {
-    return item.split(",");
+    if (!item) return ["", ""];
+    const tuple = item.split(",");
+    //We're expecting that user passes decimals
+    const amount = tuple[1] ? parseUnits(tuple[1], 18) : "0";
+    return [tuple[0] || "", amount];
   });
   return airdropTuple;
 });
