@@ -126,7 +126,7 @@ const airdropData = computed(() => {
     const tuple = item.split(",");
     //We're expecting that user passes decimals
     const amount = tuple[1] ? parseUnits(tuple[1], 18) : "0";
-    return [tuple[0] || "", amount];
+    return [tuple[0] || "", amount.toString()];
   });
   return airdropTuple;
 });
