@@ -143,13 +143,16 @@ export default {
       return response.json();
     },
   },
-  async saveAirdropInfo(id: string, data: string[][]) {
+  async saveAirdropInfo(
+    id: string,
+    data: { payload: string[][]; merkleRoot: string }
+  ) {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     const requestOptions = {
       headers: myHeaders,
       method: "PUT",
-      body: JSON.stringify({ payload: data }),
+      body: JSON.stringify(data),
       redirect: "follow",
       credentials: "include",
     } as RequestInit;
@@ -160,7 +163,7 @@ export default {
       }/api/v0/me/tokens/${id}/airdrop/create`,
       requestOptions
     );
-    return await req.json();
+    return req;
   },
   async saveTokenData({
     tokenType,

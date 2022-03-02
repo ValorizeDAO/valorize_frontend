@@ -67,12 +67,32 @@
               py-2
               flex
               justify-between
+              border-t-4 border-t-black
             "
           >
             <h2>Total to Airdrop</h2>
-            <h2>
-              {{ c(totalAirdropAmount) }}
-            </h2>
+            <h2>{{ c(totalAirdropAmount) }} ({{ tokenData.symbol }})</h2>
+          </div>
+          <div class="flex justify-between px-4 items-center">
+            <label class="my-4 font-black" for="airdrop-duration"
+              >Airdrop Duration</label
+            >
+            <div>
+              <input
+                type="number"
+                v-model="airdropDuration"
+                class="
+                  border-black border-b-2
+                  mr-2
+                  max-w-[4rem]
+                  bg-transparent
+                  text-center
+                  font-black
+                "
+                id="airdrop-duration"
+              />
+              <span class="font-black">Days</span>
+            </div>
           </div>
         </div>
         <div class="text-center">
@@ -119,6 +139,7 @@ const ethereum: any = (window as any).ethereum;
 const { formatEther, parseUnits } = ethers.utils;
 const csvDump = ref("");
 const merkleRoot = ref("");
+const airdropDuration = ref(180);
 const airdropData = computed(() => {
   const csvSplit = csvDump.value.split("\r\n");
   const airdropTuple = csvSplit.map((item) => {
@@ -160,9 +181,27 @@ onMounted(async () => {
   contractTokenBalance.value = formatEther(balance.toString());
 });
 async function saveAirdropInfo() {
+  getMerkleRootFromLeaves();
   const { id } = route.params;
   if (typeof id == "string") {
-    await authentication.saveAirdropInfo(id, airdropData.value);
+    const request = await authentication.saveAirdropInfo(id, {
+      payload: airdropData.value,
+      merkleRoot: merkleRoot.value,
+    });
+    if (request.status == 200) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const tokenInstance = new SimpleTokenFactory(signer).attach(
+        tokenData.address
+      );
+      await tokenInstance.newAirdrop(
+        merkleRoot.value,
+        BigNumber.from(airdropDuration.value).mul(24 * 60)
+      );
+    } else {
+      alert("Error saving airdrop info");
+    }
+    console.log({ request });
   }
 }
 function triggerUploadForm() {
