@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="px-16 pt-8 font-black">
-      {{ c(contractTokenBalance) }} ({{ tokenData.symbol }}) Available for
-      Airdrop
+      {{ c(formatEther(tokenData.airdropSupply)) }} ({{ tokenData.symbol }})
+      Available for Airdrop
     </div>
     <transition name="fade" mode="out-in">
       <div
@@ -116,6 +116,7 @@ export default defineComponent({
 <script setup lang="ts">
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory";
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory";
+import detectEthereumProvider from "@metamask/detect-provider";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
 import type { SimpleToken } from "../contracts/SimpleToken";
@@ -152,6 +153,13 @@ const airdropData = computed(() => {
   return airdropTuple;
 });
 const merkleLeaves = computed(() => {
+  //check if the first value of airdropData repeats in the set
+  const airdropSet = new Set(airdropData.value.map((item) => item[0]));
+  if (airdropSet.size !== airdropData.value.length) {
+    alert(
+      "Duplicate addresses in CSV! This will cause an error, please check your CSV file"
+    );
+  }
   const leaves = airdropData.value.map((baseNode: string[]) => {
     return ethers.utils.solidityKeccak256(
       ["address", "uint256"],
@@ -194,10 +202,14 @@ async function saveAirdropInfo() {
       const tokenInstance = new SimpleTokenFactory(signer).attach(
         tokenData.address
       );
-      await tokenInstance.newAirdrop(
-        merkleRoot.value,
-        BigNumber.from(airdropDuration.value).mul(24 * 60)
-      );
+      try {
+        await tokenInstance.newAirdrop(
+          merkleRoot.value,
+          BigNumber.from(airdropDuration.value).mul(24 * 60)
+        );
+      } catch (err) {
+        console.log(err);
+      }
     } else {
       alert("Error saving airdrop info");
     }
