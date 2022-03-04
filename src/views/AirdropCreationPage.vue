@@ -1,9 +1,23 @@
 <template>
   <div>
-    <div v-if="!tokenData.airdrop.isComplete">
+    <div
+      v-if="
+        tokenData.airdrop.airdropIndex != -1 && !tokenData.airdrop.isComplete
+      "
+    >
       <h2 class="font-black text-2xl text-center mt-8">
         {{ tokenData.name }} has an active airdrop
       </h2>
+      <div class="font-black text-center mt-4">
+        <p>
+          Administrators will be able to sweep the unclaimed funds for this
+          airdrop on:
+        </p>
+        <p />
+        <div class="mt-2 text-xl">
+          {{ new Date(tokenData.airdrop.claimPeriodEnds * 1000).toUTCString() }}
+        </div>
+      </div>
     </div>
     <div v-else>
       <div class="px-16 pt-8 font-black">

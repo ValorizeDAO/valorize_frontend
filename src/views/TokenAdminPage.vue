@@ -44,7 +44,7 @@
         <span>{{ mintTimeDisplay }}</span>
       </div>
       <div class="row items-center" v-if="tokenData.tokenType == 'timed_mint'">
-        <span class="text-2xl">Minter</span>
+        <span class="text-2xl">Minter:</span>
         <span v-if="hasSetMinter">{{ formatAddress(tokenData.minter) }}</span>
         <span v-else class="font-normal">None Set</span>
       </div>
