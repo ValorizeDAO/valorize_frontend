@@ -50,6 +50,12 @@ export default defineComponent({
         address: "",
         contractVersion: "",
         airdropSupply: "",
+        airdrop: {
+          claimPeriodEnds: 0,
+          isComplete: false,
+          rootHash: "",
+          airdropIndex: 0,
+        },
       },
       tokenAdmins: [] as Array<{ address: string; user: number }>,
     });
@@ -74,6 +80,7 @@ export default defineComponent({
         minter,
         contractVersion,
         airdropSupply,
+        airdropInfo,
       } = await api.getTokenData(tokenId);
       state.tokenData.name = name;
       state.tokenData.symbol = symbol;
@@ -87,6 +94,8 @@ export default defineComponent({
       state.tokenData.minter = minter;
       state.tokenData.contractVersion = contractVersion;
       state.tokenData.airdropSupply = airdropSupply;
+      state.tokenData.airdrop = airdropInfo;
+      console.log({ airdropInfo });
 
       const response = await api.getTokenAdmins(tokenId);
       state.tokenAdmins = [...response.administrators];

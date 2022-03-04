@@ -1,108 +1,119 @@
 <template>
   <div>
-    <div class="px-16 pt-8 font-black">
-      {{ c(formatEther(tokenData.airdropSupply)) }} ({{ tokenData.symbol }})
-      Available for Airdrop
+    <div v-if="!tokenData.airdrop.isComplete">
+      <h2 class="font-black text-2xl text-center mt-8">
+        {{ tokenData.name }} has an active airdrop
+      </h2>
     </div>
-    <transition name="fade" mode="out-in">
-      <div
-        v-if="airdropData.length <= 1"
-        id="drop-airdrop-csv"
-        class="md:px-16 mt-4"
-      >
-        <div class="border-black border-4 border-dashed bg-purple-100 mx-auto">
-          <div class="h-[20rem] flex flex-col justify-center items-center">
-            Add a CSV File
-            <button @click="triggerUploadForm" class="btn my-4">Upload</button>
-            <input
-              accept=".csv"
-              type="file"
-              ref="uploadButton"
-              class="sr-only"
-            />
+    <div v-else>
+      <div class="px-16 pt-8 font-black">
+        {{ c(formatEther(tokenData.airdropSupply)) }} ({{ tokenData.symbol }})
+        Available for Airdrop
+      </div>
+      <transition name="fade" mode="out-in">
+        <div
+          v-if="airdropData.length <= 1"
+          id="drop-airdrop-csv"
+          class="md:px-16 mt-4"
+        >
+          <div
+            class="border-black border-4 border-dashed bg-purple-100 mx-auto"
+          >
+            <div class="h-[20rem] flex flex-col justify-center items-center">
+              Add a CSV File
+              <button @click="triggerUploadForm" class="btn my-4">
+                Upload
+              </button>
+              <input
+                accept=".csv"
+                type="file"
+                ref="uploadButton"
+                class="sr-only"
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div v-else class="md:mx-16 mt-4 w-100">
-        <h2 class="text-3xl font-black">Please Verify Airdrop Ammounts</h2>
-        <div class="max-w-2xl mt-4 mx-auto mb-8 bg-paper-lighter">
-          <div
-            class="
-              text-2xl
-              bg-paper-default
-              border-b-2 border-x-paper-dark
-              font-black
-              px-4
-              py-2
-              flex
-              justify-between
-            "
-          >
-            <h3>Address</h3>
-            <h3>Airdrop amount</h3>
-          </div>
-          <div class="max-h-[40vh] overflow-y-auto bg-paper-light">
+        <div v-else class="md:mx-16 mt-4 w-100">
+          <h2 class="text-3xl font-black">Please Verify Airdrop Ammounts</h2>
+          <div class="max-w-2xl mt-4 mx-auto mb-8 bg-paper-lighter">
             <div
-              v-for="(data, index) in airdropData"
-              :key="index"
               class="
-                py-2
+                text-2xl
+                bg-paper-default
+                border-b-2 border-x-paper-dark
+                font-black
                 px-4
+                py-2
                 flex
                 justify-between
-                border-b-2 border-paper-dark
               "
             >
-              <p class="mr-6">{{ data[0] }}</p>
-              <p>{{ c(formatEther(data[1])) }}</p>
+              <h3>Address</h3>
+              <h3>Airdrop amount</h3>
             </div>
-          </div>
-          <div
-            class="
-              text-2xl
-              bg-paper-default
-              border-b-2 border-b-paper-dark
-              font-black
-              px-4
-              py-2
-              flex
-              justify-between
-              border-t-4 border-t-black
-            "
-          >
-            <h2>Total to Airdrop</h2>
-            <h2>{{ c(totalAirdropAmount) }} ({{ tokenData.symbol }})</h2>
-          </div>
-          <div class="flex justify-between px-4 items-center">
-            <label class="my-4 font-black" for="airdrop-duration"
-              >Airdrop Duration</label
-            >
-            <div>
-              <input
-                type="number"
-                v-model="airdropDuration"
+            <div class="max-h-[40vh] overflow-y-auto bg-paper-light">
+              <div
+                v-for="(data, index) in airdropData"
+                :key="index"
                 class="
-                  border-black border-b-2
-                  mr-2
-                  max-w-[4rem]
-                  bg-transparent
-                  text-center
-                  font-black
+                  py-2
+                  px-4
+                  flex
+                  justify-between
+                  border-b-2 border-paper-dark
                 "
-                id="airdrop-duration"
-              />
-              <span class="font-black">Days</span>
+              >
+                <p class="mr-6">{{ data[0] }}</p>
+                <p>{{ c(formatEther(data[1])) }}</p>
+              </div>
+            </div>
+            <div
+              class="
+                text-2xl
+                bg-paper-default
+                border-b-2 border-b-paper-dark
+                font-black
+                px-4
+                py-2
+                flex
+                justify-between
+                border-t-4 border-t-black
+              "
+            >
+              <h2>Total to Airdrop</h2>
+              <h2>{{ c(totalAirdropAmount) }} ({{ tokenData.symbol }})</h2>
+            </div>
+            <div class="flex justify-between px-4 items-center">
+              <label class="my-4 font-black" for="airdrop-duration"
+                >Airdrop Duration</label
+              >
+              <div>
+                <input
+                  type="number"
+                  v-model="airdropDuration"
+                  class="
+                    border-black border-b-2
+                    mr-2
+                    max-w-[4rem]
+                    bg-transparent
+                    text-center
+                    font-black
+                  "
+                  id="airdrop-duration"
+                />
+                <span class="font-black">Days</span>
+              </div>
             </div>
           </div>
+          <div class="text-center">
+            <button class="btn bg-purple-200 my-4" @click="saveAirdropInfo">
+              Confirm Data</button
+            ><br />
+            (Once confirmed, this cannot be changed)
+          </div>
         </div>
-        <div class="text-center">
-          <button class="btn bg-purple-200 my-4" @click="saveAirdropInfo">
-            Confirm Data</button
-          ><br />
-          (Once confirmed, this cannot be changed)
-        </div>
-      </div>
-    </transition>
+      </transition>
+    </div>
   </div>
 </template>
 
