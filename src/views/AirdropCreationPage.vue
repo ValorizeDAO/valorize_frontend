@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ airdropStatus }}
     <div
       v-if="
         tokenData.airdrop.airdropIndex != -1 && !tokenData.airdrop.isComplete
@@ -26,10 +27,24 @@
       </div>
       <transition name="fade" mode="out-in">
         <div
-          v-if="airdropData.length <= 1"
+          v-if="
+            airdropStatus == 'INIT' || airdropStatus == 'UPLOADED_CSV_ERROR'
+          "
           id="drop-airdrop-csv"
           class="md:px-16 mt-4"
         >
+          <transition name="fade">
+            <div
+              v-if="airdropStatus == 'UPLOADED_CSV_ERROR'"
+              class="my-4 text-red-900 font-black text-center"
+            >
+              <p class="text-lg">We found duplicate addresses in the CSV!</p>
+              <p class="text-black">
+                This will cause an error, please check your CSV file and upload
+                again.
+              </p>
+            </div>
+          </transition>
           <div
             class="border-black border-4 border-dashed bg-purple-100 mx-auto"
           >
@@ -47,7 +62,12 @@
             </div>
           </div>
         </div>
-        <div v-else class="md:mx-16 mt-4 w-100">
+        <div
+          v-else-if="
+            airdropStatus == 'UPLOADED_CSV' || airdropStatus == 'VERIFIED_CSV'
+          "
+          class="md:mx-16 mt-4 w-100"
+        >
           <h2 class="text-3xl font-black">Please Verify Airdrop Ammounts</h2>
           <div class="max-w-2xl mt-4 mx-auto mb-8 bg-paper-lighter">
             <div
@@ -125,6 +145,12 @@
             ><br />
             (Once confirmed, this cannot be changed)
           </div>
+          <div class="text-center mt-8">
+            Or, <br />
+            <button @click="() => (airdropStatus = 'INIT')" class="btn">
+              Upload another CSV
+            </button>
+          </div>
         </div>
       </transition>
     </div>
@@ -166,6 +192,77 @@ const { formatEther, parseUnits } = ethers.utils;
 const csvDump = ref("");
 const merkleRoot = ref("");
 const airdropDuration = ref(180);
+const airdropStatuses = [
+  "INIT",
+  "UPLOADED_CSV",
+  "UPLOADED_CSV_ERROR",
+  "VERIFIED_CSV",
+  "CONFIRMING_BACKEND",
+  "CONFIRMING_BACKEND_ERROR",
+  "SENDING_TX",
+  "SENDING_TX_ERROR",
+  "COMPLETE",
+  "ERROR",
+];
+const airdropStatus = ref(airdropStatuses[0]);
+function checkForDuplicateAddresses() {
+  const airdropSet = new Set(airdropData.value.map((item) => item[0]));
+  if (airdropSet.size !== airdropData.value.length) {
+    transitionState(false);
+  } else {
+    transitionState();
+  }
+}
+function transitionState(success: boolean = true) {
+  const from = airdropStatus.value;
+  if (success) {
+    switch (airdropStatus.value) {
+      case "INIT":
+        airdropStatus.value = "UPLOADED_CSV";
+        checkForDuplicateAddresses();
+        break;
+      case "UPLOADED_CSV" || "UPLOADED_CSV_ERROR":
+        airdropStatus.value = "VERIFIED_CSV";
+        break;
+      case "VERIFIED_CSV":
+        airdropStatus.value = "CONFIRMING_BACKEND";
+        break;
+      case "CONFIRMING_BACKEND":
+        airdropStatus.value = "SENDING_TX";
+        break;
+      case "SENDING_TX":
+        airdropStatus.value = "COMPLETE";
+        break;
+      default:
+        airdropStatus.value = "INIT";
+        break;
+    }
+  } else {
+    switch (airdropStatus.value) {
+      case "INIT":
+        airdropStatus.value = "UPLOADED_CSV_ERROR";
+        break;
+      case "UPLOADED_CSV":
+        airdropStatus.value = "UPLOADED_CSV_ERROR";
+        break;
+      case "CONFIRMNG_BACKEND":
+        airdropStatus.value = "CONFIRMING_BACKEND_ERROR";
+        break;
+      case "SENDING_TX":
+        airdropStatus.value = "SENDING_TX_ERROR";
+        break;
+      default:
+        airdropStatus.value = "ERROR";
+        break;
+    }
+  }
+  console.log(
+    `FROM: ${from} direction: ${success ? "success" : "error"} TO: ${
+      airdropStatus.value
+    }`
+  );
+  return state;
+}
 const airdropData = computed(() => {
   const csvSplit = csvDump.value.split("\r\n");
   const airdropTuple = csvSplit.map((item) => {
@@ -178,13 +275,6 @@ const airdropData = computed(() => {
   return airdropTuple;
 });
 const merkleLeaves = computed(() => {
-  //check if the first value of airdropData repeats in the set
-  const airdropSet = new Set(airdropData.value.map((item) => item[0]));
-  if (airdropSet.size !== airdropData.value.length) {
-    alert(
-      "Duplicate addresses in CSV! This will cause an error, please check your CSV file"
-    );
-  }
   const leaves = airdropData.value.map((baseNode: string[]) => {
     return ethers.utils.solidityKeccak256(
       ["address", "uint256"],
@@ -244,12 +334,18 @@ async function saveAirdropInfo() {
 function triggerUploadForm() {
   if (uploadButton.value) {
     uploadButton.value.click();
-    uploadButton.value.addEventListener("change", (e) => {
+    uploadButton.value.addEventListener("change", (e: Event) => {
       var fr = new FileReader();
       fr.onload = function () {
-        csvDump.value = fr.result;
+        csvDump.value = fr.result as string;
+        transitionState();
       };
-      fr.readAsText(e.target?.files[0]);
+      try {
+        fr.readAsText(e.target?.files[0]);
+      } catch (err) {
+        console.log(err);
+        transitionState(false);
+      }
     });
   }
 }
