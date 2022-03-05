@@ -30,7 +30,9 @@
       <transition name="fade" mode="out-in">
         <div
           v-if="
-            airdropStatus == 'INIT' || airdropStatus == 'UPLOADED_CSV_ERROR'
+            airdropStatus == 'INIT' ||
+            airdropStatus == 'UPLOADED_CSV_ERROR' ||
+            airdropStatus == 'ERROR'
           "
           id="drop-airdrop-csv"
           class="md:px-16 mt-4"
@@ -45,6 +47,12 @@
                 This will cause an error, please check your CSV file and upload
                 again.
               </p>
+            </div>
+            <div
+              v-else-if="airdropStatus == 'ERROR'"
+              class="my-4 text-red-900 font-black text-center"
+            >
+              There was an error with the request, please try again.
             </div>
           </transition>
           <div
