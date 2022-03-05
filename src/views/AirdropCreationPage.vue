@@ -65,20 +65,23 @@
           v-else-if="
             airdropStatus == 'UPLOADED_CSV' ||
             airdropStatus == 'VERIFIED_CSV' ||
-            airdropStatus == 'CONFIRMING_BACKEND_ERROR'
+            airdropStatus == 'CONFIRMING_BACKEND_ERROR' ||
+            airdropStatus == 'SENDING_TX_ERROR'
           "
           class="md:mx-16 mt-4 w-100"
         >
           <h2 class="text-3xl font-black">Please Verify Airdrop Ammounts</h2>
-          <transition name="fade">
-            <h3
-              class="font-black my-3 text-red-900"
-              v-if="airdropStatus == 'CONFIRMING_BACKEND_ERROR'"
-            >
-              There was an internal error verifying your data, please try again
-              or contact customer service
-            </h3>
-          </transition>
+          <h3 class="font-black my-3 text-red-900">
+            <transition name="fade">
+              <div v-if="airdropStatus == 'CONFIRMING_BACKEND_ERROR'">
+                There was an internal error verifying your data, please try
+                again or contact customer service
+              </div>
+              <div v-else-if="airdropStatus == 'SENDING_TX_ERROR'">
+                {{ metamaskError }}
+              </div>
+            </transition>
+          </h3>
           <div class="max-w-2xl mt-4 mx-auto mb-8 bg-paper-lighter">
             <div
               class="
@@ -186,6 +189,8 @@ import { keccak_256 } from "js-sha3";
 import api from "../services/api";
 import { useRoute } from "vue-router";
 import authentication from "../services/authentication";
+import { networkInfo } from "../services/network";
+import { formatAddress } from "../services/formatAddress";
 
 const props = defineProps<{
   state: any;
@@ -209,6 +214,9 @@ const airdropStatuses = [
   "VERIFIED_CSV",
   "CONFIRMING_BACKEND",
   "CONFIRMING_BACKEND_ERROR",
+  "CONFIRMED_BACKEND",
+  "CHECKING_NETWORK",
+  "METAMASK_NETWORK_ERROR",
   "SENDING_TX",
   "SENDING_TX_ERROR",
   "COMPLETE",
@@ -238,6 +246,12 @@ function transitionState(success: boolean = true) {
         airdropStatus.value = "CONFIRMING_BACKEND";
         break;
       case "CONFIRMING_BACKEND":
+        airdropStatus.value = "CONFIRMED_BACKEND";
+        break;
+      case "CONFIRMED_BACKEND":
+        airdropStatus.value = "CHECKING_NETWORK";
+        break;
+      case "CHECKING_NETWORK" || "METAMASK_NETWORK_ERROR":
         airdropStatus.value = "SENDING_TX";
         break;
       case "SENDING_TX":
@@ -257,6 +271,9 @@ function transitionState(success: boolean = true) {
         break;
       case "CONFIRMING_BACKEND":
         airdropStatus.value = "CONFIRMING_BACKEND_ERROR";
+        break;
+      case "CONFIRMED_BACKEND":
+        airdropStatus.value = "METAMASK_NETWORK_ERROR";
         break;
       case "SENDING_TX":
         airdropStatus.value = "SENDING_TX_ERROR";
@@ -313,6 +330,7 @@ onMounted(async () => {
   const balance = await token.value.balanceOf(tokenData.address);
   contractTokenBalance.value = formatEther(balance.toString());
 });
+const metamaskError = ref("");
 async function saveAirdropInfo() {
   transitionState();
   getMerkleRootFromLeaves();
@@ -329,14 +347,29 @@ async function saveAirdropInfo() {
       const tokenInstance = new SimpleTokenFactory(signer).attach(
         tokenData.address
       );
+      await switchOrAddNetwork(parseInt(tokenData.chainId));
       try {
         await tokenInstance.newAirdrop(
           merkleRoot.value,
           BigNumber.from(airdropDuration.value).mul(24 * 60)
         );
         transitionState();
-      } catch (err) {
-        console.log(err);
+      } catch (err: any) {
+        transitionState(false);
+        console.log(err.code);
+        switch (err.code) {
+          case 4001:
+            metamaskError.value = "You need to approve the transaction";
+            break;
+          case "UNPREDICTABLE_GAS_LIMIT":
+            metamaskError.value = `Your account: ${formatAddress(
+              await signer.getAddress()
+            )} is not an administrator account, please switch to an account with administrator privileges`;
+            break;
+          default:
+            metamaskError.value = "Something went wrong";
+            break;
+        }
       }
     } else {
       transitionState(false);
@@ -360,6 +393,43 @@ function triggerUploadForm() {
         transitionState(false);
       }
     });
+  }
+}
+
+async function switchOrAddNetwork(chainId: number): Promise<void> {
+  const hexIdOfChain = ethers.utils.hexValue(chainId);
+  transitionState();
+  try {
+    await ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: hexIdOfChain }],
+    });
+  } catch (switchError: any) {
+    transitionState(false);
+    if (switchError.code === 4902) {
+      metamaskError.value = `You need to add ${networkInfo[chainId].name} to your wallet`;
+      try {
+        await ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: hexIdOfChain,
+              chainName: networkInfo[tokenData.chainId].name,
+              rpcUrls: [networkInfo[tokenData.chainId].rpcUrl],
+            },
+          ],
+        });
+      } catch (addError: any) {
+        transitionState(false);
+        console.log({ addError: addError.message });
+      } finally {
+        transitionState();
+      }
+    } else {
+      metamaskError.value = `There was an error switching your wallet network to ${networkInfo[chainId].name}`;
+    }
+  } finally {
+    transitionState();
   }
 }
 
