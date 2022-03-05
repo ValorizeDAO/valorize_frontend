@@ -14,8 +14,11 @@
           airdrop on:
         </p>
         <p />
-        <div class="mt-2 text-xl">
+        <div class="mt-2 text-xl" v-if="isSweepingAllowed">
           {{ new Date(tokenData.airdrop.claimPeriodEnds * 1000).toUTCString() }}
+        </div>
+        <div class="mt-2 text-xl" v-else>
+          <button @click="completeAirdrop">Mark Airdrop as Complete</button>
         </div>
       </div>
     </div>
@@ -231,6 +234,20 @@ function checkForDuplicateAddresses() {
     transitionState();
   }
 }
+
+const isSweepingAllowed = computed(() => {
+  return new Date() > new Date(tokenData.airdrop.claimPeriodEnds * 1000);
+});
+async function completeAirdrop() {
+  const tokenInstance = new SimpleTokenFactory(signer.value).attach(
+    tokenData.address
+  );
+  try {
+    await tokenInstance.completeAirdrop();
+  } catch (error: any) {
+    console.log(error);
+  }
+}
 function transitionState(success: boolean = true) {
   const from = airdropStatus.value;
   if (success) {
@@ -323,12 +340,11 @@ const totalAirdropAmount = computed(() => {
   });
   return amountsOnly.reduce((partialSum, a) => partialSum + parseInt(a), 0);
 });
+const provider = ref<any>({});
+const signer = ref<any>({});
 onMounted(async () => {
-  const provider = new ethers.providers.Web3Provider(ethereum);
-  const signer = provider.getSigner();
-  token.value = new SimpleTokenFactory(signer).attach(tokenData.address);
-  const balance = await token.value.balanceOf(tokenData.address);
-  contractTokenBalance.value = formatEther(balance.toString());
+  provider.value = new ethers.providers.Web3Provider(ethereum);
+  signer.value = provider.value.getSigner();
 });
 const metamaskError = ref("");
 async function saveAirdropInfo() {
@@ -342,9 +358,7 @@ async function saveAirdropInfo() {
     });
     if (request.status == 200) {
       transitionState();
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const signer = provider.getSigner();
-      const tokenInstance = new SimpleTokenFactory(signer).attach(
+      const tokenInstance = new SimpleTokenFactory(signer.value).attach(
         tokenData.address
       );
       await switchOrAddNetwork(parseInt(tokenData.chainId));
