@@ -18,7 +18,9 @@
     <router-view v-slot="{ Component, route }">
       <transition :name="route.meta.transition || 'fade'" mode="out-in">
         <div v-if="status === 'LOADED'">
-          <component :is="Component" :state="state" />
+          <keep-alive>
+            <component :is="Component" :state="state" />
+          </keep-alive>
         </div>
         <div v-else>Loading</div>
       </transition>

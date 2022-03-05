@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ airdropStatus }}
     <div
       v-if="
         tokenData.airdrop.airdropIndex != -1 && !tokenData.airdrop.isComplete
@@ -64,11 +63,22 @@
         </div>
         <div
           v-else-if="
-            airdropStatus == 'UPLOADED_CSV' || airdropStatus == 'VERIFIED_CSV'
+            airdropStatus == 'UPLOADED_CSV' ||
+            airdropStatus == 'VERIFIED_CSV' ||
+            airdropStatus == 'CONFIRMING_BACKEND_ERROR'
           "
           class="md:mx-16 mt-4 w-100"
         >
           <h2 class="text-3xl font-black">Please Verify Airdrop Ammounts</h2>
+          <transition name="fade">
+            <h3
+              class="font-black my-3 text-red-900"
+              v-if="airdropStatus == 'CONFIRMING_BACKEND_ERROR'"
+            >
+              There was an internal error verifying your data, please try again
+              or contact customer service
+            </h3>
+          </transition>
           <div class="max-w-2xl mt-4 mx-auto mb-8 bg-paper-lighter">
             <div
               class="
@@ -145,9 +155,9 @@
             ><br />
             (Once confirmed, this cannot be changed)
           </div>
-          <div class="text-center mt-8">
+          <div class="text-center my-8">
             Or, <br />
-            <button @click="() => (airdropStatus = 'INIT')" class="btn">
+            <button @click="() => (airdropStatus = 'INIT')" class="btn mt-4">
               Upload another CSV
             </button>
           </div>
@@ -245,7 +255,7 @@ function transitionState(success: boolean = true) {
       case "UPLOADED_CSV":
         airdropStatus.value = "UPLOADED_CSV_ERROR";
         break;
-      case "CONFIRMNG_BACKEND":
+      case "CONFIRMING_BACKEND":
         airdropStatus.value = "CONFIRMING_BACKEND_ERROR";
         break;
       case "SENDING_TX":
@@ -304,6 +314,7 @@ onMounted(async () => {
   contractTokenBalance.value = formatEther(balance.toString());
 });
 async function saveAirdropInfo() {
+  transitionState();
   getMerkleRootFromLeaves();
   const { id } = route.params;
   if (typeof id == "string") {
@@ -312,6 +323,7 @@ async function saveAirdropInfo() {
       merkleRoot: merkleRoot.value,
     });
     if (request.status == 200) {
+      transitionState();
       const provider = new ethers.providers.Web3Provider(ethereum);
       const signer = provider.getSigner();
       const tokenInstance = new SimpleTokenFactory(signer).attach(
@@ -322,11 +334,12 @@ async function saveAirdropInfo() {
           merkleRoot.value,
           BigNumber.from(airdropDuration.value).mul(24 * 60)
         );
+        transitionState();
       } catch (err) {
         console.log(err);
       }
     } else {
-      alert("Error saving airdrop info");
+      transitionState(false);
     }
     console.log({ request });
   }
