@@ -84,20 +84,21 @@ export default defineComponent({
         airdropSupply,
         airdropInfo,
       } = await api.getTokenData(tokenId);
-      state.tokenData.name = name;
-      state.tokenData.symbol = symbol;
-      state.tokenData.totalSupply = totalSupply;
-      state.tokenData.maxSupply = maxSupply;
-      state.tokenData.chainId = chainId;
-      state.tokenData.tokenType = tokenType;
-      state.tokenData.nextMintAllowance = nextMintAllowance;
-      state.tokenData.nextAllowedMint = nextAllowedMint;
-      state.tokenData.address = address;
-      state.tokenData.minter = minter;
-      state.tokenData.contractVersion = contractVersion;
-      state.tokenData.airdropSupply = airdropSupply;
-      state.tokenData.airdrop = airdropInfo;
-      console.log({ airdropInfo });
+      state.tokenData = {
+        name,
+        symbol,
+        totalSupply,
+        maxSupply,
+        chainId,
+        tokenType,
+        nextMintAllowance,
+        nextAllowedMint,
+        address,
+        minter,
+        contractVersion,
+        airdropSupply,
+        airdrop: { ...airdropInfo },
+      };
 
       const response = await api.getTokenAdmins(tokenId);
       state.tokenAdmins = [...response.administrators];
