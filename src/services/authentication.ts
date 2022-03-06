@@ -101,13 +101,18 @@ export default {
       credentials: "include",
     } as RequestInit;
 
-    const apiResponse = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/wallet/new", requestOptions)
-    return apiResponse.json()
+    const apiResponse = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/v0/admin/wallet/new",
+      requestOptions
+    );
+    return apiResponse.json();
   },
   async getAllowedUsers() {
-    const req = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/v0/users/alpha")
-    const users = await req.json() as User[]
-    return users
+    const req = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/v0/users/alpha"
+    );
+    const users = (await req.json()) as User[];
+    return users;
   },
   links: {
     async update(links: Array<Link>): Promise<SuccessOrError> {
@@ -115,7 +120,7 @@ export default {
         import.meta.env.VITE_BACKEND_URL + "/api/v0/me/links",
         {
           method: "PUT",
-          body: JSON.stringify({links:links}),
+          body: JSON.stringify({ links: links }),
           credentials: "include",
           headers: {
             "Content-Type": "application/json",
@@ -136,9 +141,31 @@ export default {
         } as RequestInit
       );
       return response.json();
-    }
+    },
   },
-  async saveTokenData({ 
+  async saveAirdropInfo(
+    id: string,
+    data: { payload: string[][]; merkleRoot: string }
+  ) {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    const requestOptions = {
+      headers: myHeaders,
+      method: "PUT",
+      body: JSON.stringify(data),
+      redirect: "follow",
+      credentials: "include",
+    } as RequestInit;
+
+    const req = await fetch(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/v0/me/tokens/${id}/airdrop/create`,
+      requestOptions
+    );
+    return req;
+  },
+  async saveTokenData({
     tokenType,
     contractVersion,
     freeSupply,
@@ -149,7 +176,7 @@ export default {
     adminAddresses,
     chainId,
     txHash,
-    contractAddress
+    contractAddress,
   }: SimpleTokenParams): Promise<Response> {
     const formdata = new FormData();
     formdata.append("tokenType", tokenType);
@@ -165,15 +192,16 @@ export default {
     formdata.append("contractAddress", contractAddress.toString());
 
     const requestOptions = {
-      method: 'PUT',
+      method: "PUT",
       body: formdata,
-      redirect: 'follow',
-      credentials: 'include',
+      redirect: "follow",
+      credentials: "include",
     } as RequestInit;
 
-    const apiResponse = await fetch(
-      import.meta.env.VITE_BACKEND_URL + "/api/v0/me/tokendata", requestOptions
-    ) as Response;
+    const apiResponse = (await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/v0/me/tokendata",
+      requestOptions
+    )) as Response;
     return apiResponse;
-  }
-}
+  },
+};

@@ -60,7 +60,9 @@
           </transition>
           <div class="py-8">
             Or
-            <router-link :to="{ path: 'register', query: route.query }" class="font-black underline"
+            <router-link
+              :to="{ path: 'register', query: route.query }"
+              class="font-black underline"
               >Register New Account</router-link
             >
           </div>
@@ -89,7 +91,8 @@ export default defineComponent({
     const password = ref("");
     const authError = ref(false);
     const authenticating = ref(false);
-    const hasQueryToAddUserWallet = route.query.redirectUri && route.query.registerAddress
+    const hasQueryToAddUserWallet =
+      route.query.redirectUri && route.query.registerAddress;
     async function sendLogin() {
       authError.value = false;
       authenticating.value = true;
@@ -114,12 +117,17 @@ export default defineComponent({
             store.state.authenticated = true;
             store.commit("authUser/setUser", result);
             if (hasQueryToAddUserWallet) {
-              route.query.registerAddress && auth.addExternalWalletToAccount(
-                   route.query.registerAddress.toString()
-                )
-                .then(() => {
-                  route.query.redirectUri && router.push(decodeURI(route.query.redirectUri.toString()));
-                });
+              route.query.registerAddress &&
+                auth
+                  .addExternalWalletToAccount(
+                    route.query.registerAddress.toString()
+                  )
+                  .then(() => {
+                    route.query.redirectUri &&
+                      router.push(
+                        decodeURI(route.query.redirectUri.toString())
+                      );
+                  });
             } else {
               router.push("/" + name.value);
             }
@@ -132,7 +140,15 @@ export default defineComponent({
         });
     }
 
-    return { name, password, hasQueryToAddUserWallet, route, sendLogin, authError, authenticating };
+    return {
+      name,
+      password,
+      hasQueryToAddUserWallet,
+      route,
+      sendLogin,
+      authError,
+      authenticating,
+    };
   },
 });
 </script>

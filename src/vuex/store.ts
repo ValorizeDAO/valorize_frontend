@@ -5,6 +5,6 @@ import userToken from "./modules/userTokenModule"
 export default createStore({
   modules: {
     authUser,
-    userToken
+    userToken,
   },
 })

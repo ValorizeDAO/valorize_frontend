@@ -7,10 +7,7 @@
       data-tf-iframe-props="title=Valorize Beta Signup"
       style="width: 100%; height: 100%"
     ></div>
-    <component 
-        :is="'script'" 
-        ref="leadgen"
-    />
+    <component :is="'script'" ref="leadgen" />
   </div>
 </template>
 

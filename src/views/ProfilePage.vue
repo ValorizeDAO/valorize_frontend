@@ -7,11 +7,7 @@
         px-4
         pt-8
         border-r-0 border-black
-        md:bg-purple-200
-        md:border-r-2
-        md:px-16
-        md:col-span-5
-        md:min-h-screen
+        md:bg-purple-200 md:border-r-2 md:px-16 md:col-span-5 md:min-h-screen
       "
     >
       <h1 class="text-3xl font-black">{{ userInfo.username }}</h1>
@@ -45,9 +41,7 @@
         border-black
         px-4
         col-span-12
-        md:col-span-7
-        md:px-16
-        md:min-h-screen
+        md:col-span-7 md:px-16 md:min-h-screen
       "
     >
       <div v-if="userInfo.hasDeployedToken">
