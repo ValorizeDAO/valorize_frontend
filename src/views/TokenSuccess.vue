@@ -8,7 +8,7 @@
     </div>
   </div>
 </template>
-
+ 
 <script lang="ts">
 import { ref, defineComponent, onMounted, Ref } from "vue";
 import JSConfetti from 'js-confetti'

@@ -79,23 +79,22 @@
                 <SvgLoader fill="#cecece" class="h-12 mx-auto"></SvgLoader>
               </div>
               <div v-else-if="['init', 'error', 'conflict'].includes(status)">
-              <input
-                type="submit"
-                class="px-4 py-2 border-2 rounded-md font-black w-full"
-                id="submit-registration"
-                :class="
-                  ready
-                    ? 'text-black border-black bg-purple-50 cursor-pointer'
-                    : 'cursor-not-allowed text-gray-400'
-                "
-                :disabled="!ready"
-              />
+                <input
+                  type="submit"
+                  class="px-4 py-2 border-2 rounded-md font-black w-full"
+                  id="submit-registration"
+                  :class="
+                    ready
+                      ? 'text-black border-black bg-purple-50 cursor-pointer'
+                      : 'cursor-not-allowed text-gray-400'
+                  "
+                  :disabled="!ready"
+                />
                 <p v-if="status === 'error'" class="text-red-800 font-bold">
                   {{ errorMessage }}
                 </p>
               </div>
             </transition>
-
           </div>
         </form>
       </div>
@@ -188,14 +187,18 @@ export default defineComponent({
         const result = (await response.json()) as User | { error: string };
         store.commit("authUser/setUser", result);
         if (hasQueryToAddUserWallet) {
-          route.query.registerAddress && await auth.addExternalWalletToAccount(route.query.registerAddress.toString())
-          route.query.redirectUri && await router.push(decodeURI(route.query.redirectUri.toString()));
+          route.query.registerAddress &&
+            (await auth.addExternalWalletToAccount(
+              route.query.registerAddress.toString()
+            ));
+          route.query.redirectUri &&
+            (await router.push(decodeURI(route.query.redirectUri.toString())));
         } else {
           await router.push({ path: "/edit-profile" });
         }
       } else {
         status.value = requestStatuses[3];
-        const result = await response.json() as { error: string };
+        const result = (await response.json()) as { error: string };
         errorMessage.value = result.error;
       }
     }
@@ -209,7 +212,7 @@ export default defineComponent({
       ready,
       userNameAvailable,
       sendLogin,
-      errorMessage
+      errorMessage,
     };
   },
 });
