@@ -2,23 +2,42 @@
   <div>
     <div
       v-if="
-        tokenData.airdrop.airdropIndex != -1 && !tokenData.airdrop.isComplete
+        airdropStatus == 'COMPLETE' ||
+        (tokenData.airdrop.airdropIndex != -1 && !tokenData.airdrop.isComplete)
       "
     >
-      <h2 class="font-black text-2xl text-center mt-8">
+      <h2
+        v-if="airdropStatus == 'COMPLETE'"
+        class="font-black text-2xl text-center mt-8"
+      >
+        You have successfully created an airdrop for {{ tokenData.name }}!
+      </h2>
+      <h2 v-else class="font-black text-2xl text-center mt-8">
         {{ tokenData.name }} has an active airdrop
       </h2>
       <div class="font-black text-center mt-4">
-        <p>
+        <p v-if="isSweepingAllowed">
+          Time period for this airdrop is over. Mark the airdrop as complete to
+          create another one or sweep the unclaimed funds.
+        </p>
+        <p v-else>
           Administrators will be able to sweep the unclaimed funds for this
           airdrop on:
         </p>
         <p />
-        <div class="mt-2 text-xl" v-if="isSweepingAllowed">
-          {{ new Date(tokenData.airdrop.claimPeriodEnds * 1000).toUTCString() }}
+        <div class="mt-2 text-xl" v-if="!isSweepingAllowed">
+          {{
+            dateFormat(
+              new Date(tokenData.airdrop.claimPeriodEnds * 1000),
+              "mmm d, yyyy h:MM TT"
+            )
+          }}<br />
+          <p class="font-normal text-base">(Shown in local time)</p>
         </div>
         <div class="mt-2 text-xl" v-else>
-          <button @click="completeAirdrop">Mark Airdrop as Complete</button>
+          <button @click="completeAirdrop" class="btn">
+            Mark Airdrop as Complete
+          </button>
         </div>
       </div>
     </div>
@@ -74,10 +93,14 @@
         </div>
         <div
           v-else-if="
-            airdropStatus == 'UPLOADED_CSV' ||
-            airdropStatus == 'VERIFIED_CSV' ||
-            airdropStatus == 'CONFIRMING_BACKEND_ERROR' ||
-            airdropStatus == 'SENDING_TX_ERROR'
+            [
+              'UPLOADED_CSV',
+              'VERIFIED_CSV',
+              'CONFIRMING_BACKEND',
+              'CONFIRMING_BACKEND_ERROR',
+              'SENDING_TX',
+              'SENDING_TX_ERROR',
+            ].includes(airdropStatus)
           "
           class="md:mx-16 mt-4 w-100"
         >
@@ -176,6 +199,14 @@
             </button>
           </div>
         </div>
+        <div
+          v-else-if="
+            airdropStatus == 'CONFIRMING_BACKEND' ||
+            airdropStatus == 'SENDING_TX'
+          "
+        >
+          Confirming your airdrop information
+        </div>
       </transition>
     </div>
   </div>
@@ -191,10 +222,11 @@ export default defineComponent({
 <script setup lang="ts">
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory";
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory";
+import type { SimpleToken } from "../contracts/SimpleToken";
+import type { TimedMintToken } from "../contracts/TimedMintToken";
 import detectEthereumProvider from "@metamask/detect-provider";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
-import type { SimpleToken } from "../contracts/SimpleToken";
 import { MerkleTree } from "merkletreejs";
 import { keccak_256 } from "js-sha3";
 import api from "../services/api";
@@ -202,6 +234,7 @@ import { useRoute } from "vue-router";
 import authentication from "../services/authentication";
 import { networkInfo } from "../services/network";
 import { formatAddress } from "../services/formatAddress";
+import dateFormat from "dateformat";
 
 const props = defineProps<{
   state: any;
@@ -247,13 +280,15 @@ const isSweepingAllowed = computed(() => {
   return new Date() > new Date(tokenData.airdrop.claimPeriodEnds * 1000);
 });
 async function completeAirdrop() {
-  const tokenInstance = new SimpleTokenFactory(signer.value).attach(
-    tokenData.address
-  );
-  try {
-    await tokenInstance.completeAirdrop();
-  } catch (error: any) {
-    console.log(error);
+  const { signer } = getProviderAndSigner();
+  let tokenInstance: SimpleToken;
+  if (signer) {
+    tokenInstance = new SimpleTokenFactory(signer).attach(tokenData.address);
+    try {
+      await tokenInstance.completeAirdrop();
+    } catch (error: any) {
+      console.error(error);
+    }
   }
 }
 function transitionState(success: boolean = true) {
@@ -308,11 +343,11 @@ function transitionState(success: boolean = true) {
         break;
     }
   }
-  console.log(
-    `FROM: ${from} direction: ${success ? "success" : "error"} TO: ${
-      airdropStatus.value
-    }`
-  );
+  console.groupCollapsed("transition_state");
+  console.log(`FROM: ${from}`);
+  console.log(`DIRECTION: ${success ? "NEXT" : "ERROR"}`);
+  console.log(`TO: ${airdropStatus.value}`);
+  console.groupEnd();
   return state;
 }
 const airdropData = computed(() => {
@@ -348,16 +383,29 @@ const totalAirdropAmount = computed(() => {
   });
   return amountsOnly.reduce((partialSum, a) => partialSum + parseInt(a), 0);
 });
-const provider = ref<any>({});
-const signer = ref<any>({});
-onMounted(async () => {
-  provider.value = new ethers.providers.Web3Provider(ethereum);
-  signer.value = provider.value.getSigner();
-});
+
 const metamaskError = ref("");
+function getProviderAndSigner() {
+  if (ethereum) {
+    ethereum.enable();
+    const provider = new ethers.providers.Web3Provider(
+      ethereum
+    ) as ethers.providers.Web3Provider;
+    const signer = provider.getSigner() as ethers.providers.JsonRpcSigner;
+    return { provider, signer };
+  } else {
+    metamaskError.value = "Please install MetaMask";
+    return { provider: null, signer: null };
+  }
+}
 async function saveAirdropInfo() {
   transitionState();
   getMerkleRootFromLeaves();
+  const { signer } = getProviderAndSigner();
+  if (!signer) {
+    transitionState(false);
+    return;
+  }
   const { id } = route.params;
   if (typeof id == "string") {
     const request = await authentication.saveAirdropInfo(id, {
@@ -366,19 +414,33 @@ async function saveAirdropInfo() {
     });
     if (request.status == 200) {
       transitionState();
-      const tokenInstance = new SimpleTokenFactory(signer.value).attach(
-        tokenData.address
-      );
+      let tokenInstance: SimpleToken | TimedMintToken;
+      if (tokenData.tokenType == "timed_mint") {
+        tokenInstance = new TimedMintTokenFactory(signer).attach(
+          tokenData.address
+        );
+      } else if (tokenData.tokenType == "simple") {
+        tokenInstance = new SimpleTokenFactory(signer).attach(
+          tokenData.address
+        );
+      } else {
+        transitionState(false);
+        throw new Error("Token type not supported");
+      }
       await switchOrAddNetwork(parseInt(tokenData.chainId));
       try {
         await tokenInstance.newAirdrop(
           merkleRoot.value,
-          BigNumber.from(airdropDuration.value).mul(24 * 60)
+          BigNumber.from(airdropDuration.value).mul(24 * 60 * 60)
         );
+        tokenData.airdrop.claimPeriodEnds =
+          new Date().getTime() / 1000 +
+          BigNumber.from(airdropDuration.value)
+            .mul(24 * 60 * 60)
+            .toNumber();
         transitionState();
       } catch (err: any) {
         transitionState(false);
-        console.log(err.code);
         switch (err.code) {
           case 4001:
             metamaskError.value = "You need to approve the transaction";
@@ -396,7 +458,6 @@ async function saveAirdropInfo() {
     } else {
       transitionState(false);
     }
-    console.log({ request });
   }
 }
 function triggerUploadForm() {
@@ -411,7 +472,7 @@ function triggerUploadForm() {
       try {
         fr.readAsText(e.target?.files[0]);
       } catch (err) {
-        console.log(err);
+        console.error(err);
         transitionState(false);
       }
     });
@@ -427,6 +488,7 @@ async function switchOrAddNetwork(chainId: number): Promise<void> {
       params: [{ chainId: hexIdOfChain }],
     });
   } catch (switchError: any) {
+    console.error(switchError);
     transitionState(false);
     if (switchError.code === 4902) {
       metamaskError.value = `You need to add ${networkInfo[chainId].name} to your wallet`;
@@ -443,7 +505,7 @@ async function switchOrAddNetwork(chainId: number): Promise<void> {
         });
       } catch (addError: any) {
         transitionState(false);
-        console.log({ addError: addError.message });
+        console.error(addError);
       } finally {
         transitionState();
       }
