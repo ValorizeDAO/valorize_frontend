@@ -1,50 +1,18 @@
 <template>
-  <div v-if="status == 'LOADED'">
-    <h1 class="font-black text-4xl px-16 pt-4">Manage Token</h1>
-    <div class="max-w-2xl mx-auto mt-24">
-      <div class="flex justify-between flex-wrap items-center">
-        <h2 class="font-black text-3xl">
-          {{ tokenData.name }} ({{ tokenData.symbol }})
-        </h2>
-        <a :href="blockExplorerUrl" class="btn flex" target="_blank"
-          >See on Blockexplorer
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 ml-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-            />
-          </svg>
-        </a>
-      </div>
-      <div class="font-black text-2xl flex flex-col mt-8">
-        <div class="row">
-          <span class="text-2xl"> Current Supply: </span>
-          <span>{{ c(tokenData.totalSupply) }}</span>
-        </div>
-        <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
-          <span class="text-2xl">Max Supply: </span>
-          <span v-if="!maxSupplySet">{{ c(formatEther(tokenData.maxSupply)) }}</span>
-          <span v-else>Unlimited</span>
-        </div>
-        <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
-          <span class="text-2xl">Next Minting Allowance: </span>
-          <span>{{ c(formatEther(tokenData.nextMintAllowance)) }}</span>
-        </div>
-        <div class="row" v-if="tokenData.tokenType == 'timed_mint'">
-          <span class="text-2xl">Next Mint Time: </span>
-          <span>{{ tokenData.nextAllowedMint }}</span>
-        </div>
-        <div
-          class="row items-center"
-          v-if="tokenData.tokenType == 'timed_mint'"
+  <h1 class="font-black text-4xl px-16 pt-4">Manage Token</h1>
+  <div class="max-w-2xl mx-auto mt-24">
+    <div class="flex justify-between flex-wrap items-center">
+      <h2 class="font-black text-3xl">
+        {{ tokenData.name }} ({{ tokenData.symbol }})
+      </h2>
+      <a :href="blockExplorerUrl" class="btn flex" target="_blank"
+        >See on Blockexplorer
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6 ml-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
           <path
             stroke-linecap="round"
@@ -102,27 +70,40 @@
           </button>
         </div>
         <div v-if="settingMinter">
-          <div class="flex justify-between items-center">
-            <label class="pl-8 text-sm font-normal" for="minter-address-to-set"
-              >Set Minter Address:</label
-            ><br />
-            <input
-              class="
-                bg-transparent
-                text-sm
-                font-normal
-                w-[32em]
-                border-b-2 border-black
-                mr-8
-              "
-              type="text"
-              id="minter-address-to-set"
-              v-model="minterAddressToSet"
-            />
-          </div>
-          <div>
-            <button class="btn mt-4" @click="setMinter">Set Minter</button>
-          </div>
+          <transition name="">
+            <div v-if="!waitingForMinterSet">
+              <div class="flex justify-between items-center">
+                <label
+                  class="pl-8 text-sm font-normal"
+                  for="minter-address-to-set"
+                  >Set Minter Address:</label
+                ><br />
+                <input
+                  class="
+                    bg-transparent
+                    text-sm
+                    font-normal
+                    w-[32em]
+                    border-b-2 border-black
+                    mr-8
+                  "
+                  type="text"
+                  id="minter-address-to-set"
+                  v-model="minterAddressToSet"
+                />
+              </div>
+              <div>
+                <button class="btn mt-4" @click="setMinter">Set Minter</button>
+              </div>
+            </div>
+            <div v-else>
+              <div class="flex justify-center items-center flex-col">
+                <div class="spinner mr-4"></div>
+                <span>Setting Minter...</span>
+                <svg-loader class="mt-4 h-16 fill-purple-900" />
+              </div>
+            </div>
+          </transition>
         </div>
         <div
           class="
@@ -165,6 +146,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 export default defineComponent({
+  components: { SvgLoader },
   name: "Token Admin",
 });
 </script>
@@ -176,11 +158,12 @@ import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
 import { formatAddress } from "../services/formatAddress";
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory";
+import SvgLoader from "../components/SvgLoader.vue";
 
 const props = defineProps<{
   state: any;
 }>();
-const emit = defineEmits(["change:state"]);
+const emit = defineEmits(["update:state", "updateState"]);
 const { state } = props;
 const { tokenData, tokenAdmins } = state;
 const { formatEther } = ethers.utils;
@@ -188,6 +171,10 @@ const mintingError = ref("");
 const settingMinter = ref(false);
 const canMintNow = ref(false);
 const minterAddressToSet = ref("0x0000000000000000000000000000000000000000");
+const waitingForMinterSet = ref(false);
+function updateState(newState: any) {
+  emit("updateState", newState);
+}
 const mintTimeDisplay = computed(() => {
   if (!tokenData?.nextAllowedMint) return;
   const nextAllowedMintDateObject = new Date(
@@ -255,17 +242,19 @@ function getTMToken() {
 async function setMinter() {
   const token = getTMToken();
   try {
+    waitingForMinterSet.value = true;
     await token.setMinter(minterAddressToSet.value);
-    const newState = { ...state };
-    newState.tokenData.minter = await token.minter();
-    emit("change:state", newState);
+    tokenData.minter = minterAddressToSet.value;
     mintingError.value = "";
   } catch (err: any) {
     if (err.error?.message.includes(adminRole)) {
       mintingError.value = "Only admin address can set minter";
     } else {
-      mintingError.value = err.error.message;
+      mintingError.value = err.error.message || err.message;
     }
+  } finally {
+    waitingForMinterSet.value = true;
+    settingMinter.value = false;
   }
 }
 

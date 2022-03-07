@@ -465,12 +465,16 @@ function triggerUploadForm() {
     uploadButton.value.click();
     uploadButton.value.addEventListener("change", (e: Event) => {
       var fr = new FileReader();
+      const target = e.target as HTMLInputElement;
       fr.onload = function () {
         csvDump.value = fr.result as string;
         transitionState();
       };
       try {
-        fr.readAsText(e.target?.files[0]);
+        if (!target || !target?.files?.length) {
+          throw new Error("Error reading files");
+        }
+        fr.readAsText(target.files[0]);
       } catch (err) {
         console.error(err);
         transitionState(false);
@@ -517,7 +521,7 @@ async function switchOrAddNetwork(chainId: number): Promise<void> {
   }
 }
 
-function c(value: string) {
+function c(value: string | number) {
   return currency(Number(value), {
     separator: ",",
     precision: 0,
