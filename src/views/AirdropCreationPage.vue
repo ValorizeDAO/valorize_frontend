@@ -227,12 +227,12 @@ import type { TimedMintToken } from "../contracts/TimedMintToken";
 import detectEthereumProvider from "@metamask/detect-provider";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
-import { MerkleTree } from "merkletreejs";
-import { keccak_256 } from "js-sha3";
 import api from "../services/api";
+import { MerkleTree } from "merkletreejs";
 import { useRoute } from "vue-router";
 import authentication from "../services/authentication";
 import { networkInfo } from "../services/network";
+import functions from "../services/functions";
 import { formatAddress } from "../services/formatAddress";
 import dateFormat from "dateformat";
 
@@ -361,20 +361,22 @@ const airdropData = computed(() => {
   });
   return airdropTuple;
 });
-const merkleLeaves = computed(() => {
+
+async function getMerkleRootFromLeaves() {
   const leaves = airdropData.value.map((baseNode: string[]) => {
     return ethers.utils.solidityKeccak256(
       ["address", "uint256"],
       [baseNode[0], BigNumber.from(baseNode[1])]
     );
   });
-  return leaves;
-});
-function getMerkleRootFromLeaves() {
-  const merkleTree = new MerkleTree(merkleLeaves.value, keccak_256, {
-    sort: true,
-  });
-  merkleRoot.value = merkleTree.getHexRoot();
+  const response = await functions.getMerkleRoot(leaves);
+  if (response.status == 200) {
+    const { merkleRoot } = await response.json();
+    merkleRoot.value = merkleRoot;
+  } else {
+    transitionState(false);
+    console.error(response);
+  }
 }
 const totalAirdropAmount = computed(() => {
   const csvSplit = csvDump.value.split("\r\n");
