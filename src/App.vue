@@ -149,6 +149,9 @@ export default defineComponent({
       user: "authUser/user",
     }),
   },
+  mounted() {
+    console.log("VALORIZE_APP_DEPLOY_0.1.0");
+  },
 });
 </script>
 
