@@ -279,7 +279,7 @@ const isSweepingAllowed = computed(() => {
   return new Date() > new Date(tokenData.airdrop.claimPeriodEnds * 1000);
 });
 async function completeAirdrop() {
-  const { signer } = getProviderAndSigner();
+  const { signer } = await getProviderAndSigner();
   let tokenInstance: SimpleToken;
   if (signer) {
     tokenInstance = new SimpleTokenFactory(signer).attach(tokenData.address);
@@ -399,7 +399,7 @@ async function getProviderAndSigner() {
 async function saveAirdropInfo() {
   transitionState();
   getMerkleRootFromLeaves();
-  const { signer } = getProviderAndSigner();
+  const { signer } = await getProviderAndSigner();
   if (!signer) {
     transitionState(false);
     return;
