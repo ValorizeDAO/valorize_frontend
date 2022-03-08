@@ -363,6 +363,7 @@ const airdropData = computed(() => {
 
 async function getMerkleRootFromLeaves() {
   const response = await functions.getMerkleRoot(airdropData.value);
+  console.log({ response });
   if (response.status == 200) {
     const { merkleRoot } = await response.json();
     merkleRoot.value = merkleRoot;
@@ -380,9 +381,11 @@ const totalAirdropAmount = computed(() => {
 });
 
 const metamaskError = ref("");
-function getProviderAndSigner() {
+async function getProviderAndSigner() {
   if (ethereum) {
-    ethereum.enable();
+    await ethereum.request({
+      method: "eth_requestAccounts",
+    });
     const provider = new ethers.providers.Web3Provider(
       ethereum
     ) as ethers.providers.Web3Provider;

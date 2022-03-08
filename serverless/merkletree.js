@@ -624,9 +624,7 @@ const { keccak_256 } = root;
 const { BigNumber } = ethers;
 
 exports.handler = async function(event, context) {
-  console.log({ ethers });
   const airdropData = JSON.parse(event.body).leaves;
-  console.log({ airdropData });
   const leaves = airdropData.map((baseNode) => {
     return ethers.utils.solidityKeccak256(
       ["address", "uint256"],
