@@ -291,7 +291,6 @@ async function completeAirdrop() {
   }
 }
 function transitionState(success: boolean = true) {
-  const from = airdropStatus.value;
   if (success) {
     switch (airdropStatus.value) {
       case "INIT":
@@ -342,11 +341,6 @@ function transitionState(success: boolean = true) {
         break;
     }
   }
-  console.groupCollapsed("transition_state");
-  console.log(`FROM: ${from}`);
-  console.log(`DIRECTION: ${success ? "NEXT" : "ERROR"}`);
-  console.log(`TO: ${airdropStatus.value}`);
-  console.groupEnd();
   return state;
 }
 const airdropData = computed(() => {
@@ -363,10 +357,9 @@ const airdropData = computed(() => {
 
 async function getMerkleRootFromLeaves() {
   const response = await functions.getMerkleRoot(airdropData.value);
-  console.log({ response });
   if (response.status == 200) {
-    const { merkleRoot } = await response.json();
-    merkleRoot.value = merkleRoot;
+    const data = await response.json();
+    merkleRoot.value = data.root;
   } else {
     transitionState(false);
     console.error(response);
@@ -398,7 +391,7 @@ async function getProviderAndSigner() {
 }
 async function saveAirdropInfo() {
   transitionState();
-  getMerkleRootFromLeaves();
+  await getMerkleRootFromLeaves();
   const { signer } = await getProviderAndSigner();
   if (!signer) {
     transitionState(false);
