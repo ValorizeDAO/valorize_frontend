@@ -124,6 +124,7 @@ import { mapGetters, mapActions } from "vuex";
 import { defineComponent } from "vue";
 import SvgLoader from "./components/SvgLoader.vue";
 import auth from "./services/authentication";
+import asciiLogo from "./assets/ascii-logo";
 
 export default defineComponent({
   name: "App",
@@ -148,6 +149,20 @@ export default defineComponent({
       authenticated: "authUser/authenticated",
       user: "authUser/user",
     }),
+  },
+  mounted() {
+    //check if app is running in production
+    console.log("VALORIZE_APP_DEPLOY_0.1.2");
+    if (import.meta.env.VITE_ENV != "dev") {
+      console.log(
+        `%c${asciiLogo}
+  %cWELCOME TO VALORIZE, 
+  We are on a mission to design better incentives that improve the technology of human collaboration.
+  JOIN US! https://discord.gg/3PRMWrH9DT`,
+        "color: purple; font-size:10px; line-height: 12 px;",
+        "color:unset; font-size: 1em"
+      );
+    }
   },
 });
 </script>
