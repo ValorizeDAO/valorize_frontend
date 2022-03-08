@@ -1,5 +1,5 @@
 class Functions {
-  async getMerkleRoot(leaves: string[]) {
+  async getMerkleRoot(airdropData: string[][]) {
     return fetch(
       import.meta.env.VITE_SERVERLESS_URL + "/.netlify/functions/merkletree",
       {
@@ -8,7 +8,7 @@ class Functions {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          leaves,
+          leaves: airdropData,
         }),
       }
     );
