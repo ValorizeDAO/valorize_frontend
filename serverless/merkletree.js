@@ -1,4 +1,5 @@
 const { MerkleTree } = require("merkletreejs");
+const ethers = require("ethers");
 
 /**
  * [js-sha3]{@link https://github.com/emn178/js-sha3}
@@ -620,10 +621,20 @@ var root = {};
   }
 })();
 const { keccak_256 } = root;
+const { BigNumber } = ethers;
 
 exports.handler = async function(event, context) {
-  console.log(root);
-  const merkleTree = new MerkleTree(JSON.parse(event.body).leaves, keccak_256, {
+  console.log({ ethers });
+  const airdropData = JSON.parse(event.body).leaves;
+  console.log({ airdropData });
+  const leaves = airdropData.map((baseNode) => {
+    return ethers.utils.solidityKeccak256(
+      ["address", "uint256"],
+      [baseNode[0], BigNumber.from(baseNode[1])]
+    );
+  });
+
+  const merkleTree = new MerkleTree(leaves, keccak_256, {
     sort: true,
   });
   return {

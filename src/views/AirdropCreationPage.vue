@@ -228,7 +228,6 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
 import api from "../services/api";
-import { MerkleTree } from "merkletreejs";
 import { useRoute } from "vue-router";
 import authentication from "../services/authentication";
 import { networkInfo } from "../services/network";
@@ -363,13 +362,7 @@ const airdropData = computed(() => {
 });
 
 async function getMerkleRootFromLeaves() {
-  const leaves = airdropData.value.map((baseNode: string[]) => {
-    return ethers.utils.solidityKeccak256(
-      ["address", "uint256"],
-      [baseNode[0], BigNumber.from(baseNode[1])]
-    );
-  });
-  const response = await functions.getMerkleRoot(leaves);
+  const response = await functions.getMerkleRoot(airdropData.value);
   if (response.status == 200) {
     const { merkleRoot } = await response.json();
     merkleRoot.value = merkleRoot;
