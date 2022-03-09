@@ -224,28 +224,6 @@
         class="flex items-center justify-between pb-4 border-black border-b-2"
       >
         <h2 class="text-xl font-black">Token Summary</h2>
-        <transition name="fade" mode="out-in">
-          <div v-if="tokenStatus === 'DEPLOYING_TEST'">
-            <SvgLoader class="text-center mx-auto h-8" fill="#"></SvgLoader>
-          </div>
-          <button v-else-if="tokenStatus === 'DEPLOYED_TEST'" class="btn flex">
-            View On Testnet
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 ml-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </button>
-        </transition>
       </div>
       <div class="mt-4">
         <h1 class="text-3xl font-black mb-8">
@@ -370,6 +348,10 @@
             To launch a token, you need a web3 provider such as
             <a href="https://metamask.io/" class="font-black underline"
               >Metamask</a
+            >
+            or use
+            <a href="https://brave.com/" class="font-black underline"
+              >Brave Browser's built in wallet</a
             >
           </div>
           <div
@@ -512,15 +494,13 @@ function composeDeployGovToken() {
     provider: providers.Provider;
   const decimalsMultiplyer = BigNumber.from("1000000000000000000");
   function toggleSimpleTokenModal() {
+    checkProvider();
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
-    if (tokenStatus.value === tokenStatuses[0]) {
-      deployToTestnet();
-    }
   }
   function expandAddressList() {
     showExpandedList.value = !showExpandedList.value;
   }
-  async function deployToTestnet() {
+  async function checkProvider() {
     tokenStatus.value = tokenStatuses[1];
     const hasEthProvider = await detectEthereumProvider();
     if (hasEthProvider) {
@@ -535,19 +515,6 @@ function composeDeployGovToken() {
         }
       });
       metamaskStatus.value = metamaskAuthStatuses[3];
-      await api.deploySimpleTokenToTestNet({
-        freeSupply: initialSupply.value,
-        airdropSupply: airdropSupply.value,
-        vaultAddress: tokenParams.vaultAddress,
-        tokenName: tokenParams.tokenName,
-        tokenSymbol: tokenParams.tokenSymbol,
-        tokenType: tokenParams.minting == "true" ? "timed_mint" : "simple",
-        contractVersion: "v0.1.0",
-        adminAddresses: parsedAddresses.value.toString(),
-        chainId: network.value,
-        txHash: "",
-        contractAddress: "",
-      });
       tokenStatus.value = tokenStatuses[2];
     } else {
       metamaskStatus.value = metamaskAuthStatuses[4];
