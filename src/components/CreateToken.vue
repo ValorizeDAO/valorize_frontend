@@ -675,7 +675,7 @@ function composeDeployGovToken() {
     },
     initialSupply: {
       required,
-      minLength: minLength(2),
+      minLength: minLength(1),
     },
     vaultAddress: {
       required,
@@ -683,7 +683,7 @@ function composeDeployGovToken() {
     },
     airdropSupply: {
       required,
-      minLength: minLength(2),
+      minLength: minLength(1),
     },
     adminAddresses: {
       required,
