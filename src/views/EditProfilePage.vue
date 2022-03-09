@@ -214,40 +214,6 @@
     >
       <!-- <h2 class="text-3xl font-black mb-6 mt-24 sm:mt-0">Your Token</h2> -->
       <div v-if="isAllowedUser">
-        <!-- <div v-else>
-        <h3 class="text-2xl font-black">{{ user.username }}'s Token</h3>
-        ( not yet deployed )
-        <label>
-          <p class="font-black mb-4 mt-8">Token Name</p>
-          <input
-            type="text"
-            name="tokenName"
-            id="token-name"
-            v-model="tokenName"
-            class="bg-paper-light border-black border-b-2 w-full"
-          />
-        </label>
-        <label>
-          <p class="font-black my-4">Token Symbol</p>
-          <input
-            type="text"
-            name="tokenSymbol"
-            id="token-tiker"
-            v-model="tokenSymbol"
-            placeholder="e.g TKN"
-            class="bg-paper-light border-black border-b-2 w-full"
-          />
-        </label>
-        <div class="text-center">
-          <p class="my-8">(Get 1000 of this token by deploying the contract)</p>
-          <button
-            @click="onTestDeployButtonPress"
-            class="btn w-48 my-4 bg-paper-darker"
-          >
-            Test Deploy {{ tokenSymbol }}
-          </button>
-        </div>
-      </div> -->
         <CreateToken />
         <Modal
           :modal-is-open="modalIsOpen"

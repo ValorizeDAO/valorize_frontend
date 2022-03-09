@@ -224,28 +224,6 @@
         class="flex items-center justify-between pb-4 border-black border-b-2"
       >
         <h2 class="text-xl font-black">Token Summary</h2>
-        <transition name="fade" mode="out-in">
-          <div v-if="tokenStatus === 'DEPLOYING_TEST'">
-            <SvgLoader class="text-center mx-auto h-8" fill="#"></SvgLoader>
-          </div>
-          <button v-else-if="tokenStatus === 'DEPLOYED_TEST'" class="btn flex">
-            View On Testnet
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-6 w-6 ml-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-              />
-            </svg>
-          </button>
-        </transition>
       </div>
       <div class="mt-4">
         <h1 class="text-3xl font-black mb-8">
@@ -340,27 +318,30 @@
         </div>
       </div>
       <div class="flex justify-center my-4">
-        <div v-if="metamaskStatus === 'TX_REJECTED'">
-          Please verify the details and try again.
-        </div>
         <transition name="fade" mode="out-in">
           <div v-if="metamaskStatus === 'INIT'">
             Checking your Web3 Provider
           </div>
-          <div v-else-if="metamaskStatus === 'REQUESTED'">
-            please enable metamask or a web3 provider
+          <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
+            Please Use Your Wallet to Confirm Transaction
           </div>
           <div
             v-else-if="
               metamaskStatus === 'SUCCESSFULLY_ENABLED' ||
-              metamaskStatus === 'TX_REJECTED' ||
-              metamaskStatus === 'TX_ERROR'
+              metamaskStatus === 'TX_ERROR' ||
+              metamaskStatus === 'TX_REJECTED'
             "
           >
             <div class="text-center" v-if="metamaskStatus === 'TX_ERROR'">
-              There was an error creating your token <br />
               <p>{{ errorText }}</p>
-              <p>Try Again?</p>
+              <p class="mb-2">Try Again?</p>
+            </div>
+            <div
+              v-else-if="metamaskStatus === 'TX_REJECTED'"
+              class="text-center"
+            >
+              <p>Transaction Rejected By Your Wallet</p>
+              <p class="mb-2">Try Again?</p>
             </div>
             <button class="btn text-center" @click="deployToken">
               <span class="px-8">Deploy to {{ networkName }}</span>
@@ -371,11 +352,12 @@
             <a href="https://metamask.io/" class="font-black underline"
               >Metamask</a
             >
+            or use
+            <a href="https://brave.com/" class="font-black underline"
+              >Brave Browser's built in wallet</a
+            >
           </div>
-          <div
-            class="text-center"
-            v-else-if="metamaskStatus === 'TX_REQUESTED'"
-          >
+          <div class="text-center" v-else-if="metamaskStatus === 'TX_APPROVED'">
             Contract launching, <br />
             <a
               v-if="isKnownNetwork"
@@ -460,9 +442,10 @@ function composeDeployGovToken() {
     "SUCCESSFULLY_ENABLED", //3
     "UNAVAILABLE", //4
     "TX_REQUESTED", //5
-    "TX_SUCCESS", //6
-    "TX_REJECTED", //7
-    "TX_ERROR", //8
+    "TX_APPROVED", //6
+    "TX_SUCCESS", //7
+    "TX_REJECTED", //8
+    "TX_ERROR", //9
   ];
   const errorText = ref("");
   const metamaskStatus = ref(metamaskAuthStatuses[0]);
@@ -512,15 +495,13 @@ function composeDeployGovToken() {
     provider: providers.Provider;
   const decimalsMultiplyer = BigNumber.from("1000000000000000000");
   function toggleSimpleTokenModal() {
+    checkProvider();
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
-    if (tokenStatus.value === tokenStatuses[0]) {
-      deployToTestnet();
-    }
   }
   function expandAddressList() {
     showExpandedList.value = !showExpandedList.value;
   }
-  async function deployToTestnet() {
+  async function checkProvider() {
     tokenStatus.value = tokenStatuses[1];
     const hasEthProvider = await detectEthereumProvider();
     if (hasEthProvider) {
@@ -535,19 +516,6 @@ function composeDeployGovToken() {
         }
       });
       metamaskStatus.value = metamaskAuthStatuses[3];
-      await api.deploySimpleTokenToTestNet({
-        freeSupply: initialSupply.value,
-        airdropSupply: airdropSupply.value,
-        vaultAddress: tokenParams.vaultAddress,
-        tokenName: tokenParams.tokenName,
-        tokenSymbol: tokenParams.tokenSymbol,
-        tokenType: tokenParams.minting == "true" ? "timed_mint" : "simple",
-        contractVersion: "v0.1.0",
-        adminAddresses: parsedAddresses.value.toString(),
-        chainId: network.value,
-        txHash: "",
-        contractAddress: "",
-      });
       tokenStatus.value = tokenStatuses[2];
     } else {
       metamaskStatus.value = metamaskAuthStatuses[4];
@@ -555,21 +523,29 @@ function composeDeployGovToken() {
   }
   async function deployToken() {
     tokenStatus.value = tokenStatuses[3];
+    metamaskStatus.value = metamaskAuthStatuses[1];
     //@ts-ignore the lies
     const signer = provider.getSigner();
+    metamaskStatus.value = metamaskAuthStatuses[3];
     let token: SimpleToken | TimedMintToken | undefined;
-    if (tokenParams.minting === "false") {
-      token = await deploySimpleToken(signer);
-    } else if (tokenParams.minting === "true") {
-      token = await deployTimedMintToken(signer);
-    } else {
-      return;
+    try {
+      metamaskStatus.value = metamaskAuthStatuses[5];
+      if (tokenParams.minting === "false") {
+        token = await deploySimpleToken(signer);
+      } else if (tokenParams.minting === "true") {
+        token = await deployTimedMintToken(signer);
+      } else {
+        return;
+      }
+    } catch (err) {
+      metamaskStatus.value = metamaskAuthStatuses[9];
     }
-    const tokenRequest = await storeTokenData();
-    const tokenResponse = await tokenRequest.json();
-    metamaskStatus.value = metamaskAuthStatuses[5];
     if (token) {
+      metamaskStatus.value = metamaskAuthStatuses[6];
+      const tokenRequest = await storeTokenData();
+      const tokenResponse = await tokenRequest.json();
       await token.deployed();
+      metamaskStatus.value = metamaskAuthStatuses[7];
       await router.push({
         path: "/token-success",
         query: { tokenId: tokenResponse.token.id },
@@ -580,7 +556,7 @@ function composeDeployGovToken() {
   async function deploySimpleToken(signer: Signer) {
     console.groupCollapsed("tokenInfo");
     console.log("Deploying Simple Token v0.1.0");
-    let simpleToken: SimpleToken;
+    let simpleToken: SimpleToken | undefined;
     try {
       simpleToken = await new SimpleTokenFactory(signer).deploy(
         BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
@@ -592,20 +568,24 @@ function composeDeployGovToken() {
       );
       tokenTxHash.value = simpleToken.deployTransaction.hash;
       deployedTokenAddress.value = simpleToken.address;
+      console.log({ simpleToken });
+    } catch (err: any) {
+      if (err.code === 4001) {
+        metamaskStatus.value = metamaskAuthStatuses[8];
+      } else {
+        metamaskStatus.value = metamaskAuthStatuses[9];
+        errorText.value = "Error confirming transaction";
+      }
+    } finally {
       console.groupEnd();
       return simpleToken;
-    } catch (err: any) {
-      console.error(err);
-      metamaskStatus.value = metamaskAuthStatuses[8];
-      errorText.value = err;
-      console.groupEnd();
     }
   }
 
   async function deployTimedMintToken(signer: Signer) {
     console.groupCollapsed("tokenInfo");
     console.log("Deploying Timed Mint Token v0.1.0");
-    let timedMintToken: TimedMintToken;
+    let timedMintToken: TimedMintToken | undefined;
     let maxSupply: BigNumber;
     if (tokenParams.supplyCap === "false") {
       maxSupply = BigNumber.from(0);
@@ -624,15 +604,19 @@ function composeDeployGovToken() {
         tokenParams.tokenSymbol,
         parsedAddresses.value.map((v) => ethers.utils.getAddress(v))
       );
+      console.log({ timedMintToken });
       tokenTxHash.value = timedMintToken.deployTransaction.hash;
       deployedTokenAddress.value = timedMintToken.address;
+    } catch (err: any) {
+      if (err.code === 4001) {
+        metamaskStatus.value = metamaskAuthStatuses[8];
+      } else {
+        metamaskStatus.value = metamaskAuthStatuses[9];
+        errorText.value = "Error confirming transaction";
+      }
+    } finally {
       console.groupEnd();
       return timedMintToken;
-    } catch (err: any) {
-      console.error(err);
-      metamaskStatus.value = metamaskAuthStatuses[8];
-      errorText.value = err;
-      console.groupEnd();
     }
   }
 
