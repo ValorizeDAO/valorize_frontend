@@ -261,13 +261,13 @@
             >To be sent to: "{{ tokenParams.vaultAddress }}"</span
           >
           <span class="text-l font-black text-gray-700">{{
-            c(tokenParams.initialSupply)
+            c(initialSupply)
           }}</span>
         </div>
         <div class="flex justify-between items-center">
           <span class="text-sm ml-8">Reserved for Airdrops</span>
           <span class="text-l font-black text-gray-700">{{
-            c(tokenParams.airdropSupply)
+            c(airdropSupply)
           }}</span>
         </div>
         <div
@@ -493,10 +493,14 @@ function composeDeployGovToken() {
   const blockExplorer = computed((): string => {
     return networks[network.value].blockExplorer;
   });
+  const initialSupply = computed(() => {
+    return getNumbersFromString(tokenParams.initialSupply);
+  });
+  const airdropSupply = computed(() => {
+    return getNumbersFromString(tokenParams.airdropSupply);
+  });
   const totalSupply = computed(() => {
-    return (
-      Number(tokenParams.initialSupply) + Number(tokenParams.airdropSupply)
-    );
+    return Number(initialSupply.value) + Number(airdropSupply.value);
   });
   const parsedAddresses = computed(() => {
     const { adminAddresses } = tokenParams;
@@ -532,8 +536,8 @@ function composeDeployGovToken() {
       });
       metamaskStatus.value = metamaskAuthStatuses[3];
       await api.deploySimpleTokenToTestNet({
-        freeSupply: tokenParams.initialSupply,
-        airdropSupply: tokenParams.airdropSupply,
+        freeSupply: initialSupply.value,
+        airdropSupply: airdropSupply.value,
         vaultAddress: tokenParams.vaultAddress,
         tokenName: tokenParams.tokenName,
         tokenSymbol: tokenParams.tokenSymbol,
@@ -579,8 +583,8 @@ function composeDeployGovToken() {
     let simpleToken: SimpleToken;
     try {
       simpleToken = await new SimpleTokenFactory(signer).deploy(
-        BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer),
-        BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer),
+        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
+        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
         ethers.utils.getAddress(tokenParams.vaultAddress),
         tokenParams.tokenName,
         tokenParams.tokenSymbol,
@@ -610,8 +614,8 @@ function composeDeployGovToken() {
     }
     try {
       timedMintToken = await new TimedMintTokenFactory(signer).deploy(
-        BigNumber.from(tokenParams.initialSupply).mul(decimalsMultiplyer), //vault
-        BigNumber.from(tokenParams.airdropSupply).mul(decimalsMultiplyer), //airdrop
+        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer), //vault
+        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer), //airdrop
         maxSupply, //supplycap
         ethers.utils.getAddress(tokenParams.vaultAddress), //vault
         BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
@@ -636,8 +640,8 @@ function composeDeployGovToken() {
     return await auth.saveTokenData({
       tokenType: tokenParams.minting == "true" ? "timed_mint" : "simple",
       contractVersion: "v0.1.0",
-      freeSupply: tokenParams.initialSupply,
-      airdropSupply: tokenParams.airdropSupply,
+      freeSupply: initialSupply.value,
+      airdropSupply: airdropSupply.value,
       vaultAddress: tokenParams.vaultAddress,
       tokenName: tokenParams.tokenName,
       tokenSymbol: tokenParams.tokenSymbol,
@@ -650,6 +654,9 @@ function composeDeployGovToken() {
   function submitToken() {
     toggleSimpleTokenModal();
   }
+  function getNumbersFromString(str: string) {
+    return str.replace(/[^0-9]/g, "");
+  }
   function isEtherAddress(value: string) {
     const trimmedAddress = value.trim();
     return (
@@ -658,9 +665,8 @@ function composeDeployGovToken() {
   }
   function isNumberString(value: string) {
     if (value) {
-      const trimmedString = value.trim();
       //@ts-ignore because TS doesn't know the idiosyncrasies (dumb design decisions) of JS
-      return parseInt(trimmedString) != "Nan";
+      return parseInt(getNumbersFromString(value)) != "Nan";
     }
     return true;
   }
@@ -676,6 +682,7 @@ function composeDeployGovToken() {
     initialSupply: {
       required,
       minLength: minLength(1),
+      isNumberString,
     },
     vaultAddress: {
       required,
@@ -684,6 +691,7 @@ function composeDeployGovToken() {
     airdropSupply: {
       required,
       minLength: minLength(1),
+      isNumberString,
     },
     adminAddresses: {
       required,
@@ -703,8 +711,8 @@ function composeDeployGovToken() {
           isNumberString(value) &&
           (value == "0" ||
             parseInt(value) >
-              parseInt(tokenParams.initialSupply) +
-                parseInt(tokenParams.airdropSupply))
+              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+                parseInt(getNumbersFromString(tokenParams.airdropSupply)))
         );
       },
     },
@@ -726,6 +734,8 @@ function composeDeployGovToken() {
   });
   return {
     tokenParams,
+    initialSupply,
+    airdropSupply,
     totalSupply,
     submitToken,
     parsedAddresses,
