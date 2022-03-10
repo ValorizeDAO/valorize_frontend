@@ -57,10 +57,32 @@
               text-center
             "
           >
-            <router-link class="pb-8 sm:pb-0 sm:pr-4" id="login" to="/login"
+            <router-link to="/beta-signup">
+              <button
+                class="
+                  sm:flex sm:justify-center
+                  pb-8
+                  sm:pb-0 sm:px-2
+                  hover:font-bold
+                  transition
+                  duration-100
+                "
+              >
+                Sign Up To Beta
+              </button>
+            </router-link>
+            <router-link
+              class="
+                pb-8
+                sm:pb-0 sm:mx-4
+                hover:font-bold
+                transition
+                duration-100
+              "
+              id="login"
+              to="/login"
               >Login</router-link
             >
-            <router-link id="register" to="/register">Register</router-link>
           </div>
           <div
             v-else
@@ -75,6 +97,9 @@
               flex flex-col
               sm:flex-row
               text-center
+              hover:font-bold
+              transition
+              duration-100
             "
           >
             <router-link
@@ -83,14 +108,13 @@
               class="px-4 py-2 sm:mr-4"
               >Edit Profile</router-link
             >
-            <button id="logout" @click="logout" class="px-4 py-2">
+            <button
+              id="logout"
+              @click="logout"
+              class="px-4 py-2 hover:font-bold transition duration-100"
+            >
               Logout
             </button>
-            <!-- <router-link to="/beta-signup">
-            <button class="pb-8 sm:pb-0 sm:pr-4">
-              Sign Up
-            </button>
-          </router-link> -->
           </div>
         </div>
       </div>
@@ -166,7 +190,11 @@ export default defineComponent({
   },
 });
 </script>
-
+<style lang="postcss" scoped>
+.router-link-exact-active {
+  @apply font-bold;
+}
+</style>
 <style>
 .cta_button,
 .cta_button--main {
