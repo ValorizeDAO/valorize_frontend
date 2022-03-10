@@ -15,7 +15,9 @@
         With us, it is not.
       </h2>
       <div class="p-8 mx-auto flex justify-center">
-        <router-link to="beta-signup" class="cta_button text-center font-bold text-2xl"
+        <router-link
+          to="beta-signup"
+          class="cta_button text-center font-bold text-2xl"
           >Sign Up</router-link
         >
       </div>
@@ -25,15 +27,15 @@
     <div class="describeSection__heading mb-24">
       <h2 class="text-4xl">
         Choose a smart contract template. Launch a token.
-        <br/>
-        <div class="mt-4">Multiply the power of your community. </div>
+        <br />
+        <div class="mt-4">Multiply the power of your community.</div>
       </h2>
     </div>
 
     <div class="describeSection__heading--right">
       <h2 class="text-4xl">
-        Launching your own token is easier than ever, create and use tokens while maintaining complete
-        control of them.
+        Launching your own token is easier than ever, create and use tokens
+        while maintaining complete control of them.
       </h2>
       <a
         href="https://www.notion.so/valorize/Valorize-White-Paper-58fa3161c09e4ec2807cb0ea5d581d8f"
@@ -54,9 +56,9 @@
           ></div>
         </button>
         <p class="faqSection__answer" v-show="!isHidden0" x-transition.fade>
-          Creator Tokens are the first type of cryptocurrency token we have developed. 
-          It works through a bonding curve, where people mint new tokens by depositing 
-          ETH into the conract, and can allways sell. 
+          Creator Tokens are the first type of cryptocurrency token we have
+          developed. It works through a bonding curve, where people mint new
+          tokens by depositing ETH into the conract, and can allways sell.
         </p>
       </li>
       <div class="divider"></div>
@@ -69,8 +71,12 @@
           ></div>
         </button>
         <p class="faqSection__answer" v-show="!isHidden1" x-transition.fade>
-          Join the waitlist by joining the platform. You can set up your profile. If you believe 
-          you are a great candidate for early access, please  <a class="underline" href="mailto:javier@valorize.app">send us an email </a>
+          Join the waitlist by joining the platform. You can set up your
+          profile. If you believe you are a great candidate for early access,
+          please
+          <a class="underline" href="mailto:javier@valorize.app"
+            >send us an email
+          </a>
           <br /><br /><router-link to="beta-signup" class="cta_button">
             Get Early Access
           </router-link>
@@ -86,8 +92,9 @@
           ></div>
         </button>
         <p class="faqSection__answer" v-show="!isHidden2" x-transition.fade>
-          Yes, network fees as well as launching fees are required to launch a token.
-          Proceeds go to continue the development of Valorize and are managed by Valorize DAO.
+          Yes, network fees as well as launching fees are required to launch a
+          token. Proceeds go to continue the development of Valorize and are
+          managed by Valorize DAO.
         </p>
       </li>
     </ul>
@@ -96,11 +103,27 @@
     <!-- <h2 class="text-right">Links</h2>  -->
     <div class="divider my-6"></div>
     <div class="flex justify-end items-center">
-      <a href="https://twitter.com/valorizedao" target="_blank" class="mr-4 opacity-30 hover:opacity-40">
-        <img class="w-12" src="/src/assets/img/logos/twitter.svg" alt="Twitter" />
+      <a
+        href="https://twitter.com/valorizedao"
+        target="_blank"
+        class="mr-4 opacity-30 hover:opacity-40"
+      >
+        <img
+          class="w-12"
+          src="/src/assets/img/logos/twitter.svg"
+          alt="Twitter"
+        />
       </a>
-      <a href="https://discord.gg/3PRMWrH9DT" target="_blank" class="opacity-30 hover:opacity-40">
-        <img class="w-12" src="/src/assets/img/logos/discord.svg" alt="Discord" />
+      <a
+        href="https://discord.gg/3PRMWrH9DT"
+        target="_blank"
+        class="opacity-30 hover:opacity-40"
+      >
+        <img
+          class="w-12"
+          src="/src/assets/img/logos/discord.svg"
+          alt="Discord"
+        />
       </a>
     </div>
   </section>
@@ -138,8 +161,8 @@ export default defineComponent({
     },
   },
   setup() {
-    const store = useStore()
-    store.dispatch("authUser/checkAuth")
+    const store = useStore();
+    store.dispatch("authUser/checkAuth");
     return { ...composeImageSlider(), ...composeChart() };
   },
 });

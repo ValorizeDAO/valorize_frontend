@@ -5,3 +5,5 @@ dist-ssr
 *.local
 .env
 .idea
+# Local Netlify folder
+.netlify
