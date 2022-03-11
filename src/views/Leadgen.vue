@@ -1,5 +1,6 @@
 <template>
-  <div class="h-screen -mt-2">
+  <div class="h-screen w-screen -mt-2 flex items-center justify-center">
+    <SvgLoader fill="black" class="h-16 w-16 absolute" />
     <div
       class="h-screen"
       data-tf-widget="OAwwIXjV"
@@ -13,8 +14,10 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import SvgLoader from "../components/SvgLoader.vue";
 
 export default defineComponent({
+  components: { SvgLoader },
   mounted() {
     const leadgen = this.$refs.leadgen as HTMLElement;
     leadgen.setAttribute("src", "//embed.typeform.com/next/embed.js");

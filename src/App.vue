@@ -57,10 +57,32 @@
               text-center
             "
           >
-            <router-link class="pb-8 sm:pb-0 sm:pr-4" id="login" to="/login"
+            <router-link to="/beta-signup">
+              <button
+                class="
+                  sm:flex sm:justify-center
+                  pb-8
+                  sm:pb-0 sm:px-2
+                  hover:font-bold
+                  transition
+                  duration-100
+                "
+              >
+                Sign Up To Beta
+              </button>
+            </router-link>
+            <router-link
+              class="
+                pb-8
+                sm:pb-0 sm:mx-4
+                hover:font-bold
+                transition
+                duration-100
+              "
+              id="login"
+              to="/login"
               >Login</router-link
             >
-            <router-link id="register" to="/register">Register</router-link>
           </div>
           <div
             v-else
@@ -75,22 +97,32 @@
               flex flex-col
               sm:flex-row
               text-center
+              hover:font-bold
+              transition
+              duration-100
             "
           >
-            <router-link
-              id="edit-profile"
-              to="/edit-profile"
-              class="px-4 py-2 sm:mr-4"
-              >Edit Profile</router-link
+            <router-link id="edit-profile" to="/edit-profile">
+              <button
+                class="
+                  sm:flex sm:justify-center
+                  pb-8
+                  sm:py-2 sm:px-2
+                  hover:font-bold
+                  transition
+                  duration-100
+                "
+              >
+                Edit Profile
+              </button>
+            </router-link>
+            <button
+              id="logout"
+              @click="logout"
+              class="px-4 py-2 hover:font-bold transition duration-100"
             >
-            <button id="logout" @click="logout" class="px-4 py-2">
               Logout
             </button>
-            <!-- <router-link to="/beta-signup">
-            <button class="pb-8 sm:pb-0 sm:pr-4">
-              Sign Up
-            </button>
-          </router-link> -->
           </div>
         </div>
       </div>
@@ -123,7 +155,6 @@
 import { mapGetters, mapActions } from "vuex";
 import { defineComponent } from "vue";
 import SvgLoader from "./components/SvgLoader.vue";
-import auth from "./services/authentication";
 import asciiLogo from "./assets/ascii-logo";
 
 export default defineComponent({
@@ -138,6 +169,7 @@ export default defineComponent({
     ...mapActions({ logoutState: "authUser/logout" }),
     async logout() {
       this.logoutState();
+      this.$router.push("/");
     },
     triggerBlock() {
       this.showMobileMenu = !this.showMobileMenu;
@@ -152,7 +184,7 @@ export default defineComponent({
   },
   mounted() {
     //check if app is running in production
-    console.log("VALORIZE_APP_DEPLOY_0.1.6");
+    console.log("VALORIZE_APP_DEPLOY_0.1.7");
     if (import.meta.env.VITE_ENV != "dev") {
       console.log(
         `%c${asciiLogo}
@@ -166,7 +198,11 @@ export default defineComponent({
   },
 });
 </script>
-
+<style lang="postcss" scoped>
+.router-link-exact-active {
+  @apply font-bold;
+}
+</style>
 <style>
 .cta_button,
 .cta_button--main {
