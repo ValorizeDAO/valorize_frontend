@@ -262,7 +262,7 @@
             <span
               class="text-xl font-black"
               v-if="tokenParams.supplyCap === 'true'"
-              >{{ c(tokenParams.maxSupply) }}</span
+              >{{ c(maxSupply) }}</span
             >
             <span
               class="text-xl font-black"
@@ -286,7 +286,7 @@
             <h2 class="text-xl font-black">
               Tokens to Mint Per Minting Periods
             </h2>
-            <span class="text-xl font-black">{{ c(tokenParams.mintCap) }}</span>
+            <span class="text-xl font-black">{{ c(mintCap) }}</span>
           </div>
         </div>
         <div class="justify-between border-b-2 border-black py-2">
@@ -482,6 +482,12 @@ function composeDeployGovToken() {
   const airdropSupply = computed(() => {
     return getNumbersFromString(tokenParams.airdropSupply);
   });
+  const mintCap = computed(() => {
+    return getNumbersFromString(tokenParams.mintCap);
+  });
+  const maxSupply = computed(() => {
+    return getNumbersFromString(tokenParams.maxSupply);
+  });
   const totalSupply = computed(() => {
     return Number(initialSupply.value) + Number(airdropSupply.value);
   });
@@ -586,17 +592,17 @@ function composeDeployGovToken() {
     console.groupCollapsed("tokenInfo");
     console.log("Deploying Timed Mint Token v0.1.0");
     let timedMintToken: TimedMintToken | undefined;
-    let maxSupply: BigNumber;
+    let maxTokenSupply: BigNumber;
     if (tokenParams.supplyCap === "false") {
-      maxSupply = BigNumber.from(0);
+      maxTokenSupply = BigNumber.from(0);
     } else {
-      maxSupply = BigNumber.from(tokenParams.maxSupply).mul(decimalsMultiplyer);
+      maxTokenSupply = BigNumber.from(maxSupply).mul(decimalsMultiplyer);
     }
     try {
       timedMintToken = await new TimedMintTokenFactory(signer).deploy(
         BigNumber.from(initialSupply.value).mul(decimalsMultiplyer), //vault
         BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer), //airdrop
-        maxSupply, //supplycap
+        maxTokenSupply, //supplycap
         ethers.utils.getAddress(tokenParams.vaultAddress), //vault
         BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
         BigNumber.from(tokenParams.mintCap).mul(decimalsMultiplyer), //mintCap
@@ -721,6 +727,8 @@ function composeDeployGovToken() {
     initialSupply,
     airdropSupply,
     totalSupply,
+    mintCap,
+    maxSupply,
     submitToken,
     parsedAddresses,
     showExpandedList,
