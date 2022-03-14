@@ -576,6 +576,7 @@ function composeDeployGovToken() {
       deployedTokenAddress.value = simpleToken.address;
       console.log({ simpleToken });
     } catch (err: any) {
+      console.error(err);
       if (err.code === 4001) {
         metamaskStatus.value = metamaskAuthStatuses[8];
       } else {
@@ -596,7 +597,7 @@ function composeDeployGovToken() {
     if (tokenParams.supplyCap === "false") {
       maxTokenSupply = BigNumber.from(0);
     } else {
-      maxTokenSupply = BigNumber.from(maxSupply).mul(decimalsMultiplyer);
+      maxTokenSupply = BigNumber.from(maxSupply.value).mul(decimalsMultiplyer);
     }
     try {
       timedMintToken = await new TimedMintTokenFactory(signer).deploy(
@@ -605,7 +606,7 @@ function composeDeployGovToken() {
         maxTokenSupply, //supplycap
         ethers.utils.getAddress(tokenParams.vaultAddress), //vault
         BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
-        BigNumber.from(tokenParams.mintCap).mul(decimalsMultiplyer), //mintCap
+        BigNumber.from(mintCap.value).mul(decimalsMultiplyer), //mintCap
         tokenParams.tokenName,
         tokenParams.tokenSymbol,
         parsedAddresses.value.map((v) => ethers.utils.getAddress(v))
@@ -614,6 +615,7 @@ function composeDeployGovToken() {
       tokenTxHash.value = timedMintToken.deployTransaction.hash;
       deployedTokenAddress.value = timedMintToken.address;
     } catch (err: any) {
+      console.error(err);
       if (err.code === 4001) {
         metamaskStatus.value = metamaskAuthStatuses[8];
       } else {
