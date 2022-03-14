@@ -194,7 +194,7 @@
                 id="mint-cap"
                 name="mintCap"
                 class="w-full border-b-2 border-black bg-transparent"
-                type="number"
+                type="string"
               />
             </label>
           </div>
@@ -216,7 +216,7 @@
       </div>
     </form>
     <Modal
-      :body-class="['bg-white xl:w-7/12 sm:mt-0']"
+      :body-class="['bg-white xl:w-7/12 sm:mt-0 md:mt-12']"
       :modal-is-open="simpleTokenModalDisplayed"
       @toggle="() => toggleSimpleTokenModal()"
     >
@@ -698,11 +698,10 @@ function composeDeployGovToken() {
     maxSupply: {
       isValidMaxSupply: (value: string) => {
         return (
-          isNumberString(value) &&
-          (value == "0" ||
-            parseInt(value) >
-              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-                parseInt(getNumbersFromString(tokenParams.airdropSupply)))
+          value == "0" ||
+          parseInt(getNumbersFromString(value)) >
+            parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+              parseInt(getNumbersFromString(tokenParams.airdropSupply))
         );
       },
     },
