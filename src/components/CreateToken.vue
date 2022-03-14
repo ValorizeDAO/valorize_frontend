@@ -197,6 +197,10 @@
                 type="string"
               />
             </label>
+            <p v-if="v$.mintCap.$dirty && v$.mintCap.isValidMintAmout.$invalid">
+              Please enter a valid amount of tokens to to mint each
+              {{ v$.timeDelay.$model }} days
+            </p>
           </div>
         </div>
       </transition>
@@ -711,7 +715,11 @@ function composeDeployGovToken() {
       isNumberString,
     },
     mintCap: {
-      isNumberString,
+      isValidMintAmout: (value: string) => {
+        return (
+          isNumberString(value) && parseInt(getNumbersFromString(value)) > 0
+        );
+      },
     },
   }));
 
