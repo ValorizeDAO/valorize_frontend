@@ -127,7 +127,7 @@
         </div>
       </div>
     </nav>
-    <div class="pt-20 min-h-screen w-screen overflow-hidden bg-purple-50">
+    <div class="pt-20 min-h-screen max-w-[100vw] overflow-hidden bg-purple-50">
       <div
         v-if="checkingAuth"
         class="

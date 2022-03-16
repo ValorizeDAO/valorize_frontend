@@ -1,18 +1,16 @@
 
 <template>
-  <section id="hero" class="heroSection">
-    <div class="flex flex-col items-center justify-center max-w-4xl mt-28">
+  <section id="hero" class="heroSection flex items-center">
+    <div class="flex flex-col justify-center max-w-4xl mt-28">
       <h1 class="text-5xl lg:text-7xl font-black mb-8">
-        Launch a Token, <br />
-        Turn a Community Into a DAO
+        Multiply the Power of Your Community.
       </h1>
       <div class="divider"></div>
       <h2 class="heroSection__supportCopy">
-        Creating your own token <em class="font-black italic">WAS</em> the most
-        difficult part of turning a <em>discord</em> into a DAO.
+        Launch a Token, turn your <em>discord</em> into a DAO.
       </h2>
       <h2 class="heroSection__supportCopy text-center mt-8">
-        With us, it is not.
+        It is easier than you think.
       </h2>
       <div class="p-8 mx-auto flex justify-center">
         <router-link
@@ -22,23 +20,68 @@
         >
       </div>
     </div>
+    <div
+      class="
+        lg:block
+        items-center
+        transform
+        sm:translate-x-80
+        md:translate-x-40
+        xl:translate-x-20
+        max-h-[60vh] max-w-[580px]
+      "
+    >
+      <div
+        class="
+          productImage__section
+          transform
+          -translate-y-[25%]
+          object-fill
+          relative
+        "
+      >
+        <img
+          src="/product-screenshot1.png"
+          alt="product screenshot"
+          srcset=""
+          class="transform translate-y-[140%] down fadeIn1"
+          ref="image1"
+        />
+        <img
+          src="/product-screenshot2.png"
+          alt="product screenshot"
+          srcset=""
+          class="z-0 transform translate-x-0 fadeIn2"
+          ref="image2"
+        />
+        <img
+          src="/product-screenshot3.png"
+          alt="product screenshot"
+          srcset=""
+          class="transform -translate-y-[140%] up fadeIn3"
+          ref="image3"
+        />
+      </div>
+    </div>
   </section>
-  <section id="describe" class="describeSection">
-    <div class="describeSection__heading mb-24">
-      <h2 class="text-4xl">
+  <section id="describe" class="describeSection bg-white border-4 border-black">
+    <div class="describeSection__heading mb-24 pt-28">
+      <h2 class="text-4xl font-black">
         Choose a smart contract template. Launch a token.
-        <br />
-        <div class="mt-4">Multiply the power of your community.</div>
       </h2>
+      <h3 class="text-2xl mt-4">
+        We have state of the art token templates that are used by the biggest
+        DAOs in the space.
+      </h3>
     </div>
 
     <div class="describeSection__heading--right">
-      <h2 class="text-4xl">
-        Launching your own token is easier than ever, create and use tokens
-        while maintaining complete control of them.
-      </h2>
+      <h2 class="text-4xl font-black">Create rewards, aridrops, and more.</h2>
+      <h3 class="text-2xl mt-4">
+        We have easy to use tools to manage and distribute your tokens
+      </h3>
       <a
-        href="https://www.notion.so/valorize/Valorize-White-Paper-58fa3161c09e4ec2807cb0ea5d581d8f"
+        href="https://medium.com/@valorize_app/introducing-valorize-c2c3b2fcf8b"
         ><button class="cta_button mt-8">Find Out More</button></a
       >
     </div>
@@ -47,18 +90,18 @@
     <h2>FAQ</h2>
     <div class="divider"></div>
     <ul class="faqSection__accordionContainer">
-      <li x-data="accordion" class="faqSection__accordion">
+      <li class="faqSection__accordion">
         <button class="faqSection__question" @click="open0">
-          <h3 class="faqSection__questionTitle">What is a Creator Token?</h3>
+          <h3 class="faqSection__questionTitle">What is a Governance Token?</h3>
           <div
             class="faqSection__questionButton"
             :class="isHidden0 ? '' : 'open'"
           ></div>
         </button>
-        <p class="faqSection__answer" v-show="!isHidden0" x-transition.fade>
-          Creator Tokens are the first type of cryptocurrency token we have
-          developed. It works through a bonding curve, where people mint new
-          tokens by depositing ETH into the conract, and can allways sell.
+        <p class="faqSection__answer" v-show="!isHidden0">
+          Governance tokens are cryptocurrency contracts living on a blockchain
+          like ethereum. They are used to reward, incentivize, manage, and vote
+          on the future of organizations
         </p>
       </li>
       <div class="divider"></div>
@@ -70,28 +113,45 @@
             :class="isHidden1 ? '' : 'open'"
           ></div>
         </button>
-        <p class="faqSection__answer" v-show="!isHidden1" x-transition.fade>
-          Join the waitlist by joining the platform. You can set up your
-          profile. If you believe you are a great candidate for early access,
-          please
-          <a class="underline" href="mailto:javier@valorize.app"
-            >send us an email
-          </a>
-          <br /><br /><router-link to="beta-signup" class="cta_button">
-            Get Early Access
-          </router-link>
-        </p>
+        <div class="faqSection__answer mb-4" v-show="!isHidden1">
+          <p>
+            Join the platform to get on the waitlist. Let us know who you are by
+            filling this form and we will get back to you.
+          </p>
+          <div class="mt-4">
+            <router-link to="beta-signup" class="cta_button">
+              Get Early Access
+            </router-link>
+          </div>
+        </div>
       </li>
       <div class="divider"></div>
       <li x-data="accordion" class="faqSection__accordion">
         <button class="faqSection__question" @click="open2">
-          <h3 class="faqSection__questionTitle">Do I Have to Pay A Fee?</h3>
+          <h3 class="faqSection__questionTitle">
+            How do we know how many tokens to mint?
+          </h3>
           <div
             class="faqSection__questionButton"
             :class="isHidden2 ? '' : 'open'"
           ></div>
         </button>
-        <p class="faqSection__answer" v-show="!isHidden2" x-transition.fade>
+        <p class="faqSection__answer mt-8" v-show="!isHidden2">
+          If you want a consultation, you can get in touch with us. We are
+          building out resources that will be available to you soon! Fill out
+          the Sign Up Form or contact us in the chat!
+        </p>
+      </li>
+      <div class="divider"></div>
+      <li x-data="accordion" class="faqSection__accordion">
+        <button class="faqSection__question" @click="open3">
+          <h3 class="faqSection__questionTitle">Do I Have to Pay A Fee?</h3>
+          <div
+            class="faqSection__questionButton"
+            :class="isHidden3 ? '' : 'open'"
+          ></div>
+        </button>
+        <p class="faqSection__answer" v-show="!isHidden3">
           Yes, network fees as well as launching fees are required to launch a
           token. Proceeds go to continue the development of Valorize and are
           managed by Valorize DAO.
@@ -130,10 +190,8 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, Ref } from "vue";
-import { Chart, ChartConfiguration, registerables } from "chart.js";
+import { ref, defineComponent, onMounted, Ref, computed } from "vue";
 import { useStore } from "vuex";
-Chart.register(...registerables);
 export default defineComponent({
   name: "Dashboard",
   props: {},
@@ -163,156 +221,33 @@ export default defineComponent({
   setup() {
     const store = useStore();
     store.dispatch("authUser/checkAuth");
-    return { ...composeImageSlider(), ...composeChart() };
+    return { ...composeAnimateProductImages() };
   },
 });
 
-const totalDuration = 5000;
-const data = [
-  3, 30, 42, 65, 75, 79, 121, 145, 175, 235, 365, 418, 522, 588, 660, 775, 815,
-  900, 1025, 1050, 1178, 1280, 1320, 1390, 1580, 1650,
-];
-const delayBetweenPoints = totalDuration / data.length;
-
-function composeImageSlider() {
-  const container: Ref<null | HTMLDivElement> = ref(null);
-  const investors = ref(150);
-  const tokenSamplePrice = ref(20.0);
+function composeAnimateProductImages() {
+  const image1 = ref<HTMLImageElement | null>(null);
+  const image2 = ref<HTMLImageElement | null>(null);
+  const image3 = ref<HTMLImageElement | null>(null);
   onMounted(() => {
-    const observerCallback: IntersectionObserverCallback = (
-      e: IntersectionObserverEntry[]
-    ) => {
-      if (e[0].isIntersecting && investors.value === 150) {
-        const increaseNums = window.setInterval(animateFrame, 50);
-        window.setTimeout(
-          () => window.clearInterval(increaseNums),
-          totalDuration
-        );
-      } else {
-        window.removeEventListener("scroll", animateFrame);
+    window.scrollTo(0, 0);
+    setTimeout(() => {
+      if (image1.value) {
+        image1.value.classList.add("productImage_image");
+        image1.value.classList.remove("fadeIn1");
       }
-    };
-    let observer = new IntersectionObserver(observerCallback, {
-      threshold: 0,
-    });
-    if (container.value) {
-      observer.observe(container.value);
-    }
-    const animateFrame = () => {
-      investors.value = investors.value + 15;
-      tokenSamplePrice.value = Number(
-        (Math.round((investors.value / 25) * 100) / 100).toFixed(2)
-      );
-    };
+      if (image2.value) {
+        image2.value.classList.add("productImage_image");
+        image2.value.classList.remove("fadeIn2");
+      }
+      if (image3.value) {
+        image3.value.classList.add("productImage_image");
+        image3.value.classList.remove("fadeIn3");
+      }
+    }, 4700);
   });
-  return {
-    investors,
-    tokenSamplePrice,
-    container,
-  };
+  return { image1, image2, image3 };
 }
-
-let myChart: Chart;
-function composeChart() {
-  const chart: Ref<null | HTMLCanvasElement> = ref(null);
-  onMounted(() => {
-    const observerCallback: IntersectionObserverCallback = (e) => {
-      if (e[0].isIntersecting && !myChart && chart.value) {
-        myChart = new Chart(chart.value, config);
-      }
-    };
-    let observer = new IntersectionObserver(observerCallback);
-    const { value: ctx } = chart;
-    if (ctx) {
-      observer.observe(ctx);
-    }
-  });
-  return { chart };
-}
-
-const previousY = (ctx: {
-  index: number;
-  chart: {
-    scales: { y: { getPixelForValue: (arg0: number) => any } };
-    getDatasetMeta: (arg0: any) => {
-      (): any;
-      new (): any;
-      data: {
-        getProps: (
-          arg0: string[],
-          arg1: boolean
-        ) => { (): any; new (): any; y: any };
-      }[];
-    };
-  };
-  datasetIndex: any;
-}) =>
-  ctx.index === 0
-    ? ctx.chart.scales.y.getPixelForValue(100)
-    : ctx.chart
-        .getDatasetMeta(ctx.datasetIndex)
-        .data[ctx.index - 1].getProps(["y"], true).y;
-
-const animation = {
-  x: {
-    type: "number",
-    easing: "linear",
-    duration: delayBetweenPoints,
-    from: NaN, // the point is initially skipped
-    delay(ctx: { type: string; xStarted: boolean; index: number }) {
-      if (ctx.type !== "data" || ctx.xStarted) {
-        return 0;
-      }
-      ctx.xStarted = true;
-      return ctx.index * delayBetweenPoints;
-    },
-  },
-  y: {
-    type: "number",
-    easing: "linear",
-    duration: delayBetweenPoints,
-    from: previousY,
-    delay(ctx: { type: string; yStarted: boolean; index: number }) {
-      if (ctx.type !== "data" || ctx.yStarted) {
-        return 0;
-      }
-      ctx.yStarted = true;
-      return ctx.index * delayBetweenPoints;
-    },
-  },
-};
-let config: ChartConfiguration = {
-  type: "line",
-  data: {
-    labels: new Array(data.length).fill(""),
-    datasets: [
-      {
-        label: "",
-        data: data,
-        fill: false,
-        borderColor: "#23123a",
-      },
-    ],
-  },
-  options: {
-    interaction: { intersect: false },
-    scales: {
-      y: {
-        beginAtZero: true,
-        grid: { display: false },
-        ticks: { display: false },
-      },
-      x: {
-        beginAtZero: true,
-        grid: { display: false },
-        ticks: { display: false },
-      },
-    },
-    plugins: {
-      legend: { display: false },
-    },
-  },
-};
 </script>
 
 <style scoped>
@@ -371,8 +306,7 @@ img {
 
 .heroSection {
   padding: 0 6em;
-  min-height: 80vh;
-  display: flex;
+  min-height: 70vh;
   justify-content: space-around;
 }
 @media (max-width: 640px) {
@@ -687,7 +621,7 @@ h3 {
 }
 .describeSection__heading,
 .describeSection__heading--right {
-  width: 50vw;
+  width: 700px;
   font-size: 18pt;
 }
 @media (max-width: 920px) {
@@ -902,6 +836,22 @@ h3 {
   cursor: pointer;
 }
 
+.fadeIn1 {
+  opacity: 0;
+  animation: fade 1.2s forwards;
+  animation-delay: 0.8s;
+}
+.fadeIn2 {
+  opacity: 0;
+  animation: fade 1.2s forwards;
+  animation-delay: 2.2s;
+}
+.fadeIn3 {
+  opacity: 0;
+  animation: fade 1.2s forwards;
+  animation-delay: 3.6s;
+}
+
 @keyframes slideDown {
   from {
     transform: translateY(-100%);
@@ -924,6 +874,44 @@ h3 {
   }
   to {
     opacity: 100%;
+  }
+}
+
+@media (max-width: 1280px) {
+  .productImage__section {
+    display: none;
+  }
+}
+.productImage_image {
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-direction: alternate;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+}
+.productImage_image.up {
+  animation-name: floatUp;
+}
+
+.productImage_image.down {
+  animation-name: floatDown;
+}
+
+@keyframes floatDown {
+  from {
+    transform: translateY(140%);
+  }
+  to {
+    transform: translateY(135%);
+  }
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(-140%);
+  }
+  to {
+    transform: translateY(-135%);
   }
 }
 
