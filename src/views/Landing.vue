@@ -20,16 +20,52 @@
         >
       </div>
     </div>
-    <div class="lg:block items-center transform sm:translate-x-80 md:translate-x-40 xl:translate-x-20 max-h-[60vh]">
-      <div class="productImage__section transform -translate-y-[25%] object-fill relative">
-        <img src="/product-screenshot1.png" alt="product screenshot" srcset="" class="transform translate-y-[140%] down fadeIn1" ref="image1">
-        <img src="/product-screenshot2.png" alt="product screenshot" srcset="" class="z-0 transform translate-x-0 fadeIn2" ref="image2">
-        <img src="/product-screenshot3.png" alt="product screenshot" srcset="" class="transform -translate-y-[140%] up fadeIn3" ref="image3">
+    <div
+      class="
+        lg:block
+        items-center
+        transform
+        sm:translate-x-80
+        md:translate-x-40
+        xl:translate-x-20
+        max-h-[60vh] max-w-[580px]
+      "
+    >
+      <div
+        class="
+          productImage__section
+          transform
+          -translate-y-[25%]
+          object-fill
+          relative
+        "
+      >
+        <img
+          src="/product-screenshot1.png"
+          alt="product screenshot"
+          srcset=""
+          class="transform translate-y-[140%] down fadeIn1"
+          ref="image1"
+        />
+        <img
+          src="/product-screenshot2.png"
+          alt="product screenshot"
+          srcset=""
+          class="z-0 transform translate-x-0 fadeIn2"
+          ref="image2"
+        />
+        <img
+          src="/product-screenshot3.png"
+          alt="product screenshot"
+          srcset=""
+          class="transform -translate-y-[140%] up fadeIn3"
+          ref="image3"
+        />
       </div>
     </div>
   </section>
-  <section id="describe" class="describeSection bg-white">
-    <div class="describeSection__heading mb-24">
+  <section id="describe" class="describeSection bg-white border-4 border-black">
+    <div class="describeSection__heading mb-24 pt-28">
       <h2 class="text-4xl font-black">
         Choose a smart contract template. Launch a token.
       </h2>
@@ -77,13 +113,17 @@
             :class="isHidden1 ? '' : 'open'"
           ></div>
         </button>
-        <p class="faqSection__answer mb-4" v-show="!isHidden1">
-          Join the platform to get on the waitlist. Let us know who you are by
-          filling this form and we will get back to you.
-          <br /><div class="mt-4"><router-link to="beta-signup" class="cta_button">
-            Get Early Access
-          </router-link></div>
-        </p>
+        <div class="faqSection__answer mb-4" v-show="!isHidden1">
+          <p>
+            Join the platform to get on the waitlist. Let us know who you are by
+            filling this form and we will get back to you.
+          </p>
+          <div class="mt-4">
+            <router-link to="beta-signup" class="cta_button">
+              Get Early Access
+            </router-link>
+          </div>
+        </div>
       </li>
       <div class="divider"></div>
       <li x-data="accordion" class="faqSection__accordion">
@@ -96,7 +136,7 @@
             :class="isHidden2 ? '' : 'open'"
           ></div>
         </button>
-        <p class="faqSection__answer" v-show="!isHidden2">
+        <p class="faqSection__answer mt-8" v-show="!isHidden2">
           If you want a consultation, you can get in touch with us.
         </p>
       </li>
