@@ -691,7 +691,7 @@ function composeDeployGovToken() {
     },
     adminAddresses: {
       required,
-      isListOfAdminAddresses: (value: string) => {
+      isListOfAdminAddresses: (value: any) => {
         return value.split(",").every(isEtherAddress);
       },
     },
@@ -702,7 +702,7 @@ function composeDeployGovToken() {
       required,
     },
     maxSupply: {
-      isValidMaxSupply: (value: string) => {
+      isValidMaxSupply: (value: any) => {
         return (
           value == "0" ||
           parseInt(getNumbersFromString(value)) >
