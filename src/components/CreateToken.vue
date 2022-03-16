@@ -715,7 +715,7 @@ function composeDeployGovToken() {
       isNumberString,
     },
     mintCap: {
-      isValidMintAmout: (value: string) => {
+      isValidMintAmout: (value: any) => {
         return (
           isNumberString(value) && parseInt(getNumbersFromString(value)) > 0
         );
