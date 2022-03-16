@@ -137,7 +137,9 @@
           ></div>
         </button>
         <p class="faqSection__answer mt-8" v-show="!isHidden2">
-          If you want a consultation, you can get in touch with us.
+          If you want a consultation, you can get in touch with us. We are
+          building out resources that will be available to you soon! Fill out
+          the Sign Up Form or contact us in the chat!
         </p>
       </li>
       <div class="divider"></div>
