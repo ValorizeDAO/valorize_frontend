@@ -127,7 +127,7 @@
         </div>
       </div>
     </nav>
-    <div class="pt-20 min-h-screen w-screen overflow-hidden bg-purple-50">
+    <div class="pt-20 min-h-screen max-w-[100vw] overflow-hidden bg-purple-50">
       <div
         v-if="checkingAuth"
         class="
@@ -184,7 +184,7 @@ export default defineComponent({
   },
   mounted() {
     //check if app is running in production
-    console.log("VALORIZE_APP_DEPLOY_0.1.7");
+    console.log("VALORIZE_APP_DEPLOY_0.1.8");
     if (import.meta.env.VITE_ENV != "dev") {
       console.log(
         `%c${asciiLogo}
