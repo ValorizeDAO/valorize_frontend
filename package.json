@@ -6,7 +6,8 @@
     "build": "vue-tsc --noEmit && vite build",
     "test:unit": "vue-cli-service test:unit",
     "dev": "vite",
-    "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore . --fix"
+    "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore . --fix",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",

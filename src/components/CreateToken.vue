@@ -197,7 +197,7 @@
                 type="string"
               />
             </label>
-            <p v-if="v$.mintCap.$dirty && v$.mintCap.isValidMintAmout.$invalid">
+            <p v-if="isValidMintAmout">
               Please enter a valid amount of tokens to to mint each
               {{ v$.timeDelay.$model }} days
             </p>
@@ -731,6 +731,12 @@ function composeDeployGovToken() {
       v$.value.maxSupply.$dirty && v$.value.maxSupply.isValidMaxSupply.$invalid
     );
   });
+  const isValidMintAmout = computed(() => {
+    return (
+      //@ts-ignore
+      v$.mintCap.$dirty && v$.mintCap.isValidMintAmout.$invalid
+    );
+  });
   return {
     tokenParams,
     initialSupply,
@@ -750,6 +756,7 @@ function composeDeployGovToken() {
     networkName,
     v$,
     isMaxSupplyValid,
+    isValidMintAmout,
     metamaskStatus,
     tokenTxHash,
     deployedTokenAddress,
