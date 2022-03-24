@@ -143,10 +143,7 @@ export default {
       return response.json();
     },
   },
-  async saveAirdropInfo(
-    id: string,
-    data: { payload: string[][]; merkleRoot: string }
-  ) {
+  async saveAirdropInfo(id: string, data: { payload: string[][] }) {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     const requestOptions = {
