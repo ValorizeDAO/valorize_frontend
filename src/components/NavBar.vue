@@ -122,7 +122,7 @@
   </nav>
 </template>
 <script lang="ts">
-import { toRefs, defineComponent } from "vue";
+import { defineComponent } from "vue";
 import { mapActions, mapGetters } from "vuex";
 export default defineComponent({
   name: "NavBar",
