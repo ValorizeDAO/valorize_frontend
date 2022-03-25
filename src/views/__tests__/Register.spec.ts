@@ -1,7 +1,6 @@
 import { shallowMount, mount, DOMWrapper } from "@vue/test-utils";
 import Register from "@/views/Register.vue";
-import { useRoute, useRouter } from "vue-router";
-import { useStore } from "vuex";
+import router from "vue-router";
 import api from "../../services/api";
 
 jest.mock("vue-router", () => ({

@@ -187,7 +187,7 @@
               </button>
             </div>
             <transition name="fade">
-              <div v-if="links.length" class="text-center mb-24">
+              <div v-if="links" class="text-center mb-24">
                 <button
                   @click="saveLinks"
                   class="btn w-48 mt-8 bg-purple-100 mx-auto"
@@ -307,7 +307,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed } from "vue";
+import { ref, defineComponent, computed, toRefs } from "vue";
 import auth from "../services/authentication";
 import { formatAddress } from "../services/formatAddress";
 import { User } from "../models/User";
@@ -349,9 +349,7 @@ export default defineComponent({
 });
 function composeProfileInfo() {
   const store = useStore();
-  const fullName = ref(store.state.authUser.user.name);
-  const about = ref(store.state.authUser.user.about);
-  const links = ref(store.state.authUser.user.links);
+  const { name: fullName, about } = toRefs(store.getters["authUser/user"]);
   const hasToken = store.getters["authUser/hasToken"];
   const isAllowedUser = ref(store.state.authUser.user.isAlphaUser);
 
@@ -382,7 +380,6 @@ function composeProfileInfo() {
     updateProfile,
     fullName,
     about,
-    links,
     profileUpdateStatus,
     hasToken,
     formatAddress,
