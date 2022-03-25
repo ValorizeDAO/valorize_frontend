@@ -4,7 +4,7 @@
       <h1 class="font-black text-3xl">Register</h1>
       <div class="my-8">
         <form @submit.prevent="sendLogin" class="my-12">
-          <label for="name" class="">
+          <label for="email" class="">
             <span class="text-xl font-black">Email</span>
           </label>
           <input
@@ -62,7 +62,7 @@
             v-model="password"
           />
           <br />
-          <label for="password" class="mt-24">
+          <label for="password-2" class="mt-24">
             <span class="text-xl font-black">Re-Enter Password</span>
           </label>
           <input
@@ -110,6 +110,7 @@ import SvgLoader from "../components/SvgLoader.vue";
 import useDebounced from "../composed/useDebounced";
 import { User } from "../models/User";
 import auth from "../services/authentication";
+import api from "../services/api";
 
 export default defineComponent({
   name: "Register",
@@ -145,11 +146,8 @@ export default defineComponent({
 
     async function fetchUserName(usernameToTest: Ref<string>) {
       username.value = usernameToTest.value;
-      fetch(
-        import.meta.env.VITE_BACKEND_URL +
-          "/api/v0/users/" +
-          usernameToTest.value
-      )
+      api
+        .get(`/api/v0/users/${usernameToTest.value}`)
         .then((response) => {
           if (response.status === 404) {
             userNameAvailable.value = true;
