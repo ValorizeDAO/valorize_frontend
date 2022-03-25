@@ -10,7 +10,7 @@ exports[`<EditProfilePage \\> renders as expected 1`] = `
           <h2 class="text-2xl font-black mb-4 sm:mb-0"></h2>
         </div>
         <div class="">
-          <router-link class="btn min-h-12 pt-1"> See Public Profile</router-link>
+          <router-link-stub class="btn min-h-12 pt-1"></router-link-stub>
         </div>
       </div>
       <div class="grid lg:grid-cols-9 md:gap-6">
