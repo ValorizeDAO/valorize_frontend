@@ -70,5 +70,24 @@ describe("<Register \\>", () => {
       await wrapper.vm.$nextTick();
       expect(api.get).toHaveBeenCalledWith("/api/v0/users/fakename");
     });
+    it("should throw an error if the username is not available", async () => {
+      api.get = jest.fn().mockResolvedValue({
+        status: 200,
+        json: jest.fn(),
+      });
+      const wrapper = shallowMount(Register);
+      let errorText = (await wrapper.find(
+        ".text-red-700"
+      )) as DOMWrapper<HTMLDivElement>;
+      expect(errorText.exists()).toBeFalsy();
+      await wrapper.find("input[name='username']").setValue("fakename");
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await wrapper.vm.$nextTick();
+      errorText = (await wrapper.find(
+        ".text-red-700"
+      )) as DOMWrapper<HTMLDivElement>;
+      expect(errorText.exists()).toBeTruthy();
+      expect(errorText.text()).toBe("* fakename is not available");
+    });
   });
 });
