@@ -66,21 +66,17 @@ describe("<Register \\>", () => {
       ) as DOMWrapper<HTMLInputElement>;
       expect(submitButton.element.disabled).toBe(false);
     });
-    //   it("should be disabled if one password is unlike the other", async () => {
-    //     goodData.password = "a";
-    //     const wrapper = shallowMount(Register, {
-    //       data() {
-    //         return { ...goodData };
-    //       },
-    //       global: {
-    //         plugins: [Vuex],
-    //       },
-    //     } as any);
-    //     const submitButton = wrapper.find(
-    //       "input[type='submit']"
-    //     ) as DOMWrapper<HTMLInputElement>;
-
-    //     expect(submitButton.element.disabled).toBe(true);
-    //   });
+    it("should be disabled if one password is unlike the other", async () => {
+      goodData.password = "a";
+      const wrapper = shallowMount(Register);
+      await wrapper.find("input[name='username']").setValue("fakename");
+      await wrapper.find("input[name='email']").setValue("test@test.com");
+      await wrapper.find("input[name='password']").setValue("test");
+      await wrapper.find("input[name='password2']").setValue("test2");
+      const submitButton = wrapper.find(
+        "input[type='submit']"
+      ) as DOMWrapper<HTMLInputElement>;
+      expect(submitButton.element.disabled).toBe(true);
+    });
   });
 });
