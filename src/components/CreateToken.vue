@@ -194,9 +194,13 @@
                 id="mint-cap"
                 name="mintCap"
                 class="w-full border-b-2 border-black bg-transparent"
-                type="number"
+                type="string"
               />
             </label>
+            <p v-if="v$.mintCap.$dirty && v$.mintCap.isValidMintAmout.$invalid">
+              Please enter a valid amount of tokens to to mint each
+              {{ v$.timeDelay.$model }} days
+            </p>
           </div>
         </div>
       </transition>
@@ -216,7 +220,7 @@
       </div>
     </form>
     <Modal
-      :body-class="['bg-white xl:w-7/12 sm:mt-0']"
+      :body-class="['bg-white xl:w-7/12 sm:mt-0 md:mt-12']"
       :modal-is-open="simpleTokenModalDisplayed"
       @toggle="() => toggleSimpleTokenModal()"
     >
@@ -262,7 +266,7 @@
             <span
               class="text-xl font-black"
               v-if="tokenParams.supplyCap === 'true'"
-              >{{ c(tokenParams.maxSupply) }}</span
+              >{{ c(maxSupply) }}</span
             >
             <span
               class="text-xl font-black"
@@ -286,7 +290,7 @@
             <h2 class="text-xl font-black">
               Tokens to Mint Per Minting Periods
             </h2>
-            <span class="text-xl font-black">{{ c(tokenParams.mintCap) }}</span>
+            <span class="text-xl font-black">{{ c(mintCap) }}</span>
           </div>
         </div>
         <div class="justify-between border-b-2 border-black py-2">
@@ -482,6 +486,12 @@ function composeDeployGovToken() {
   const airdropSupply = computed(() => {
     return getNumbersFromString(tokenParams.airdropSupply);
   });
+  const mintCap = computed(() => {
+    return getNumbersFromString(tokenParams.mintCap);
+  });
+  const maxSupply = computed(() => {
+    return getNumbersFromString(tokenParams.maxSupply);
+  });
   const totalSupply = computed(() => {
     return Number(initialSupply.value) + Number(airdropSupply.value);
   });
@@ -570,6 +580,7 @@ function composeDeployGovToken() {
       deployedTokenAddress.value = simpleToken.address;
       console.log({ simpleToken });
     } catch (err: any) {
+      console.error(err);
       if (err.code === 4001) {
         metamaskStatus.value = metamaskAuthStatuses[8];
       } else {
@@ -586,20 +597,20 @@ function composeDeployGovToken() {
     console.groupCollapsed("tokenInfo");
     console.log("Deploying Timed Mint Token v0.1.0");
     let timedMintToken: TimedMintToken | undefined;
-    let maxSupply: BigNumber;
+    let maxTokenSupply: BigNumber;
     if (tokenParams.supplyCap === "false") {
-      maxSupply = BigNumber.from(0);
+      maxTokenSupply = BigNumber.from(0);
     } else {
-      maxSupply = BigNumber.from(tokenParams.maxSupply).mul(decimalsMultiplyer);
+      maxTokenSupply = BigNumber.from(maxSupply.value).mul(decimalsMultiplyer);
     }
     try {
       timedMintToken = await new TimedMintTokenFactory(signer).deploy(
         BigNumber.from(initialSupply.value).mul(decimalsMultiplyer), //vault
         BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer), //airdrop
-        maxSupply, //supplycap
+        maxTokenSupply, //supplycap
         ethers.utils.getAddress(tokenParams.vaultAddress), //vault
         BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
-        BigNumber.from(tokenParams.mintCap).mul(decimalsMultiplyer), //mintCap
+        BigNumber.from(mintCap.value).mul(decimalsMultiplyer), //mintCap
         tokenParams.tokenName,
         tokenParams.tokenSymbol,
         parsedAddresses.value.map((v) => ethers.utils.getAddress(v))
@@ -608,6 +619,7 @@ function composeDeployGovToken() {
       tokenTxHash.value = timedMintToken.deployTransaction.hash;
       deployedTokenAddress.value = timedMintToken.address;
     } catch (err: any) {
+      console.error(err);
       if (err.code === 4001) {
         metamaskStatus.value = metamaskAuthStatuses[8];
       } else {
@@ -692,11 +704,10 @@ function composeDeployGovToken() {
     maxSupply: {
       isValidMaxSupply: (value: string) => {
         return (
-          isNumberString(value) &&
-          (value == "0" ||
-            parseInt(value) >
-              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-                parseInt(getNumbersFromString(tokenParams.airdropSupply)))
+          value == "0" ||
+          parseInt(getNumbersFromString(value)) >
+            parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+              parseInt(getNumbersFromString(tokenParams.airdropSupply))
         );
       },
     },
@@ -704,7 +715,11 @@ function composeDeployGovToken() {
       isNumberString,
     },
     mintCap: {
-      isNumberString,
+      isValidMintAmout: (value: any) => {
+        return (
+          isNumberString(value) && parseInt(getNumbersFromString(value)) > 0
+        );
+      },
     },
   }));
 
@@ -721,6 +736,8 @@ function composeDeployGovToken() {
     initialSupply,
     airdropSupply,
     totalSupply,
+    mintCap,
+    maxSupply,
     submitToken,
     parsedAddresses,
     showExpandedList,
