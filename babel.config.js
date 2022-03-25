@@ -1,15 +1,9 @@
 
 module.exports = {
+  presets: [
+    "@babel/preset-env",
+  ],
   plugins: [
     "babel-plugin-transform-import-meta",
-    function () {
-      return {
-        visitor: {
-          MetaProperty(path) {
-            path.replaceWithSourceString("process");
-          },
-        },
-      }
-    },
   ],
 }
