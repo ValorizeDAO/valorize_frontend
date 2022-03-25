@@ -13,20 +13,22 @@ jest.mock("vue-router", () => ({
   useRouter: jest.fn(() => ({ name: "Home" })),
 }));
 const mockedAuth = mocked(auth, true);
+const testUser = {
+  id: 1,
+  name: "test",
+  email: "test@email.com",
+  about: "test",
+  isAlphaUser: false,
+};
 const mockStore = {
   state: {
     authUser: {
-      user: {
-        id: 1,
-        name: "test",
-        email: "test@email.com",
-        about: "test",
-        isAlphaUser: false,
-      },
+      user: testUser,
     },
   },
   getters: {
     "authUser/hasToken": jest.fn(() => true),
+    "authUser/user": jest.fn(() => testUser),
     "authUser/profileImage": jest.fn(() => "fake_url.jpg"),
   },
 };

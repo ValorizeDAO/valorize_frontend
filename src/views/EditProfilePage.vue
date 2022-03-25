@@ -307,7 +307,7 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, computed, toRefs } from "vue";
+import { ref, defineComponent, computed, toRefs, reactive } from "vue";
 import auth from "../services/authentication";
 import { formatAddress } from "../services/formatAddress";
 import { User } from "../models/User";
@@ -349,7 +349,9 @@ export default defineComponent({
 });
 function composeProfileInfo() {
   const store = useStore();
-  const { name: fullName, about } = toRefs(store.getters["authUser/user"]);
+  const userInfo = store.getters["authUser/user"];
+  const fullName = ref(userInfo.name);
+  const about = ref(userInfo.about);
   const hasToken = store.getters["authUser/hasToken"];
   const isAllowedUser = ref(store.state.authUser.user.isAlphaUser);
 
