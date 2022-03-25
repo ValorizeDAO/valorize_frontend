@@ -29,15 +29,6 @@ describe("<Register \\>", () => {
     expect(wrapper.html()).toMatchSnapshot();
   });
   describe("Submit Button", () => {
-    let goodData: any;
-    beforeEach(() => {
-      goodData = {
-        password: "test",
-        passwordVerify: "test",
-        email: "test@test.com",
-        username: "fakename",
-      };
-    });
     it("is disabled when all fields are empty", () => {
       const wrapper = shallowMount(Register);
       const submitButton = wrapper.find(
@@ -46,13 +37,6 @@ describe("<Register \\>", () => {
       expect(submitButton.element.disabled).toBe(true);
     });
 
-    it("should check the backend whether a username is available", async () => {
-      const wrapper = shallowMount(Register);
-      await wrapper.find("input[name='username']").setValue("fakename");
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      await wrapper.vm.$nextTick();
-      expect(api.get).toHaveBeenCalledWith("/api/v0/users/fakename");
-    });
     it("should need all fields filled to be enabled", async () => {
       const wrapper = mount(Register);
       await wrapper.find("input[name='username']").setValue("fakename");
@@ -67,7 +51,6 @@ describe("<Register \\>", () => {
       expect(submitButton.element.disabled).toBe(false);
     });
     it("should be disabled if one password is unlike the other", async () => {
-      goodData.password = "a";
       const wrapper = shallowMount(Register);
       await wrapper.find("input[name='username']").setValue("fakename");
       await wrapper.find("input[name='email']").setValue("test@test.com");
@@ -77,6 +60,15 @@ describe("<Register \\>", () => {
         "input[type='submit']"
       ) as DOMWrapper<HTMLInputElement>;
       expect(submitButton.element.disabled).toBe(true);
+    });
+  });
+  describe("Username", () => {
+    it("should check the backend whether a username is available", async () => {
+      const wrapper = shallowMount(Register);
+      await wrapper.find("input[name='username']").setValue("fakename");
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await wrapper.vm.$nextTick();
+      expect(api.get).toHaveBeenCalledWith("/api/v0/users/fakename");
     });
   });
 });
