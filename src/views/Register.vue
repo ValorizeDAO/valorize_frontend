@@ -11,12 +11,7 @@
             type="email"
             name="email"
             id="email"
-            class="
-              p-2
-              mb-12
-              w-full
-              border-0 border-b-2 border-black
-              bg-purple-50
+            class="p-2 mb-12 w-full border-0 border-b-2 border-black bg-purple-50
             "
             v-model="email"
           />

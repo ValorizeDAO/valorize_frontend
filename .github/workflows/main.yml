@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     name: Test and build
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - name: Use Node.js
