@@ -44,7 +44,7 @@ describe("<EditProfilePage \\>", () => {
       },
     })
     expect(wrapper).toBeTruthy()
-  })
+  }) 
   describe("Alpha Users", () => {
     it("Does not let a non-alpha user deploy a token", () => {
       const wrapper = shallowMount(EditProfilePage, {
