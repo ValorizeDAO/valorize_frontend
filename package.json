@@ -6,8 +6,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "test:unit": "vue-cli-service test:unit",
     "dev": "vite",
-    "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore . --fix",
-    "postinstall": "patch-package"
+    "lint:script": "eslint --ext .ts,vue --ignore-path .gitignore . --fix"
   },
   "dependencies": {
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
@@ -28,7 +27,6 @@
     "js-confetti": "^0.10.2",
     "logrocket": "^2.2.0",
     "merkletreejs": "^0.2.27",
-    "patch-package": "^6.4.7",
     "rollup-plugin-polyfill-node": "^0.8.0",
     "vite-ssr": "^0.10.5",
     "vue": "3",
