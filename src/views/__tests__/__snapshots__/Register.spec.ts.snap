@@ -16,13 +16,7 @@ exports[`<Register \\> renders as expected 1`] = `
           <transition-stub>
             <!--v-if-->
           </transition-stub>
-        </div><label for="password" class="mt-36"><span class="text-xl font-black">Password</span></label><input type="password" name="password" class="
-              p-2
-              w-full
-              border-0 border-b-2 border-black
-              bg-purple-50
-              mb-12
-            " id="password"><br><label for="password-2" class="mt-24"><span class="text-xl font-black">Re-Enter Password</span></label><input type="password" name="password2" class="p-2 w-full border-0 border-b-2 border-black bg-purple-50" id="password-2"><br>
+        </div><label for="password" class="mt-36"><span class="text-xl font-black">Password</span></label><input type="password" name="password" class="p-2 w-full border-0 border-b-2 border-black bg-purple-50 mb-12" id="password"><br><label for="password-2" class="mt-24"><span class="text-xl font-black">Re-Enter Password</span></label><input type="password" name="password2" class="p-2 w-full border-0 border-b-2 border-black bg-purple-50" id="password-2"><br>
         <div class="mt-20">
           <transition-stub>
             <div><input type="submit" class="px-4 py-2 border-2 rounded-md font-black w-full cursor-not-allowed text-gray-400" id="submit-registration" disabled="">
