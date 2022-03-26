@@ -23,10 +23,6 @@ describe("<Register \\>", () => {
     const wrapper = shallowMount(Register);
     expect(wrapper).toBeTruthy();
   });
-  it("renders as expected", () => {
-    const wrapper = shallowMount(Register);
-    expect(wrapper.html()).toMatchSnapshot();
-  });
   describe("Submit Button", () => {
     it("is disabled when all fields are empty", () => {
       const wrapper = shallowMount(Register);

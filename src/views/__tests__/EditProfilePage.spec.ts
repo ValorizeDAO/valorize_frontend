@@ -45,14 +45,6 @@ describe("<EditProfilePage \\>", () => {
     })
     expect(wrapper).toBeTruthy()
   })
-  it("renders as expected", () => {
-    const wrapper = shallowMount(EditProfilePage, {
-      global: {
-        stubs: ["router-link"],
-      },
-    })
-    expect(wrapper.html()).toMatchSnapshot()
-  })
   describe("Alpha Users", () => {
     it("Does not let a non-alpha user deploy a token", () => {
       const wrapper = shallowMount(EditProfilePage, {
