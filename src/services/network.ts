@@ -37,4 +37,4 @@ export const networkInfo: networks = {
     blockExplorer: "https://arbiscan.io/",
     rpcUrl: "https://rpc.arbiscan.io",
   },
-};
+}
