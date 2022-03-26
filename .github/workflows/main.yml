@@ -25,4 +25,4 @@ jobs:
       run: |
         npm install
         npm run test:unit
-      working-directory: ../
+      working-directory: ./valorize_frontend
