@@ -98,6 +98,7 @@
               'VERIFIED_CSV',
               'CONFIRMING_BACKEND',
               'CONFIRMING_BACKEND_ERROR',
+              'METAMASK_NETWORK_ERROR',
               'SENDING_TX',
               'SENDING_TX_ERROR',
             ].includes(airdropStatus)
@@ -227,11 +228,9 @@ import type { TimedMintToken } from "../contracts/TimedMintToken";
 import detectEthereumProvider from "@metamask/detect-provider";
 import currency from "currency.js";
 import { ethers, BigNumber } from "ethers";
-import api from "../services/api";
 import { useRoute } from "vue-router";
 import authentication from "../services/authentication";
 import { networkInfo } from "../services/network";
-import functions from "../services/functions";
 import { formatAddress } from "../services/formatAddress";
 import dateFormat from "dateformat";
 
@@ -355,16 +354,6 @@ const airdropData = computed(() => {
   return airdropTuple;
 });
 
-async function getMerkleRootFromLeaves() {
-  const response = await functions.getMerkleRoot(airdropData.value);
-  if (response.status == 200) {
-    const data = await response.json();
-    merkleRoot.value = data.root;
-  } else {
-    transitionState(false);
-    console.error(response);
-  }
-}
 const totalAirdropAmount = computed(() => {
   const csvSplit = csvDump.value.split("\r\n");
   const amountsOnly = csvSplit.map((item) => {
@@ -391,7 +380,6 @@ async function getProviderAndSigner() {
 }
 async function saveAirdropInfo() {
   transitionState();
-  await getMerkleRootFromLeaves();
   const { signer } = await getProviderAndSigner();
   if (!signer) {
     transitionState(false);
@@ -401,10 +389,11 @@ async function saveAirdropInfo() {
   if (typeof id == "string") {
     const request = await authentication.saveAirdropInfo(id, {
       payload: airdropData.value,
-      merkleRoot: merkleRoot.value,
     });
     if (request.status == 200) {
       transitionState();
+      const data = await request.json();
+      merkleRoot.value = data.merkleRoot;
       let tokenInstance: SimpleToken | TimedMintToken;
       if (tokenData.tokenType == "timed_mint") {
         tokenInstance = new TimedMintTokenFactory(signer).attach(
@@ -442,6 +431,7 @@ async function saveAirdropInfo() {
             )} is not an administrator account, please switch to an account with administrator privileges`;
             break;
           default:
+            console.error(err);
             metamaskError.value = "Something went wrong";
             break;
         }

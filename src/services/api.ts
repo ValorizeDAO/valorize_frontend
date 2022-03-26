@@ -70,6 +70,10 @@ class Api {
     );
     return await req.json();
   }
+
+  get(route: string) {
+    return fetch(import.meta.env.VITE_BACKEND_URL + route);
+  }
 }
 
 const api = new Api();
