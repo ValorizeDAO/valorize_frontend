@@ -174,7 +174,7 @@ export default defineComponent({
           }
           return response.json()
         })
-        .catch((error) => console.log(error));
+        .catch((error) => console.log(error))
     }
 
     async function sendLogin() {
