@@ -19,12 +19,7 @@
             type="email"
             name="email"
             id="email"
-            class="
-              p-2
-              mb-12
-              w-full
-              border-0 border-b-2 border-black
-              bg-purple-50
+            class="p-2 mb-12 w-full border-0 border-b-2 border-black bg-purple-50
             "
             v-model="email"
           >
@@ -68,13 +63,7 @@
           <input
             type="password"
             name="password"
-            class="
-              p-2
-              w-full
-              border-0 border-b-2 border-black
-              bg-purple-50
-              mb-12
-            "
+            class="p-2 w-full border-0 border-b-2 border-black bg-purple-50 mb-12"
             id="password"
             v-model="password"
           >
@@ -185,7 +174,7 @@ export default defineComponent({
           }
           return response.json()
         })
-        .catch((error) => console.log(error))
+        .catch((error) => console.log(error));
     }
 
     async function sendLogin() {
