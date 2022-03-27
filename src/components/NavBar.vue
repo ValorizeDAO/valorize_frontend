@@ -16,7 +16,11 @@
     "
   >
     <router-link to="/">
-      <img src="../assets/logo_large.png" alt="Valorize" class="h-8" />
+      <img
+        src="../assets/logo_large.png"
+        alt="Valorize"
+        class="h-8"
+      >
     </router-link>
     <div>
       <div class="sm:hidden">
@@ -26,7 +30,7 @@
           :class="showMobileMenu ? 'is-active' : ''"
         >
           <span class="hamburger-box">
-            <span class="hamburger-inner"></span>
+            <span class="hamburger-inner" />
           </span>
         </button>
       </div>
@@ -74,8 +78,9 @@
             class="pb-8 sm:pb-0 sm:mx-4 hover:font-bold transition duration-100"
             id="login"
             to="/login"
-            >Login</router-link
           >
+            Login
+          </router-link>
         </div>
         <div
           v-else
@@ -95,7 +100,10 @@
             duration-100
           "
         >
-          <router-link id="edit-profile" to="/edit-profile">
+          <router-link
+            id="edit-profile"
+            to="/edit-profile"
+          >
             <button
               class="
                 sm:flex sm:justify-center
@@ -122,23 +130,23 @@
   </nav>
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
-import { mapActions, mapGetters } from "vuex";
+import { defineComponent } from "vue"
+import { mapActions, mapGetters } from "vuex"
 export default defineComponent({
   name: "NavBar",
   data() {
     return {
       showMobileMenu: false,
-    };
+    }
   },
   methods: {
     ...mapActions({ logoutState: "authUser/logout" }),
     async logout() {
-      this.logoutState();
-      this.$router.push("/");
+      this.logoutState()
+      this.$router.push("/")
     },
     triggerBlock() {
-      this.showMobileMenu = !this.showMobileMenu;
+      this.showMobileMenu = !this.showMobileMenu
     },
   },
   computed: {
@@ -148,5 +156,5 @@ export default defineComponent({
       user: "authUser/user",
     }),
   },
-});
+})
 </script>
