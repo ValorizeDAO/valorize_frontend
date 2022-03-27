@@ -1,10 +1,14 @@
 <template>
   <div>
     <form>
-      <h2 class="text-3xl font-black">Launch A Token</h2>
+      <h2 class="text-3xl font-black">
+        Launch A Token
+      </h2>
       <div class="flex justify-between mt-20">
-        <label class="text-l font-black flex flex-col" for=""
-          >Name
+        <label
+          class="text-l font-black flex flex-col"
+          for=""
+        >Name
           <input
             v-model="v$.tokenName.$model"
             name="tokenName"
@@ -17,11 +21,13 @@
               placeholder:font-bold
             "
             type="text"
-          />
+          >
         </label>
-        <div class="mx-4"></div>
-        <label class="text-l font-black flex flex-col" for=""
-          >Symbol
+        <div class="mx-4" />
+        <label
+          class="text-l font-black flex flex-col"
+          for=""
+        >Symbol
           <input
             v-model="v$.tokenSymbol.$model"
             name="tokenSymbol"
@@ -34,23 +40,24 @@
               placeholder:font-bold
             "
             type="text"
-          />
+          >
         </label>
       </div>
       <div class="mt-8">
-        <label class="text-l font-black"
-          >Supply For Vault<input
-            v-model="v$.initialSupply.$model"
-            name="initialSupply"
-            placeholder="5,000,000"
-            class="
+        <label
+          class="text-l font-black"
+        >Supply For Vault<input
+          v-model="v$.initialSupply.$model"
+          name="initialSupply"
+          placeholder="5,000,000"
+          class="
               w-full
               border-b-2 border-black
               bg-transparent
               placeholder:font-bold
             "
-            type="text"
-        /></label>
+          type="text"
+        ></label>
       </div>
       <div class="mt-8">
         <label class="text-l font-black">
@@ -66,31 +73,35 @@
               placeholder:font-bold
             "
             type="text"
-        /></label>
-        <span v-if="v$.vaultAddress.$dirty && v$.vaultAddress.$invalid"
-          >Please enter a valid Ethereum address</span
-        >
+          ></label>
+        <span
+          v-if="v$.vaultAddress.$dirty && v$.vaultAddress.$invalid"
+        >Please enter a valid Ethereum address</span>
       </div>
       <div class="mt-8">
-        <label class="text-l font-black"
-          >Supply for Airdrop<input
-            v-model="v$.airdropSupply.$model"
-            name="airdropSupply"
-            placeholder="5,000,000"
-            class="
+        <label
+          class="text-l font-black"
+        >Supply for Airdrop<input
+          v-model="v$.airdropSupply.$model"
+          name="airdropSupply"
+          placeholder="5,000,000"
+          class="
               w-full
               border-b-2 border-black
               bg-transparent
               placeholder:font-bold
             "
-            type="text"
-        /></label>
+          type="text"
+        ></label>
       </div>
       <div class="mt-8">
-        <label class="text-l font-black" for="admin-addresses"
-          >Administrators' Addresses</label
-        >
-        <p class="mb-4 text-s">Insert list separated by commas</p>
+        <label
+          class="text-l font-black"
+          for="admin-addresses"
+        >Administrators' Addresses</label>
+        <p class="mb-4 text-s">
+          Insert list separated by commas
+        </p>
         <input
           v-model="v$.adminAddresses.$model"
           id="admin-addresses"
@@ -102,13 +113,18 @@
             placeholder:font-bold
           "
           type="text"
-        />
-        <span v-if="v$.adminAddresses.$dirty && v$.adminAddresses.$invalid"
-          >Please enter a valid Ethereum addresses separated by commas</span
         >
+        <span
+          v-if="v$.adminAddresses.$dirty && v$.adminAddresses.$invalid"
+        >Please enter a valid Ethereum addresses separated by commas</span>
       </div>
       <div class="mt-8 flex justify-between">
-        <p class="text-l font-black" for="">Minting Allowed</p>
+        <p
+          class="text-l font-black"
+          for=""
+        >
+          Minting Allowed
+        </p>
         <div>
           <input
             type="radio"
@@ -117,7 +133,10 @@
             v-model="v$.minting.$model"
             :checked="v$.minting.$model === 'false'"
             value="false"
-          /><label for="minting-no" class="mr-4">No</label>
+          ><label
+            for="minting-no"
+            class="mr-4"
+          >No</label>
           <input
             type="radio"
             id="minting-yes"
@@ -125,16 +144,17 @@
             v-model="v$.minting.$model"
             :checked="v$.minting.$model === 'true'"
             value="true"
-          /><label for="minting-yes">Yes</label>
+          ><label for="minting-yes">Yes</label>
         </div>
       </div>
       <transition name="fade">
         <div v-if="v$.minting.$model === 'true'">
           <div>
             <div class="mt-8 flex justify-between">
-              <label class="text-l font-black" for="supplyCap"
-                >Total Supply Cap</label
-              >
+              <label
+                class="text-l font-black"
+                for="supplyCap"
+              >Total Supply Cap</label>
               <div>
                 <input
                   type="radio"
@@ -143,7 +163,10 @@
                   v-model="v$.supplyCap.$model"
                   :checked="v$.supplyCap.$model === 'false'"
                   value="false"
-                /><label for="mint-cap-no" class="mr-4">No</label>
+                ><label
+                  for="mint-cap-no"
+                  class="mr-4"
+                >No</label>
                 <input
                   type="radio"
                   id="mint-cap-yes"
@@ -151,51 +174,60 @@
                   v-model="v$.supplyCap.$model"
                   :checked="v$.supplyCap.$model === 'true'"
                   value="true"
-                /><label for="mint-cap-yes">Yes</label>
+                ><label for="mint-cap-yes">Yes</label>
               </div>
             </div>
             <transition name="fade">
-              <div v-if="v$.supplyCap.$model === 'true'" class="mt-8">
-                <label class="text-l font-black"
-                  >Max Supply
+              <div
+                v-if="v$.supplyCap.$model === 'true'"
+                class="mt-8"
+              >
+                <label
+                  class="text-l font-black"
+                >Max Supply
                   <input
                     v-model="v$.maxSupply.$model"
                     id="maxSupply"
                     name="maxSupply"
                     class="w-full border-b-2 border-black bg-transparent"
                     type="text"
-                  />
+                  >
                 </label>
               </div>
             </transition>
             <transition name="fade">
-              <p v-if="isMaxSupplyValid" class="mt-4">
+              <p
+                v-if="isMaxSupplyValid"
+                class="mt-4"
+              >
                 Should be greater than innitial supply + airdrop supply
               </p>
             </transition>
           </div>
           <div class="mt-8">
-            <label class="text-l font-black"
-              >Days Between Mints
+            <label
+              class="text-l font-black"
+            >Days Between Mints
               <input
                 v-model="v$.timeDelay.$model"
                 id="time-delay"
                 name="timeDelay"
                 class="w-full border-b-2 border-black bg-transparent"
                 type="number"
-              />
+              >
             </label>
           </div>
           <div class="mt-8">
-            <label class="text-l font-black"
-              >Tokens to Mint Per Mint Period
+            <label
+              class="text-l font-black"
+            >Tokens to Mint Per Mint Period
               <input
                 v-model="v$.mintCap.$model"
                 id="mint-cap"
                 name="mintCap"
                 class="w-full border-b-2 border-black bg-transparent"
                 type="string"
-              />
+              >
             </label>
             <p v-if="isValidMintAmout">
               Please enter a valid amount of tokens to to mint each
@@ -213,10 +245,11 @@
           }"
           :disabled="v$.$invalid"
           @click.prevent="submitToken"
-        />
-        <span v-if="v$.$anyDirty && v$.$invalid" class="my-4"
-          >All Fields Required</span
         >
+        <span
+          v-if="v$.$anyDirty && v$.$invalid"
+          class="my-4"
+        >All Fields Required</span>
       </div>
     </form>
     <Modal
@@ -227,21 +260,25 @@
       <div
         class="flex items-center justify-between pb-4 border-black border-b-2"
       >
-        <h2 class="text-xl font-black">Token Summary</h2>
+        <h2 class="text-xl font-black">
+          Token Summary
+        </h2>
       </div>
       <div class="mt-4">
         <h1 class="text-3xl font-black mb-8">
           {{ tokenParams.tokenName }} ({{ tokenParams.tokenSymbol }})
         </h1>
         <div class="flex justify-between">
-          <h2 class="font-black text-xl">Initial Supply</h2>
+          <h2 class="font-black text-xl">
+            Initial Supply
+          </h2>
           <span class="text-xl font-black">{{ c(totalSupply) }}</span>
         </div>
         Breakdown:
         <div class="flex justify-between items-center">
-          <span class="text-sm ml-8"
-            >To be sent to: "{{ tokenParams.vaultAddress }}"</span
-          >
+          <span
+            class="text-sm ml-8"
+          >To be sent to: "{{ tokenParams.vaultAddress }}"</span>
           <span class="text-l font-black text-gray-700">{{
             c(initialSupply)
           }}</span>
@@ -262,26 +299,28 @@
         </div>
         <div v-if="tokenParams.minting === 'true'">
           <div class="flex justify-between border-b-2 border-black py-2">
-            <h2 class="text-xl font-black">Max Supply</h2>
+            <h2 class="text-xl font-black">
+              Max Supply
+            </h2>
             <span
               class="text-xl font-black"
               v-if="tokenParams.supplyCap === 'true'"
-              >{{ c(maxSupply) }}</span
-            >
+            >{{ c(maxSupply) }}</span>
             <span
               class="text-xl font-black"
               v-if="tokenParams.supplyCap === 'false'"
-              >Unlimited</span
-            >
+            >Unlimited</span>
           </div>
           <div
             v-if="tokenParams.minting === 'true'"
             class="flex justify-between border-b-2 border-black py-2"
           >
-            <h2 class="text-xl font-black">Time Between Minting Periods</h2>
-            <span class="text-xl font-black"
-              >{{ tokenParams.timeDelay }} Days</span
-            >
+            <h2 class="text-xl font-black">
+              Time Between Minting Periods
+            </h2>
+            <span
+              class="text-xl font-black"
+            >{{ tokenParams.timeDelay }} Days</span>
           </div>
           <div
             v-if="tokenParams.minting === 'true'"
@@ -294,10 +333,17 @@
           </div>
         </div>
         <div class="justify-between border-b-2 border-black py-2">
-          <h2 class="text-xl font-black">Administrators</h2>
+          <h2 class="text-xl font-black">
+            Administrators
+          </h2>
           <ul class="flex flex-col">
-            <div v-for="address in parsedAddresses.slice(0, 3)" :key="address">
-              <li class="w-100">{{ address }}</li>
+            <div
+              v-for="address in parsedAddresses.slice(0, 3)"
+              :key="address"
+            >
+              <li class="w-100">
+                {{ address }}
+              </li>
             </div>
             <div v-if="parsedAddresses.length > 3">
               <transition name="fade">
@@ -322,7 +368,10 @@
         </div>
       </div>
       <div class="flex justify-center my-4">
-        <transition name="fade" mode="out-in">
+        <transition
+          name="fade"
+          mode="out-in"
+        >
           <div v-if="metamaskStatus === 'INIT'">
             Checking your Web3 Provider
           </div>
@@ -332,63 +381,81 @@
           <div
             v-else-if="
               metamaskStatus === 'SUCCESSFULLY_ENABLED' ||
-              metamaskStatus === 'TX_ERROR' ||
-              metamaskStatus === 'TX_REJECTED'
+                metamaskStatus === 'TX_ERROR' ||
+                metamaskStatus === 'TX_REJECTED'
             "
           >
-            <div class="text-center" v-if="metamaskStatus === 'TX_ERROR'">
+            <div
+              class="text-center"
+              v-if="metamaskStatus === 'TX_ERROR'"
+            >
               <p>{{ errorText }}</p>
-              <p class="mb-2">Try Again?</p>
+              <p class="mb-2">
+                Try Again?
+              </p>
             </div>
             <div
               v-else-if="metamaskStatus === 'TX_REJECTED'"
               class="text-center"
             >
               <p>Transaction Rejected By Your Wallet</p>
-              <p class="mb-2">Try Again?</p>
+              <p class="mb-2">
+                Try Again?
+              </p>
             </div>
-            <button class="btn text-center" @click="deployToken">
+            <button
+              class="btn text-center"
+              @click="deployToken"
+            >
               <span class="px-8">Deploy to {{ networkName }}</span>
             </button>
           </div>
           <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
             To launch a token, you need a web3 provider such as
-            <a href="https://metamask.io/" class="font-black underline"
-              >Metamask</a
-            >
+            <a
+              href="https://metamask.io/"
+              class="font-black underline"
+            >Metamask</a>
             or use
-            <a href="https://brave.com/" class="font-black underline"
-              >Brave Browser's built in wallet</a
-            >
+            <a
+              href="https://brave.com/"
+              class="font-black underline"
+            >Brave Browser's built in wallet</a>
           </div>
-          <div class="text-center" v-else-if="metamaskStatus === 'TX_APPROVED'">
-            Contract launching, <br />
+          <div
+            class="text-center"
+            v-else-if="metamaskStatus === 'TX_APPROVED'"
+          >
+            Contract launching, <br>
             <a
               v-if="isKnownNetwork"
               :href="blockExplorer + 'tx/' + tokenTxHash"
               target="_blank"
               class="font-black border-black border-b-2 pt-2"
-              >See transaction: {{ formatAddress(tokenTxHash) }}
+            >See transaction: {{ formatAddress(tokenTxHash) }}
             </a>
             <span v-else>Tx hash: {{ tokenTxHash }}</span>
             <SvgLoader
               class="text-center mx-auto h-12 pt-4"
               fill="#"
-            ></SvgLoader>
+            />
           </div>
-          <div class="text-center" v-else-if="metamaskStatus === 'TX_SUCCESS'">
-            Success! <br />
+          <div
+            class="text-center"
+            v-else-if="metamaskStatus === 'TX_SUCCESS'"
+          >
+            Success! <br>
             <a
               v-if="isKnownNetwork"
               :href="blockExplorer + 'address/' + deployedTokenAddress"
               target="_blank"
               class="font-black border-black border-b-2"
-              >See your token: {{ formatAddress(deployedTokenAddress) }}
+            >See your token: {{ formatAddress(deployedTokenAddress) }}
             </a>
-            <span v-else
-              >Your token is now live in address:
-              {{ deployedTokenAddress }}</span
-            >
+            <span
+              v-else
+            >Your token is now live in address:
+              {{ deployedTokenAddress }}</span>
           </div>
         </transition>
       </div>
@@ -396,23 +463,22 @@
   </div>
 </template>
 <script lang="ts">
-import { ref, reactive, defineComponent, computed } from "vue";
-import { useRouter } from "vue-router";
-import { ethers, BigNumber, Signer, providers } from "ethers";
-import { networkInfo, network } from "../services/network";
-import detectEthereumProvider from "@metamask/detect-provider";
-import currency from "currency.js";
-import api from "../services/api";
-import auth from "../services/authentication";
-import useVuelidate from "@vuelidate/core";
-import { required, minLength } from "@vuelidate/validators";
-import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory";
-import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory";
-import { TimedMintToken } from "../contracts/TimedMintToken";
-import { SimpleToken } from "../contracts/SimpleToken";
-import Modal from "../components/Modal.vue";
-import SvgLoader from "../components/SvgLoader.vue";
-import { formatAddress } from "../services/formatAddress";
+import { ref, reactive, defineComponent, computed } from "vue"
+import { useRouter } from "vue-router"
+import { ethers, BigNumber, Signer, providers } from "ethers"
+import { networkInfo, network } from "../services/network"
+import detectEthereumProvider from "@metamask/detect-provider"
+import currency from "currency.js"
+import auth from "../services/authentication"
+import useVuelidate from "@vuelidate/core"
+import { required, minLength } from "@vuelidate/validators"
+import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
+import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
+import { TimedMintToken } from "../contracts/TimedMintToken"
+import { SimpleToken } from "../contracts/SimpleToken"
+import Modal from "../components/Modal.vue"
+import SvgLoader from "../components/SvgLoader.vue"
+import { formatAddress } from "../services/formatAddress"
 
 export default defineComponent({
   name: "CreateToken",
@@ -430,33 +496,33 @@ export default defineComponent({
           symbol: "",
           precision: 0,
         }).format(),
-    };
+    }
   },
-});
+})
 
 function composeDeployGovToken() {
-  const router = useRouter();
-  const showExpandedList = ref(false);
-  const tokenStatuses = ["INIT", "DEPLOYING_TEST", "DEPLOYED_TEST"];
-  const tokenStatus = ref(tokenStatuses[0]);
+  const router = useRouter()
+  const showExpandedList = ref(false)
+  const tokenStatuses = ["INIT", "DEPLOYING_TEST", "DEPLOYED_TEST"]
+  const tokenStatus = ref(tokenStatuses[0])
   const metamaskAuthStatuses = [
-    "INIT", //0
-    "REQUESTED", //1
-    "TIMEOUT", //2
-    "SUCCESSFULLY_ENABLED", //3
-    "UNAVAILABLE", //4
-    "TX_REQUESTED", //5
-    "TX_APPROVED", //6
-    "TX_SUCCESS", //7
-    "TX_REJECTED", //8
-    "TX_ERROR", //9
-  ];
-  const errorText = ref("");
-  const metamaskStatus = ref(metamaskAuthStatuses[0]);
-  const simpleTokenModalDisplayed = ref(false);
-  const network = ref("");
-  const tokenTxHash = ref("");
-  const deployedTokenAddress = ref("");
+    "INIT", // 0
+    "REQUESTED", // 1
+    "TIMEOUT", // 2
+    "SUCCESSFULLY_ENABLED", // 3
+    "UNAVAILABLE", // 4
+    "TX_REQUESTED", // 5
+    "TX_APPROVED", // 6
+    "TX_SUCCESS", // 7
+    "TX_REJECTED", // 8
+    "TX_ERROR", // 9
+  ]
+  const errorText = ref("")
+  const metamaskStatus = ref(metamaskAuthStatuses[0])
+  const simpleTokenModalDisplayed = ref(false)
+  const network = ref("")
+  const tokenTxHash = ref("")
+  const deployedTokenAddress = ref("")
   const tokenParams = reactive({
     tokenName: "",
     tokenSymbol: "",
@@ -469,104 +535,104 @@ function composeDeployGovToken() {
     maxSupply: "0",
     timeDelay: 0,
     mintCap: "",
-  });
-  const networks = { ...networkInfo };
+  })
+  const networks = { ...networkInfo }
   const networkName = computed((): string => {
-    return networks[network.value].name || "Unsuported";
-  });
+    return networks[network.value].name || "Unsuported"
+  })
   const isKnownNetwork = computed((): network => {
-    return networks[network.value];
-  });
+    return networks[network.value]
+  })
   const blockExplorer = computed((): string => {
-    return networks[network.value].blockExplorer;
-  });
+    return networks[network.value].blockExplorer
+  })
   const initialSupply = computed(() => {
-    return getNumbersFromString(tokenParams.initialSupply);
-  });
+    return getNumbersFromString(tokenParams.initialSupply)
+  })
   const airdropSupply = computed(() => {
-    return getNumbersFromString(tokenParams.airdropSupply);
-  });
+    return getNumbersFromString(tokenParams.airdropSupply)
+  })
   const mintCap = computed(() => {
-    return getNumbersFromString(tokenParams.mintCap);
-  });
+    return getNumbersFromString(tokenParams.mintCap)
+  })
   const maxSupply = computed(() => {
-    return getNumbersFromString(tokenParams.maxSupply);
-  });
+    return getNumbersFromString(tokenParams.maxSupply)
+  })
   const totalSupply = computed(() => {
-    return Number(initialSupply.value) + Number(airdropSupply.value);
-  });
+    return Number(initialSupply.value) + Number(airdropSupply.value)
+  })
   const parsedAddresses = computed(() => {
-    const { adminAddresses } = tokenParams;
-    const addresses = adminAddresses.split(",");
-    if (addresses.length > 1) return addresses.map((val) => val.trim());
-    return [adminAddresses].map((v) => ethers.utils.getAddress(v));
-  });
-  let ethereum: any = {},
-    provider: providers.Provider;
-  const decimalsMultiplyer = BigNumber.from("1000000000000000000");
+    const { adminAddresses } = tokenParams
+    const addresses = adminAddresses.split(",")
+    if (addresses.length > 1) return addresses.map((val) => val.trim())
+    return [adminAddresses].map((v) => ethers.utils.getAddress(v))
+  })
+  let ethereum: any = {}
+  let provider: providers.Provider
+  const decimalsMultiplyer = BigNumber.from("1000000000000000000")
   function toggleSimpleTokenModal() {
-    checkProvider();
-    simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value;
+    checkProvider()
+    simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value
   }
   function expandAddressList() {
-    showExpandedList.value = !showExpandedList.value;
+    showExpandedList.value = !showExpandedList.value
   }
   async function checkProvider() {
-    tokenStatus.value = tokenStatuses[1];
-    const hasEthProvider = await detectEthereumProvider();
+    tokenStatus.value = tokenStatuses[1]
+    const hasEthProvider = await detectEthereumProvider()
     if (hasEthProvider) {
-      ethereum = (window as any).ethereum;
-      provider = new ethers.providers.Web3Provider(ethereum, "any");
-      ethereum.request({ method: "eth_requestAccounts" });
-      const networkInfo = await provider.getNetwork();
-      network.value = networkInfo.chainId.toString();
+      ethereum = (window as any).ethereum
+      provider = new ethers.providers.Web3Provider(ethereum, "any")
+      ethereum.request({ method: "eth_requestAccounts" })
+      const networkInfo = await provider.getNetwork()
+      network.value = networkInfo.chainId.toString()
       provider.on("network", (newNetwork, oldNetwork) => {
         if (oldNetwork) {
-          network.value = newNetwork.chainId;
+          network.value = newNetwork.chainId
         }
-      });
-      metamaskStatus.value = metamaskAuthStatuses[3];
-      tokenStatus.value = tokenStatuses[2];
+      })
+      metamaskStatus.value = metamaskAuthStatuses[3]
+      tokenStatus.value = tokenStatuses[2]
     } else {
-      metamaskStatus.value = metamaskAuthStatuses[4];
+      metamaskStatus.value = metamaskAuthStatuses[4]
     }
   }
   async function deployToken() {
-    tokenStatus.value = tokenStatuses[3];
-    metamaskStatus.value = metamaskAuthStatuses[1];
-    //@ts-ignore the lies
-    const signer = provider.getSigner();
-    metamaskStatus.value = metamaskAuthStatuses[3];
-    let token: SimpleToken | TimedMintToken | undefined;
+    tokenStatus.value = tokenStatuses[3]
+    metamaskStatus.value = metamaskAuthStatuses[1]
+    // @ts-ignore the lies
+    const signer = provider.getSigner()
+    metamaskStatus.value = metamaskAuthStatuses[3]
+    let token: SimpleToken | TimedMintToken | undefined
     try {
-      metamaskStatus.value = metamaskAuthStatuses[5];
+      metamaskStatus.value = metamaskAuthStatuses[5]
       if (tokenParams.minting === "false") {
-        token = await deploySimpleToken(signer);
+        token = await deploySimpleToken(signer)
       } else if (tokenParams.minting === "true") {
-        token = await deployTimedMintToken(signer);
+        token = await deployTimedMintToken(signer)
       } else {
-        return;
+        return
       }
     } catch (err) {
-      metamaskStatus.value = metamaskAuthStatuses[9];
+      metamaskStatus.value = metamaskAuthStatuses[9]
     }
     if (token) {
-      metamaskStatus.value = metamaskAuthStatuses[6];
-      const tokenRequest = await storeTokenData();
-      const tokenResponse = await tokenRequest.json();
-      await token.deployed();
-      metamaskStatus.value = metamaskAuthStatuses[7];
+      metamaskStatus.value = metamaskAuthStatuses[6]
+      const tokenRequest = await storeTokenData()
+      const tokenResponse = await tokenRequest.json()
+      await token.deployed()
+      metamaskStatus.value = metamaskAuthStatuses[7]
       await router.push({
         path: "/token-success",
         query: { tokenId: tokenResponse.token.id },
-      });
+      })
     }
   }
 
   async function deploySimpleToken(signer: Signer) {
-    console.groupCollapsed("tokenInfo");
-    console.log("Deploying Simple Token v0.1.0");
-    let simpleToken: SimpleToken | undefined;
+    console.groupCollapsed("tokenInfo")
+    console.log("Deploying Simple Token v0.1.0")
+    let simpleToken: SimpleToken | undefined
     try {
       simpleToken = await new SimpleTokenFactory(signer).deploy(
         BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
@@ -574,67 +640,69 @@ function composeDeployGovToken() {
         ethers.utils.getAddress(tokenParams.vaultAddress),
         tokenParams.tokenName,
         tokenParams.tokenSymbol,
-        parsedAddresses.value.map((v) => ethers.utils.getAddress(v))
-      );
-      tokenTxHash.value = simpleToken.deployTransaction.hash;
-      deployedTokenAddress.value = simpleToken.address;
-      console.log({ simpleToken });
+        parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
+      )
+      tokenTxHash.value = simpleToken.deployTransaction.hash
+      deployedTokenAddress.value = simpleToken.address
+      console.log({ simpleToken })
+      return simpleToken
     } catch (err: any) {
-      console.error(err);
+      console.error(err)
       if (err.code === 4001) {
-        metamaskStatus.value = metamaskAuthStatuses[8];
+        metamaskStatus.value = metamaskAuthStatuses[8]
       } else {
-        metamaskStatus.value = metamaskAuthStatuses[9];
-        errorText.value = "Error confirming transaction";
+        metamaskStatus.value = metamaskAuthStatuses[9]
+        errorText.value = "Error confirming transaction"
       }
+      return
     } finally {
-      console.groupEnd();
-      return simpleToken;
+      console.groupEnd()
     }
   }
 
   async function deployTimedMintToken(signer: Signer) {
-    console.groupCollapsed("tokenInfo");
-    console.log("Deploying Timed Mint Token v0.1.0");
-    let timedMintToken: TimedMintToken | undefined;
-    let maxTokenSupply: BigNumber;
+    console.groupCollapsed("tokenInfo")
+    console.log("Deploying Timed Mint Token v0.1.0")
+    let timedMintToken: TimedMintToken | undefined
+    let maxTokenSupply: BigNumber
     if (tokenParams.supplyCap === "false") {
-      maxTokenSupply = BigNumber.from(0);
+      maxTokenSupply = BigNumber.from(0)
     } else {
-      maxTokenSupply = BigNumber.from(maxSupply.value).mul(decimalsMultiplyer);
+      maxTokenSupply = BigNumber.from(maxSupply.value).mul(decimalsMultiplyer)
     }
     try {
       timedMintToken = await new TimedMintTokenFactory(signer).deploy(
-        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer), //vault
-        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer), //airdrop
-        maxTokenSupply, //supplycap
-        ethers.utils.getAddress(tokenParams.vaultAddress), //vault
-        BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), //timeDelay
-        BigNumber.from(mintCap.value).mul(decimalsMultiplyer), //mintCap
+        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer), // vault
+        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer), // airdrop
+        maxTokenSupply, // supplycap
+        ethers.utils.getAddress(tokenParams.vaultAddress), // vault
+        BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), // timeDelay
+        BigNumber.from(mintCap.value).mul(decimalsMultiplyer), // mintCap
         tokenParams.tokenName,
         tokenParams.tokenSymbol,
-        parsedAddresses.value.map((v) => ethers.utils.getAddress(v))
-      );
-      console.log({ timedMintToken });
-      tokenTxHash.value = timedMintToken.deployTransaction.hash;
-      deployedTokenAddress.value = timedMintToken.address;
+        parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
+      )
+      console.log({ timedMintToken })
+      tokenTxHash.value = timedMintToken.deployTransaction.hash
+      deployedTokenAddress.value = timedMintToken.address
+      return timedMintToken
     } catch (err: any) {
-      console.error(err);
+      console.error(err)
       if (err.code === 4001) {
-        metamaskStatus.value = metamaskAuthStatuses[8];
+        metamaskStatus.value = metamaskAuthStatuses[8]
       } else {
-        metamaskStatus.value = metamaskAuthStatuses[9];
-        errorText.value = "Error confirming transaction";
+        metamaskStatus.value = metamaskAuthStatuses[9]
+        errorText.value = "Error confirming transaction"
       }
+      return
     } finally {
-      console.groupEnd();
-      return timedMintToken;
+      console.groupEnd()
     }
   }
 
   async function storeTokenData() {
     return await auth.saveTokenData({
-      tokenType: tokenParams.minting == "true" ? "timed_mint" : "simple",
+      tokenType: tokenParams.minting === "true" ? "timed_mint" : "simple",
       contractVersion: "v0.1.0",
       freeSupply: initialSupply.value,
       airdropSupply: airdropSupply.value,
@@ -645,26 +713,26 @@ function composeDeployGovToken() {
       chainId: network.value,
       txHash: tokenTxHash.value,
       contractAddress: deployedTokenAddress.value,
-    });
+    })
   }
   function submitToken() {
-    toggleSimpleTokenModal();
+    toggleSimpleTokenModal()
   }
   function getNumbersFromString(str: string) {
-    return str.replace(/[^0-9]/g, "");
+    return str.replace(/[^0-9]/g, "")
   }
   function isEtherAddress(value: string) {
-    const trimmedAddress = value.trim();
+    const trimmedAddress = value.trim()
     return (
       trimmedAddress.substring(0, 2) === "0x" && trimmedAddress.length === 42
-    );
+    )
   }
   function isNumberString(value: string) {
     if (value) {
-      //@ts-ignore because TS doesn't know the idiosyncrasies (dumb design decisions) of JS
-      return parseInt(getNumbersFromString(value)) != "Nan";
+      // @ts-ignore because TS doesn't know the idiosyncrasies (dumb design decisions) of JS
+      return parseInt(getNumbersFromString(value)) !== "Nan"
     }
-    return true;
+    return true
   }
   const rules = computed(() => ({
     tokenName: {
@@ -692,7 +760,7 @@ function composeDeployGovToken() {
     adminAddresses: {
       required,
       isListOfAdminAddresses: (value: any) => {
-        return value.split(",").every(isEtherAddress);
+        return value.split(",").every(isEtherAddress)
       },
     },
     minting: {
@@ -704,11 +772,11 @@ function composeDeployGovToken() {
     maxSupply: {
       isValidMaxSupply: (value: any) => {
         return (
-          value == "0" ||
+          value === "0" ||
           parseInt(getNumbersFromString(value)) >
-            parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-              parseInt(getNumbersFromString(tokenParams.airdropSupply))
-        );
+          parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+          parseInt(getNumbersFromString(tokenParams.airdropSupply))
+        )
       },
     },
     timeDelay: {
@@ -718,25 +786,25 @@ function composeDeployGovToken() {
       isValidMintAmout: (value: any) => {
         return (
           isNumberString(value) && parseInt(getNumbersFromString(value)) > 0
-        );
+        )
       },
     },
-  }));
+  }))
 
-  //@ts-ignore
-  const v$ = useVuelidate(rules, tokenParams);
+  // @ts-ignore
+  const v$ = useVuelidate(rules, tokenParams)
   const isMaxSupplyValid = computed(() => {
     return (
-      //@ts-ignore
+      // @ts-ignore
       v$.value.maxSupply.$dirty && v$.value.maxSupply.isValidMaxSupply.$invalid
-    );
-  });
+    )
+  })
   const isValidMintAmout = computed(() => {
     return (
-      //@ts-ignore
+      // @ts-ignore
       v$.mintCap.$dirty && v$.mintCap.isValidMintAmout.$invalid
-    );
-  });
+    )
+  })
   return {
     tokenParams,
     initialSupply,
@@ -763,6 +831,6 @@ function composeDeployGovToken() {
     blockExplorer,
     isKnownNetwork,
     errorText,
-  };
+  }
 }
 </script>
