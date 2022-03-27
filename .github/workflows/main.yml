@@ -17,8 +17,13 @@ jobs:
         
     - name: npm install test and lint
       run: |
+        echo "===========INSTALLING============"
         npm install
+        echo "======PATCHING DEPENDENCIES======"
         npm run postinstall
+        echo "=============TESTING============="
         npm run test:unit
+        echo "=============LINTING============="
         npm run lint:script
+        echo "=============BUILDING============="
         npm run build
