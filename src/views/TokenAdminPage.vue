@@ -263,7 +263,7 @@ async function getTMToken() {
   return tokenContract.attach(tokenData.value.address)
 }
 async function setMinter() {
-  const token = getTMToken()
+  const token = await getTMToken()
   if (!token) return
   try {
     waitingForMinterSet.value = true
