@@ -1,7 +1,7 @@
 import { shallowMount } from "@vue/test-utils"
 import EditProfilePage from "@/views/EditProfilePage.vue"
 
-jest.mock("../../services/authentication", () => ({}));
+jest.mock("../../services/authentication", () => ({}))
 
 jest.mock("vue-router", () => ({
   useRoute: jest.fn(() => ({
@@ -15,7 +15,7 @@ const testUser = {
   email: "test@email.com",
   about: "test",
   isAlphaUser: false,
-};
+}
 const mockStore = {
   state: {
     authUser: {
@@ -27,10 +27,10 @@ const mockStore = {
     "authUser/user": jest.fn(() => testUser),
     "authUser/profileImage": jest.fn(() => "fake_url.jpg"),
   },
-};
+}
 jest.mock("vuex", () => ({
   useStore: jest.fn(() => mockStore),
-}));
+}))
 
 describe("<EditProfilePage \\>", () => {
   it("mounts", () => {
@@ -52,17 +52,17 @@ describe("<EditProfilePage \\>", () => {
       expect(tokenLaunchComponent.exists()).toBe(false)
     })
     it("lets alpha users see the <CreateToken \\> component", () => {
-      mockStore.state.authUser.user.isAlphaUser = true;
+      mockStore.state.authUser.user.isAlphaUser = true
       jest.mock("vuex", () => ({
         useStore: jest.fn(() => mockStore),
-      }));
+      }))
       const wrapper = shallowMount(EditProfilePage, {
         global: {
           stubs: ["router-link"],
         },
-      });
-      const tokenLaunchComponent = wrapper.find("create-token-stub");
-      expect(tokenLaunchComponent.exists()).toBe(true);
-    });
-  });
-});
+      })
+      const tokenLaunchComponent = wrapper.find("create-token-stub")
+      expect(tokenLaunchComponent.exists()).toBe(true)
+    })
+  })
+})
