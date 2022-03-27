@@ -131,7 +131,7 @@ export default defineComponent({
     }
     return {
       ...composeUserInfo(usernameString),
-      username,
+      username: usernameString,
       authUser: computed(() => store.state.authUser.user),
     }
   },
