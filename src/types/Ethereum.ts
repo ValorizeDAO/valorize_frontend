@@ -4,17 +4,17 @@ export default interface Ethereum {
   request(args: RequestArguments): Promise<unknown>;
 }
 
-interface RequestArguments {
+export interface RequestArguments {
   readonly method: string;
   readonly params?: readonly unknown[] | object;
 }
 
-interface ProviderRpcError extends Error {
+export interface ProviderRpcError extends Error {
   code: number;
   data?: unknown;
 }
 
-interface ProviderMessage {
+export interface ProviderMessage {
   readonly type: string;
   readonly data: unknown;
 }

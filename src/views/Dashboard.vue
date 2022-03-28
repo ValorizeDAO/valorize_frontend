@@ -35,11 +35,11 @@ export default defineComponent({
   props: {},
   components: { ImageContainer },
   setup: () => {
-    const store = useStore();
-    const user = store.getters["authUser/user"];
-    return { store, user };
+    const store = useStore()
+    const user = store.getters["authUser/user"]
+    return { store, user }
   },
-});
+})
 </script>
 
 <style scoped>
