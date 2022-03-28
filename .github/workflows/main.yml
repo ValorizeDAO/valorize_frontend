@@ -25,5 +25,3 @@ jobs:
         npm run test:unit
         echo "=============LINTING============="
         npm run lint:script
-        echo "=============BUILDING============="
-        npm run build
