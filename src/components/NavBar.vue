@@ -15,7 +15,10 @@
       z-10
     "
   >
-    <router-link to="/" class="home">
+    <router-link
+      to="/"
+      class="home"
+    >
       <img
         src="../assets/logo_large.png"
         alt="Valorize"
@@ -64,7 +67,7 @@
             sm:flex-row
           "
         >
-          <router-link 
+          <router-link
             to="/beta-signup"
             class="navbar-button"
           >
@@ -98,8 +101,8 @@
             transition
             duration-100
           "
-        > 
-        <router-link
+        >
+          <router-link
             id="edit-profile"
             to="/dashboard"
           >
