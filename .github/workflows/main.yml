@@ -15,12 +15,10 @@ jobs:
     - name: Use Node.js
       uses: actions/checkout@v2
         
-    - name: npm install test and lint
+    - name: npm test and lint
       run: |
         echo "===========INSTALLING============"
         npm install
-        echo "======PATCHING DEPENDENCIES======"
-        npm run postinstall
         echo "=============TESTING============="
         npm run test:unit
         echo "=============LINTING============="
