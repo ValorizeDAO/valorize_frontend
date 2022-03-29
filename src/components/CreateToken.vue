@@ -548,7 +548,7 @@ function composeDeployGovToken() {
     return networks[network.value]
   })
   const blockExplorer = computed((): string => {
-    return networks[network.value].blockExplorer
+    return networks[network.value]?.blockExplorer
   })
   const initialSupply = computed(() => {
     return getNumbersFromString(tokenParams.initialSupply)
@@ -806,14 +806,8 @@ function composeDeployGovToken() {
       },
     }
     if (tokenParams.minting === "false") {
-      console.log({ simpleTokenValidationParams })
-      console.log({ ...tokenParams })
-      console.log(tokenParams.minting)
       return simpleTokenValidationParams
     } else {
-      console.log({ timedMintTokenValidationParams })
-      console.log({ ...tokenParams })
-      console.log(tokenParams.minting)
       return timedMintTokenValidationParams
     }
   })
