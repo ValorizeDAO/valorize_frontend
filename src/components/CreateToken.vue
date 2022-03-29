@@ -117,6 +117,7 @@
         >
         <span
           v-if="v$.adminAddresses.$dirty && v$.adminAddresses.$invalid"
+          id="admin-addresses-error"
         >Please enter a valid Ethereum addresses separated by commas</span>
       </div>
       <div class="mt-8 flex justify-between">

@@ -78,5 +78,35 @@ describe("<CreateToken \\>", () => {
       await wrapper.vm.$nextTick()
       expect(wrapper.find("#vaultAddress-error").exists()).toBe(true)
     })
+    it("Should display an error if admin addresses are invalid ETH address", async () => {
+      wrapper = shallowMount(CreateToken)
+      expect(wrapper.find("#admin-addresses-error").exists()).toBe(false)
+      const vaultInput = wrapper.find("input[name='adminAddresses']")
+
+      // all addresses invalid
+      vaultInput.setValue("0x123, 0x456, 0x789")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#admin-addresses-error").exists()).toBe(true)
+
+      // one address valid
+      vaultInput.setValue("0x123530E9eA179066961fF4424668B04587DC0456, 0x456, 0x789")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#admin-addresses-error").exists()).toBe(true)
+
+      // one address invalid
+      vaultInput.setValue("0x123530E9eA179066961fF4426648B04587DC0456, 0x456530E9eA179066961fF4424668B04587DC0456, 0x789")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#admin-addresses-error").exists()).toBe(true)
+
+      // first address invalid
+      vaultInput.setValue("0x123, 0x456530E9eA1790664961fF442668B04587DC0456, 0x789530E9eA179066961fF4442668B04587DC0456")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#admin-addresses-error").exists()).toBe(true)
+
+      // all addresses valid
+      vaultInput.setValue("0x123530E9eA179066961fF442668B045879DC0456, 0x456530E9eA179066961fF4426968B04587DC0456, 0x789530E9eA1790669461fF442668B04587DC0456")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#admin-addresses-error").exists()).toBe(false)
+    })
   })
 })
