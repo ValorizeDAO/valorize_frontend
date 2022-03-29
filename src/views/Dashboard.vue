@@ -17,15 +17,26 @@
         Your Tokens
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-        <router-link to="/" class="col-span-1 bg-purple-300 p-8 border-2 border-black">
+        <router-link
+          to="/"
+          class="col-span-1 bg-purple-300 p-8 border-2 border-black"
+        >
           <h3 class="text-lg font-black">
             Token Test
           </h3>
-          <p class="font-black mt-4">Total Supply: <span></span></p>
-          <p class="font-black">Next Mint Time: <span></span></p>
-          <p class="font-black">Has Active Airdrop: <span></span></p>
+          <p class="font-black mt-4">
+            Total Supply: <span />
+          </p>
+          <p class="font-black">
+            Next Mint Time: <span />
+          </p>
+          <p class="font-black">
+            Has Active Airdrop: <span />
+          </p>
           <div class="text-center">
-            <button class="btn bg-paper-light mt-2 mx-auto">Manage</button>
+            <button class="btn bg-paper-light mt-2 mx-auto">
+              Manage
+            </button>
           </div>
         </router-link>
       </div>
@@ -36,11 +47,10 @@
 <script lang="ts">
 import { defineComponent } from "vue"
 import { useStore } from "vuex"
-import ImageContainer from "../components/ImageContainer.vue"
 export default defineComponent({
   name: "Dashboard",
   props: {},
-  components: { ImageContainer },
+  components: { },
   setup: () => {
     const store = useStore()
     const user = store.getters["authUser/user"]
