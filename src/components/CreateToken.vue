@@ -76,6 +76,7 @@
           ></label>
         <span
           v-if="v$.vaultAddress.$dirty && v$.vaultAddress.$invalid"
+          id="vaultAddress-error"
         >Please enter a valid Ethereum address</span>
       </div>
       <div class="mt-8">
@@ -252,9 +253,6 @@
           class="my-4"
         >All Fields Required</span>
       </div>
-      <pre class="absolute">
-      {{ v$ }}
-      </pre>
     </form>
     <Modal
       :body-class="['bg-white xl:w-7/12 sm:mt-0 md:mt-12']"

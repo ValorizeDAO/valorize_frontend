@@ -69,4 +69,14 @@ describe("<CreateToken \\>", () => {
       expect(wrapper.find("input[name='maxSupply']").exists()).toBe(true)
     })
   })
+  describe("Validations", () => {
+    it("Should display an error if vault address is invalid ETH address", async () => {
+      wrapper = shallowMount(CreateToken)
+      expect(wrapper.find("#vaultAddress-error").exists()).toBe(false)
+      const vaultInput = wrapper.find("input[name='vaultAddress']")
+      vaultInput.setValue("0x123")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#vaultAddress-error").exists()).toBe(true)
+    })
+  })
 })
