@@ -90,16 +90,16 @@
             left-0
             px-10
             py-4
+            flex flex-col
+            text-center
+            transition
+            duration-100
             sm:py-0
             sm:h-full
             sm:pr-6
-            flex flex-col
             sm:flex-row
             sm:justify-center
-            text-center
             hover:font-bold
-            transition
-            duration-100
           "
         >
           <router-link
@@ -165,7 +165,7 @@ export default defineComponent({
 </script>
 <style lang="postcss" scoped>
 .navbar-button {
-  @apply sm:flex items-center sm:justify-center sm:h-full pb-8 sm:pb-0 sm:min-w-[11em] hover:font-bold hover:px-7 transition ease-in-out delay-150  border-purple-900 hover:sm:border-b-4;
+  @apply sm:flex items-center sm:justify-center sm:h-full pb-8 sm:pb-0 sm:min-w-[11em] hover:font-bold hover:px-7 transition ease-in-out duration-300 border-white sm:border-b-4 hover:sm:border-purple-900;
 }
 .router-link {
   @apply sm:flex items-center;
@@ -173,10 +173,10 @@ export default defineComponent({
 .router-link-exact-active{
   @apply sm:border-b-4 border-purple-900;
 }
+.router-link-exact-active .navbar-button {
+  @apply sm:border-b-0 border-purple-900;
+}
 .router-link-exact-active.home{
   @apply sm:border-b-0;
-}
-.router-link-exact-active:hover{
-  @apply border-b-0 border-purple-900;
 }
 </style>
