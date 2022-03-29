@@ -131,7 +131,7 @@
             id="minting-no"
             name="minting"
             v-model="v$.minting.$model"
-            :checked="v$.minting.$model === 'false'"
+            :checked="tokenParams.minting === 'false'"
             value="false"
           ><label
             for="minting-no"
@@ -142,13 +142,13 @@
             id="minting-yes"
             name="minting"
             v-model="v$.minting.$model"
-            :checked="v$.minting.$model === 'true'"
+            :checked="tokenParams.minting === 'true'"
             value="true"
           ><label for="minting-yes">Yes</label>
         </div>
       </div>
       <transition name="fade">
-        <div v-if="v$.minting.$model === 'true'">
+        <div v-if="tokenParams.minting === 'true'">
           <div>
             <div class="mt-8 flex justify-between">
               <label
@@ -161,7 +161,7 @@
                   id="mint-cap-no"
                   name="supplyCap"
                   v-model="v$.supplyCap.$model"
-                  :checked="v$.supplyCap.$model === 'false'"
+                  :checked="tokenParams.supplyCap === 'false'"
                   value="false"
                 ><label
                   for="mint-cap-no"
@@ -172,14 +172,14 @@
                   id="mint-cap-yes"
                   name="supplyCap"
                   v-model="v$.supplyCap.$model"
-                  :checked="v$.supplyCap.$model === 'true'"
+                  :checked="tokenParams.supplyCap === 'true'"
                   value="true"
                 ><label for="mint-cap-yes">Yes</label>
               </div>
             </div>
             <transition name="fade">
               <div
-                v-if="v$.supplyCap.$model === 'true'"
+                v-if="tokenParams.supplyCap === 'true'"
                 class="mt-8"
               >
                 <label
@@ -231,7 +231,7 @@
             </label>
             <p v-if="isValidMintAmout">
               Please enter a valid amount of tokens to to mint each
-              {{ v$.timeDelay.$model }} days
+              {{ tokenParams.timeDelay }} days
             </p>
           </div>
         </div>
@@ -804,8 +804,14 @@ function composeDeployGovToken() {
       },
     }
     if (tokenParams.minting === "false") {
+      console.log({ simpleTokenValidationParams })
+      console.log({ ...tokenParams })
+      console.log(tokenParams.minting)
       return simpleTokenValidationParams
     } else {
+      console.log({ timedMintTokenValidationParams })
+      console.log({ ...tokenParams })
+      console.log(tokenParams.minting)
       return timedMintTokenValidationParams
     }
   })
