@@ -737,61 +737,77 @@ function composeDeployGovToken() {
     }
     return true
   }
-  const rules = computed(() => ({
-    tokenName: {
-      required,
-      minLength: minLength(2),
-    },
-    tokenSymbol: {
-      required,
-      minLength: minLength(2),
-    },
-    initialSupply: {
-      required,
-      minLength: minLength(1),
-      isNumberString,
-    },
-    vaultAddress: {
-      required,
-      isEtherAddress,
-    },
-    airdropSupply: {
-      required,
-      minLength: minLength(1),
-      isNumberString,
-    },
-    adminAddresses: {
-      required,
-      isListOfAdminAddresses: (value: any) => {
-        return value.split(",").every(isEtherAddress)
-      },
-    },
-    minting: {
-      required,
-    },
-    supplyCap: {
-      required,
-    },
-    maxSupply: {
-      isValidMaxSupply: (value: any) => {
-        return (
-          value === "0" ||
-          parseInt(getNumbersFromString(value)) >
-          parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-          parseInt(getNumbersFromString(tokenParams.airdropSupply))
-        )
-      },
-    },
-    timeDelay: {
-    },
-    mintCap: {
-      isValidMintAmout: (value: any) => {
-        return (
-          value == "" || (isNumberString(value) && parseInt(getNumbersFromString(value)) > 0)
-        )
-      },
-    },
-  }))
+  const rules = computed(() => {
+    const simpleTokenParams =  {
+        tokenName: {
+          required,
+          minLength: minLength(2),
+        },
+        tokenSymbol: {
+          required,
+          minLength: minLength(2),
+        },
+        initialSupply: {
+          required,
+          minLength: minLength(1),
+          isNumberString,
+        },
+        vaultAddress: {
+          required,
+          isEtherAddress,
+        },
+        airdropSupply: {
+          required,
+          minLength: minLength(1),
+          isNumberString,
+        },
+        adminAddresses: {
+          required,
+          isListOfAdminAddresses: (value: any) => {
+            return value.split(",").every(isEtherAddress)
+          },
+        },
+        minting: { },
+        supplyCap: { },
+        maxSupply: { },
+        timeDelay: { },
+        mintCap: { },
+    }
+    if (tokenParams.minting === "false") {
+      return simpleTokenParams
+    } else {
+      return {
+        ...simpleTokenParams,
+        minting: {
+          required,
+        },
+        supplyCap: {
+          required,
+        },
+        maxSupply: {
+          isValidMaxSupply: (value: any) => {
+            return (
+              parseInt(getNumbersFromString(value)) >
+              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+              parseInt(getNumbersFromString(tokenParams.airdropSupply))
+            )
+          },
+        },
+        timeDelay: {
+          hasValue: (value: number) => {
+            return value > 0
+          },
+        },
+        mintCap: {
+          isValidMintAmout: (value: any) => {
+            return (
+              (isNumberString(value) && parseInt(getNumbersFromString(value)) > 0)
+            )
+          },
+        },
+      }
+    }
+  })
 
   // @ts-ignore
   const v$ = useVuelidate(rules, tokenParams)
