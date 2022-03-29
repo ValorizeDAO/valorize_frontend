@@ -19,19 +19,15 @@
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
         <router-link
           to="/"
-          class="col-span-1 bg-purple-300 p-8 border-2 border-black"
+          class="col-span-1 bg-purple-300 p-8 border-2 border-black token-list-item"
+          v-for="token in userTokens"
+          :key="token.id"
         >
           <h3 class="text-lg font-black">
-            Token Test
+            {{ token.name }} ({{ token.symbol }})
           </h3>
-          <p class="font-black mt-4">
-            Total Supply: <span />
-          </p>
           <p class="font-black">
-            Next Mint Time: <span />
-          </p>
-          <p class="font-black">
-            Has Active Airdrop: <span />
+            Active on: <span>{{ token.chain_id }}</span>
           </p>
           <div class="text-center">
             <button class="btn bg-paper-light mt-2 mx-auto">
@@ -45,8 +41,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue"
+import { defineComponent, onMounted, reactive } from "vue"
 import { useStore } from "vuex"
+import { Token } from "../models/Token"
+import auth from "../services/authentication"
 export default defineComponent({
   name: "Dashboard",
   props: {},
@@ -54,7 +52,15 @@ export default defineComponent({
   setup: () => {
     const store = useStore()
     const user = store.getters["authUser/user"]
-    return { store, user }
+    const userTokens = reactive([] as Token[])
+    onMounted(async () => {
+      const req = await auth.getTokens()
+      if (req.status === 200) {
+        const { tokens } = await req.json()
+        userTokens.push(...tokens)
+      }
+    })
+    return { store, user, userTokens }
   },
 })
 </script>
