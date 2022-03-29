@@ -738,7 +738,7 @@ function composeDeployGovToken() {
     return true
   }
   const rules = computed(() => {
-    const simpleTokenParams =  {
+    const simpleTokenValidationParams =  {
         tokenName: {
           required,
           minLength: minLength(2),
@@ -773,11 +773,8 @@ function composeDeployGovToken() {
         timeDelay: { },
         mintCap: { },
     }
-    if (tokenParams.minting === "false") {
-      return simpleTokenParams
-    } else {
-      return {
-        ...simpleTokenParams,
+    const timedMintTokenValidationParams = {
+        ...simpleTokenValidationParams,
         minting: {
           required,
         },
@@ -806,6 +803,10 @@ function composeDeployGovToken() {
           },
         },
       }
+    if (tokenParams.minting === "false") {
+      return simpleTokenValidationParams
+    } else {
+      return timedMintTokenValidationParams
     }
   })
 
