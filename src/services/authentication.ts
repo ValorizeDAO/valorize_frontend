@@ -1,5 +1,5 @@
 import { Link } from "../models/Link"
-import { Token } from "../models/Token";
+import { Token } from "../models/Token"
 import { User, emptyUser } from "../models/User"
 import { SimpleTokenParams } from "./api"
 
@@ -203,17 +203,15 @@ export default {
     return apiResponse
   },
 
-  async getTokens () {
+  async getTokens() {
     const requestOptions = {
       method: "GET",
       redirect: "follow",
       credentials: "include",
     } as RequestInit
-    const req = await fetch(
-      import.meta.env.VITE_BACKEND_URL + "/api/v0/me/tokens", requestOptions
+    return await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/v0/me/tokens", requestOptions,
     )
-    const tokens = (await req.json()) as Token[]
-    return tokens
-  }
+  },
 
 }
