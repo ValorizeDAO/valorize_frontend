@@ -1,5 +1,4 @@
 import { Link } from "../models/Link"
-import { Token } from "../models/Token"
 import { User, emptyUser } from "../models/User"
 import { SimpleTokenParams } from "./api"
 
