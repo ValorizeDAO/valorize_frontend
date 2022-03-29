@@ -1,13 +1,13 @@
 
 <template>
-  <div class="px-16 py-4">
+  <div class="px-6 sm:px-16 py-4">
     <div class="flex w-full justify-between">
       <h1 class="text-3xl font-sans font-black">
         Welcome, {{ user.username }}!
       </h1>
       <router-link
         to="edit-profile"
-        class="btn  my-3 w-40 text-center bg-paper-light"
+        class="btn my-3 w-40 text-center bg-paper-light"
       >
         Setup Profile
       </router-link>
@@ -19,7 +19,16 @@
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
         <router-link
           to="/"
-          class="col-span-1 bg-purple-300 p-8 border-2 border-black token-list-item"
+          class="
+            bg-purple-300
+            p-8
+            border-2 border-black
+            token-list-item
+            drop-shadow-square
+            transition
+            hover:drop-shadow-square-sm hover:-translate-x-1 hover:translate-y-1
+          "
+          :class="userTokens.length === 1 ? 'sm:col-span-3' : 'sm:col-span-1'"
           v-for="token in userTokens"
           :id="'token-' + token.id"
           :key="token.id"
@@ -28,7 +37,10 @@
             {{ token.name }} ({{ token.symbol }})
           </h3>
           <p class="font-black">
-            Active on: <span class="network-name">{{ networkInfo[token.chain_id].name }}</span>
+            Active on:
+            <span class="network-name">{{
+              networkInfo[token.chain_id].name
+            }}</span>
           </p>
           <div class="text-center">
             <button class="btn bg-paper-light mt-2 mx-auto">
@@ -50,7 +62,7 @@ import { networkInfo } from "../services/network"
 export default defineComponent({
   name: "Dashboard",
   props: {},
-  components: { },
+  components: {},
   setup: () => {
     const store = useStore()
     const user = store.getters["authUser/user"]

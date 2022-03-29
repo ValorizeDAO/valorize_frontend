@@ -31,6 +31,10 @@ module.exports = {
           darker: "#E0D7D1",
         },
       },
+      dropShadow: {
+        "square-sm": "-4px 4px 0 rgba(0, 0, 0, 1)",
+        square: "-8px 8px 0 rgba(0, 0, 0, 1)",
+      },
     },
   },
   variants: {
@@ -41,4 +45,4 @@ module.exports = {
     },
   },
   plugins: [],
-};
+}
