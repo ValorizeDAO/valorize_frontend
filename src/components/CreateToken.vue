@@ -76,6 +76,7 @@
           ></label>
         <span
           v-if="v$.vaultAddress.$dirty && v$.vaultAddress.$invalid"
+          id="vaultAddress-error"
         >Please enter a valid Ethereum address</span>
       </div>
       <div class="mt-8">
@@ -116,6 +117,7 @@
         >
         <span
           v-if="v$.adminAddresses.$dirty && v$.adminAddresses.$invalid"
+          id="admin-addresses-error"
         >Please enter a valid Ethereum addresses separated by commas</span>
       </div>
       <div class="mt-8 flex justify-between">
@@ -131,7 +133,7 @@
             id="minting-no"
             name="minting"
             v-model="v$.minting.$model"
-            :checked="v$.minting.$model === 'false'"
+            :checked="tokenParams.minting === 'false'"
             value="false"
           ><label
             for="minting-no"
@@ -142,13 +144,13 @@
             id="minting-yes"
             name="minting"
             v-model="v$.minting.$model"
-            :checked="v$.minting.$model === 'true'"
+            :checked="tokenParams.minting === 'true'"
             value="true"
           ><label for="minting-yes">Yes</label>
         </div>
       </div>
       <transition name="fade">
-        <div v-if="v$.minting.$model === 'true'">
+        <div v-if="tokenParams.minting === 'true'">
           <div>
             <div class="mt-8 flex justify-between">
               <label
@@ -161,7 +163,7 @@
                   id="mint-cap-no"
                   name="supplyCap"
                   v-model="v$.supplyCap.$model"
-                  :checked="v$.supplyCap.$model === 'false'"
+                  :checked="tokenParams.supplyCap === 'false'"
                   value="false"
                 ><label
                   for="mint-cap-no"
@@ -172,14 +174,14 @@
                   id="mint-cap-yes"
                   name="supplyCap"
                   v-model="v$.supplyCap.$model"
-                  :checked="v$.supplyCap.$model === 'true'"
+                  :checked="tokenParams.supplyCap === 'true'"
                   value="true"
                 ><label for="mint-cap-yes">Yes</label>
               </div>
             </div>
             <transition name="fade">
               <div
-                v-if="v$.supplyCap.$model === 'true'"
+                v-if="tokenParams.supplyCap === 'true'"
                 class="mt-8"
               >
                 <label
@@ -195,6 +197,7 @@
                 </label>
               </div>
             </transition>
+            {{ isMaxSupplyValid }}
             <transition name="fade">
               <p
                 v-if="isMaxSupplyValid"
@@ -229,9 +232,9 @@
                 type="string"
               >
             </label>
-            <p v-if="isValidMintAmout">
+            <p v-if="v$.mintCap.$dirty && v$.mintCap.$invalid">
               Please enter a valid amount of tokens to to mint each
-              {{ v$.timeDelay.$model }} days
+              {{ tokenParams.timeDelay }} days
             </p>
           </div>
         </div>
@@ -538,13 +541,13 @@ function composeDeployGovToken() {
   })
   const networks = { ...networkInfo }
   const networkName = computed((): string => {
-    return networks[network.value].name || "Unsuported"
+    return networks[network.value]?.name || "Unsuported"
   })
   const isKnownNetwork = computed((): network => {
     return networks[network.value]
   })
   const blockExplorer = computed((): string => {
-    return networks[network.value].blockExplorer
+    return networks[network.value]?.blockExplorer
   })
   const initialSupply = computed(() => {
     return getNumbersFromString(tokenParams.initialSupply)
@@ -734,62 +737,79 @@ function composeDeployGovToken() {
     }
     return true
   }
-  const rules = computed(() => ({
-    tokenName: {
-      required,
-      minLength: minLength(2),
-    },
-    tokenSymbol: {
-      required,
-      minLength: minLength(2),
-    },
-    initialSupply: {
-      required,
-      minLength: minLength(1),
-      isNumberString,
-    },
-    vaultAddress: {
-      required,
-      isEtherAddress,
-    },
-    airdropSupply: {
-      required,
-      minLength: minLength(1),
-      isNumberString,
-    },
-    adminAddresses: {
-      required,
-      isListOfAdminAddresses: (value: any) => {
-        return value.split(",").every(isEtherAddress)
+  const rules = computed(() => {
+    const simpleTokenValidationParams = {
+      tokenName: {
+        required,
+        minLength: minLength(2),
       },
-    },
-    minting: {
-      required,
-    },
-    supplyCap: {
-      required,
-    },
-    maxSupply: {
-      isValidMaxSupply: (value: any) => {
-        return (
-          value === "0" ||
-          parseInt(getNumbersFromString(value)) >
-          parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-          parseInt(getNumbersFromString(tokenParams.airdropSupply))
-        )
+      tokenSymbol: {
+        required,
+        minLength: minLength(2),
       },
-    },
-    timeDelay: {
-      isNumberString,
-    },
-    mintCap: {
-      isValidMintAmout: (value: any) => {
-        return (
-          isNumberString(value) && parseInt(getNumbersFromString(value)) > 0
-        )
+      initialSupply: {
+        required,
+        minLength: minLength(1),
+        isNumberString,
       },
-    },
-  }))
+      vaultAddress: {
+        required,
+        isEtherAddress,
+      },
+      airdropSupply: {
+        required,
+        minLength: minLength(1),
+        isNumberString,
+      },
+      adminAddresses: {
+        required,
+        isListOfAdminAddresses: (value: any) => {
+          return value.split(",").every(isEtherAddress)
+        },
+      },
+      minting: { },
+      supplyCap: { },
+      maxSupply: { },
+      timeDelay: { },
+      mintCap: { },
+    }
+    const timedMintTokenValidationParams = {
+      ...simpleTokenValidationParams,
+      minting: {
+        required,
+      },
+      supplyCap: {
+        required,
+      },
+      maxSupply: {
+        isValidMaxSupply: (value: any) => {
+          return (
+            value !== "" && (
+              parseInt(getNumbersFromString(value)) >
+              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+              parseInt(getNumbersFromString(tokenParams.airdropSupply))
+            ))
+        },
+      },
+      timeDelay: {
+        hasValue: (value: number) => {
+          return value > 0
+        },
+      },
+      mintCap: {
+        isValidMintAmout: (value: any) => {
+          return (
+            (isNumberString(value) && parseInt(getNumbersFromString(value)) > 0)
+          )
+        },
+      },
+    }
+    if (tokenParams.minting === "false") {
+      return simpleTokenValidationParams
+    } else {
+      return timedMintTokenValidationParams
+    }
+  })
 
   // @ts-ignore
   const v$ = useVuelidate(rules, tokenParams)
@@ -797,12 +817,6 @@ function composeDeployGovToken() {
     return (
       // @ts-ignore
       v$.value.maxSupply.$dirty && v$.value.maxSupply.isValidMaxSupply.$invalid
-    )
-  })
-  const isValidMintAmout = computed(() => {
-    return (
-      // @ts-ignore
-      v$.mintCap.$dirty && v$.mintCap.isValidMintAmout.$invalid
     )
   })
   return {
@@ -824,7 +838,6 @@ function composeDeployGovToken() {
     networkName,
     v$,
     isMaxSupplyValid,
-    isValidMintAmout,
     metamaskStatus,
     tokenTxHash,
     deployedTokenAddress,
