@@ -17,20 +17,17 @@
         Your Tokens
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-        <ImageContainer>
-          <div class="col-span-1 bg-purple-300 p-8 border-2 border-black">
-            <h3 class="text-lg font-black">
-              Token Test
-            </h3>
+        <router-link to="/" class="col-span-1 bg-purple-300 p-8 border-2 border-black">
+          <h3 class="text-lg font-black">
+            Token Test
+          </h3>
+          <p class="font-black mt-4">Total Supply: <span></span></p>
+          <p class="font-black">Next Mint Time: <span></span></p>
+          <p class="font-black">Has Active Airdrop: <span></span></p>
+          <div class="text-center">
+            <button class="btn bg-paper-light mt-2 mx-auto">Manage</button>
           </div>
-        </ImageContainer>
-        <ImageContainer>
-          <div class="col-span-1 bg-purple-300 p-8 border-2 border-black">
-            <h3 class="text-lg font-black">
-              Token Test
-            </h3>
-          </div>
-        </ImageContainer>
+        </router-link>
       </div>
     </section>
   </div>
