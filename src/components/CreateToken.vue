@@ -738,71 +738,71 @@ function composeDeployGovToken() {
     return true
   }
   const rules = computed(() => {
-    const simpleTokenValidationParams =  {
-        tokenName: {
-          required,
-          minLength: minLength(2),
+    const simpleTokenValidationParams = {
+      tokenName: {
+        required,
+        minLength: minLength(2),
+      },
+      tokenSymbol: {
+        required,
+        minLength: minLength(2),
+      },
+      initialSupply: {
+        required,
+        minLength: minLength(1),
+        isNumberString,
+      },
+      vaultAddress: {
+        required,
+        isEtherAddress,
+      },
+      airdropSupply: {
+        required,
+        minLength: minLength(1),
+        isNumberString,
+      },
+      adminAddresses: {
+        required,
+        isListOfAdminAddresses: (value: any) => {
+          return value.split(",").every(isEtherAddress)
         },
-        tokenSymbol: {
-          required,
-          minLength: minLength(2),
-        },
-        initialSupply: {
-          required,
-          minLength: minLength(1),
-          isNumberString,
-        },
-        vaultAddress: {
-          required,
-          isEtherAddress,
-        },
-        airdropSupply: {
-          required,
-          minLength: minLength(1),
-          isNumberString,
-        },
-        adminAddresses: {
-          required,
-          isListOfAdminAddresses: (value: any) => {
-            return value.split(",").every(isEtherAddress)
-          },
-        },
-        minting: { },
-        supplyCap: { },
-        maxSupply: { },
-        timeDelay: { },
-        mintCap: { },
+      },
+      minting: { },
+      supplyCap: { },
+      maxSupply: { },
+      timeDelay: { },
+      mintCap: { },
     }
     const timedMintTokenValidationParams = {
-        ...simpleTokenValidationParams,
-        minting: {
-          required,
+      ...simpleTokenValidationParams,
+      minting: {
+        required,
+      },
+      supplyCap: {
+        required,
+      },
+      maxSupply: {
+        isValidMaxSupply: (value: any) => {
+          return (
+            parseInt(getNumbersFromString(value)) >
+            parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+            parseInt(getNumbersFromString(tokenParams.airdropSupply))
+          )
         },
-        supplyCap: {
-          required,
+      },
+      timeDelay: {
+        hasValue: (value: number) => {
+          return value > 0
         },
-        maxSupply: {
-          isValidMaxSupply: (value: any) => {
-            return (
-              parseInt(getNumbersFromString(value)) >
-              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-              parseInt(getNumbersFromString(tokenParams.airdropSupply))
-            )
-          },
+      },
+      mintCap: {
+        isValidMintAmout: (value: any) => {
+          return (
+            (isNumberString(value) && parseInt(getNumbersFromString(value)) > 0)
+          )
         },
-        timeDelay: {
-          hasValue: (value: number) => {
-            return value > 0
-          },
-        },
-        mintCap: {
-          isValidMintAmout: (value: any) => {
-            return (
-              (isNumberString(value) && parseInt(getNumbersFromString(value)) > 0)
-            )
-          },
-        },
-      }
+      },
+    }
     if (tokenParams.minting === "false") {
       return simpleTokenValidationParams
     } else {
