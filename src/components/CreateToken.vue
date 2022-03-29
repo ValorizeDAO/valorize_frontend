@@ -251,6 +251,9 @@
           class="my-4"
         >All Fields Required</span>
       </div>
+      <pre class="absolute">
+      {{ v$ }}
+      </pre>
     </form>
     <Modal
       :body-class="['bg-white xl:w-7/12 sm:mt-0 md:mt-12']"
@@ -538,7 +541,7 @@ function composeDeployGovToken() {
   })
   const networks = { ...networkInfo }
   const networkName = computed((): string => {
-    return networks[network.value].name || "Unsuported"
+    return networks[network.value]?.name || "Unsuported"
   })
   const isKnownNetwork = computed((): network => {
     return networks[network.value]
@@ -780,12 +783,11 @@ function composeDeployGovToken() {
       },
     },
     timeDelay: {
-      isNumberString,
     },
     mintCap: {
       isValidMintAmout: (value: any) => {
         return (
-          isNumberString(value) && parseInt(getNumbersFromString(value)) > 0
+          value == "" || (isNumberString(value) && parseInt(getNumbersFromString(value)) > 0)
         )
       },
     },
