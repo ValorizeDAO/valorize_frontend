@@ -195,6 +195,7 @@
                 </label>
               </div>
             </transition>
+            {{ isMaxSupplyValid }}
             <transition name="fade">
               <p
                 v-if="isMaxSupplyValid"
@@ -229,7 +230,7 @@
                 type="string"
               >
             </label>
-            <p v-if="isValidMintAmout">
+            <p v-if="v$.mintCap.$dirty && v$.mintCap.$invalid">
               Please enter a valid amount of tokens to to mint each
               {{ tokenParams.timeDelay }} days
             </p>
@@ -784,10 +785,11 @@ function composeDeployGovToken() {
       maxSupply: {
         isValidMaxSupply: (value: any) => {
           return (
-            parseInt(getNumbersFromString(value)) >
-            parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-            parseInt(getNumbersFromString(tokenParams.airdropSupply))
-          )
+            value !== "" && (
+              parseInt(getNumbersFromString(value)) >
+              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+              parseInt(getNumbersFromString(tokenParams.airdropSupply))
+            ))
         },
       },
       timeDelay: {
@@ -824,12 +826,6 @@ function composeDeployGovToken() {
       v$.value.maxSupply.$dirty && v$.value.maxSupply.isValidMaxSupply.$invalid
     )
   })
-  const isValidMintAmout = computed(() => {
-    return (
-      // @ts-ignore
-      v$.mintCap.$dirty && v$.mintCap.isValidMintAmout.$invalid
-    )
-  })
   return {
     tokenParams,
     initialSupply,
@@ -849,7 +845,6 @@ function composeDeployGovToken() {
     networkName,
     v$,
     isMaxSupplyValid,
-    isValidMintAmout,
     metamaskStatus,
     tokenTxHash,
     deployedTokenAddress,
