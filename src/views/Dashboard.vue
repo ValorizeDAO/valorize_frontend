@@ -21,13 +21,14 @@
           to="/"
           class="col-span-1 bg-purple-300 p-8 border-2 border-black token-list-item"
           v-for="token in userTokens"
+          :id="'token-' + token.id"
           :key="token.id"
         >
           <h3 class="text-lg font-black">
             {{ token.name }} ({{ token.symbol }})
           </h3>
           <p class="font-black">
-            Active on: <span>{{ token.chain_id }}</span>
+            Active on: <span class="network-name">{{ networkInfo[token.chain_id].name }}</span>
           </p>
           <div class="text-center">
             <button class="btn bg-paper-light mt-2 mx-auto">
@@ -45,6 +46,7 @@ import { defineComponent, onMounted, reactive } from "vue"
 import { useStore } from "vuex"
 import { Token } from "../models/Token"
 import auth from "../services/authentication"
+import { networkInfo } from "../services/network"
 export default defineComponent({
   name: "Dashboard",
   props: {},
@@ -60,7 +62,7 @@ export default defineComponent({
         userTokens.push(...tokens)
       }
     })
-    return { store, user, userTokens }
+    return { store, user, userTokens, networkInfo }
   },
 })
 </script>
