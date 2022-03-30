@@ -18,7 +18,6 @@
       <h2 class="text-2xl font-black my-4">
         Your Tokens
       </h2>
-      {{ userTokens[0] }}
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8">
         <router-link
           class="
