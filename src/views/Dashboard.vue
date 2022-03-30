@@ -18,7 +18,7 @@
       <h2 class="text-2xl font-black my-4">
         Your Tokens
       </h2>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8">
         <router-link
           class="
             bg-purple-300
@@ -63,6 +63,7 @@
             text-center col-span-3
             flex flex-col justify-between
             items-start
+            col-span-1
             hover:drop-shadow-square-sm hover:-translate-x-1 hover:translate-y-1"
           :class="userTokens.length === 0 ? 'sm:col-span-3' : 'sm:col-span-1'"
         >
