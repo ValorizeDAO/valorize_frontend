@@ -197,7 +197,6 @@
                 </label>
               </div>
             </transition>
-            {{ isMaxSupplyValid }}
             <transition name="fade">
               <p
                 v-if="isMaxSupplyValid"
@@ -254,9 +253,6 @@
           class="my-4"
         >All Fields Required</span>
       </div>
-      <pre class="absolute">
-      {{ v$ }}
-      </pre>
     </form>
     <Modal
       :body-class="['bg-white xl:w-7/12 sm:mt-0 md:mt-12']"
