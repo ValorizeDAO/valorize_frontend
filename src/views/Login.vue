@@ -150,7 +150,7 @@ export default defineComponent({
                       )
                   })
             } else {
-              router.push("/" + name.value)
+              router.push("/dashboard")
             }
           }
           authenticating.value = false
