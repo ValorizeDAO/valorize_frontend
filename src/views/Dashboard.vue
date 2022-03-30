@@ -12,13 +12,14 @@
         Setup Profile
       </router-link>
     </div>
-    <section id="manage-tokens">
+    <section
+      id="manage-tokens"
+    >
       <h2 class="text-2xl font-black my-4">
         Your Tokens
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
         <router-link
-          to="/"
           class="
             bg-purple-300
             p-8
@@ -28,10 +29,11 @@
             transition
             hover:drop-shadow-square-sm hover:-translate-x-1 hover:translate-y-1
           "
-          :class="userTokens.length === 1 ? 'sm:col-span-3' : 'sm:col-span-1'"
+          :class="userTokens.length === 1 ? 'sm:col-span-2' : 'sm:col-span-1'"
           v-for="token in userTokens"
           :id="'token-' + token.id"
           :key="token.id"
+          :to="'/token/' + token.id"
         >
           <h3 class="text-lg font-black">
             {{ token.name }} ({{ token.symbol }})
@@ -45,6 +47,31 @@
           <div class="text-center">
             <button class="btn bg-paper-light mt-2 mx-auto">
               Manage
+            </button>
+          </div>
+        </router-link>
+        <router-link
+          to="/token/create"
+          class="
+            bg-purple-300
+            p-8
+            border-2 border-black
+            token-list-item
+            drop-shadow-square
+            transition
+            font-bold
+            text-center col-span-3
+            flex flex-col justify-between
+            items-start
+            hover:drop-shadow-square-sm hover:-translate-x-1 hover:translate-y-1"
+          :class="userTokens.length === 0 ? 'sm:col-span-3' : 'sm:col-span-1'"
+        >
+          <h3 class="text-lg font-black">
+            New Token
+          </h3>
+          <div class="self-center">
+            <button class="btn bg-paper-light mx-auto">
+              Create
             </button>
           </div>
         </router-link>
