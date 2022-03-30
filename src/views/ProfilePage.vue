@@ -54,11 +54,10 @@ import { defineComponent, computed } from "vue"
 import { useRoute } from "vue-router"
 import composeUserInfo from "../composed/userInfo"
 import ImageContainer from "../components/ImageContainer.vue"
-import TokenInfoComponent from "../components/TokenInfoComponent.vue"
 import { useStore } from "vuex"
 export default defineComponent({
   name: "ProfilePage",
-  components: { ImageContainer, TokenInfoComponent },
+  components: { ImageContainer },
   setup() {
     const store = useStore()
     const router = useRoute()
