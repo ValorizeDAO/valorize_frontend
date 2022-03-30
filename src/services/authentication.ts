@@ -17,6 +17,23 @@ interface error {
 type SuccessOrError = success | error;
 
 export default {
+  async register(username:string, email:string, password:string) {
+    const formdata: FormData = new FormData()
+    formdata.append("username", username)
+    formdata.append("password", password)
+    formdata.append("email", email)
+
+    const requestOptions = {
+      method: "POST",
+      body: formdata,
+      credentials: "include",
+    } as RequestInit
+
+    return fetch(
+      import.meta.env.VITE_BACKEND_URL + "/register",
+      requestOptions,
+    )
+  },
   async isLoggedIn(): Promise<{ isLoggedIn: boolean; user: User }> {
     const response = { isLoggedIn: false, user: emptyUser }
     const requestOptions = {

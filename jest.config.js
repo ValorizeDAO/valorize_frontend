@@ -6,7 +6,7 @@ module.exports = {
     "^.+\\.vue$": "vue-jest",
   },
   transformIgnorePatterns: [
-    "node_modules/(?!(js-sha3)/)"
+    "node_modules/(?!(js-sha3)/)",
   ],
   testURL: "http://localhost/",
   globals: {
@@ -14,4 +14,5 @@ module.exports = {
       babelConfig: true,
     },
   },
-};
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
+}

@@ -1,4 +1,4 @@
-import { shallowMount } from "@vue/test-utils"
+import { config, shallowMount } from "@vue/test-utils"
 import Dashboard from "@/views/Dashboard.vue"
 import SlotStub from "@/test-helpers/SlotStub.vue"
 
@@ -24,6 +24,12 @@ jest.mock("../../services/authentication", () => ({
   }),
 }))
 describe("<Dashboard \\>", () => {
+  beforeAll(() => {
+    config.renderStubDefaultSlot = true
+  })
+  afterAll(() => {
+    config.renderStubDefaultSlot = false
+  })
   it("mounts", () => {
     const wrapper = shallowMount(Dashboard, {
       global: {

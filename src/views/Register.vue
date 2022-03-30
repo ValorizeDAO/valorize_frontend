@@ -179,21 +179,7 @@ export default defineComponent({
 
     async function sendLogin() {
       status.value = requestStatuses[1]
-      const formdata: FormData = new FormData()
-      formdata.append("username", username.value)
-      formdata.append("password", password.value)
-      formdata.append("email", email.value)
-
-      const requestOptions = {
-        method: "POST",
-        body: formdata,
-        credentials: "include",
-      } as RequestInit
-
-      const response = await fetch(
-        import.meta.env.VITE_BACKEND_URL + "/register",
-        requestOptions,
-      )
+      const response = await auth.register(username.value, email.value, password.value)
       if (response.status === 409) {
         status.value = requestStatuses[2]
       } else if (response.status === 201) {
@@ -208,7 +194,7 @@ export default defineComponent({
           route.query.redirectUri &&
             (await router.push(decodeURI(route.query.redirectUri.toString())))
         } else {
-          await router.push({ path: "/edit-profile" })
+          await router.push({ path: "/dashboard" })
         }
       } else {
         status.value = requestStatuses[3]
