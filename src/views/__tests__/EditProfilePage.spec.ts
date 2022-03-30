@@ -1,36 +1,45 @@
-import { shallowMount, DOMWrapper } from "@vue/test-utils"
-import { mocked } from 'ts-jest/utils'
+import { shallowMount } from "@vue/test-utils"
 import EditProfilePage from "@/views/EditProfilePage.vue"
-import Vuex, { Store } from 'vuex'
-import auth from '../../services/authentication'
 
-jest.mock('../../services/authentication', () => ({}))
-const mockedAuth = mocked(auth, true)
+jest.mock("../../services/authentication", () => ({}))
 
-describe("Dashboard.vue", () => {
-  let store: Store<any>
-  beforeEach(() => {
-    //new vuex store with getters and mocks
-    store = new Vuex.Store({
-      getters: {
-        profileImage: jest.fn(() => 'fake_url.jpg')
-      }
-    })
-  })
+jest.mock("vue-router", () => ({
+  useRoute: jest.fn(() => ({
+    query: { redirectUri: "a", registerAddress: "b" },
+  })),
+  useRouter: jest.fn(() => ({ name: "Home" })),
+}))
+const testUser = {
+  id: 1,
+  name: "test",
+  username: "testuser",
+  email: "test@email.com",
+  about: "test",
+  isAlphaUser: false,
+}
+const mockStore = {
+  state: {
+    authUser: {
+      user: testUser,
+    },
+  },
+  getters: {
+    "authUser/hasToken": jest.fn(() => true),
+    "authUser/user": jest.fn(() => testUser),
+    "authUser/profileImage": jest.fn(() => "fake_url.jpg"),
+  },
+}
+jest.mock("vuex", () => ({
+  useStore: jest.fn(() => mockStore),
+}))
+
+describe("<EditProfilePage \\>", () => {
   it("mounts", () => {
     const wrapper = shallowMount(EditProfilePage, {
       global: {
-        plugins: [store],
+        stubs: ["router-link"],
       },
-    } as any);
+    })
     expect(wrapper).toBeTruthy()
-  })
- it("renders as expected", () => {
-  const wrapper = shallowMount(EditProfilePage, {
-    global: {
-      plugins: [store],
-    },
-  } as any);
-    expect(wrapper.html()).toMatchSnapshot()
   })
 })

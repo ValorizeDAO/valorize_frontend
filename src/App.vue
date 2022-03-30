@@ -1,132 +1,6 @@
 <template>
   <main class="min-h-screen">
-    <nav
-      class="
-        h-20
-        bg-white
-        border-b-2 border-black
-        fixed
-        top-0
-        w-screen
-        flex
-        items-center
-        px-4
-        md:px-16
-        justify-between
-        z-10
-      "
-    >
-      <router-link to="/">
-        <img src="./assets/logo_large.png" alt="Valorize" class="h-8" />
-      </router-link>
-      <div>
-        <div class="sm:hidden">
-          <button
-            @click="triggerBlock"
-            class="hamburger hamburger--slider"
-            :class="showMobileMenu ? 'is-active' : ''"
-          >
-            <span class="hamburger-box">
-              <span class="hamburger-inner"></span>
-            </span>
-          </button>
-        </div>
-        <div
-          :class="showMobileMenu ? '' : 'hidden'"
-          class="
-            absolute
-            left-0
-            sm:relative
-            bg-white
-            border-b-2 border-black
-            sm:border-0 sm:bg-transparent sm:block
-          "
-        >
-          <div
-            @click="triggerBlock"
-            v-if="!authenticated"
-            class="
-              w-screen
-              sm:w-full
-              left-0
-              px-10
-              py-4
-              sm:pr-6
-              flex flex-col
-              sm:flex-row
-              text-center
-            "
-          >
-            <router-link to="/beta-signup">
-              <button
-                class="
-                  sm:flex sm:justify-center
-                  pb-8
-                  sm:pb-0 sm:px-2
-                  hover:font-bold
-                  transition
-                  duration-100
-                "
-              >
-                Sign Up To Beta
-              </button>
-            </router-link>
-            <router-link
-              class="
-                pb-8
-                sm:pb-0 sm:mx-4
-                hover:font-bold
-                transition
-                duration-100
-              "
-              id="login"
-              to="/login"
-              >Login</router-link
-            >
-          </div>
-          <div
-            v-else
-            @click="triggerBlock"
-            class="
-              w-screen
-              sm:w-full
-              left-0
-              px-10
-              py-4
-              sm:pr-6
-              flex flex-col
-              sm:flex-row
-              text-center
-              hover:font-bold
-              transition
-              duration-100
-            "
-          >
-            <router-link id="edit-profile" to="/edit-profile">
-              <button
-                class="
-                  sm:flex sm:justify-center
-                  pb-8
-                  sm:py-2 sm:px-2
-                  hover:font-bold
-                  transition
-                  duration-100
-                "
-              >
-                Edit Profile
-              </button>
-            </router-link>
-            <button
-              id="logout"
-              @click="logout"
-              class="px-4 py-2 hover:font-bold transition duration-100"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <NavBar />
     <div class="pt-20 min-h-screen w-screen overflow-hidden bg-purple-50">
       <div
         v-if="checkingAuth"
@@ -144,7 +18,10 @@
           z-50
         "
       >
-        <SvgLoader fill="#fff" class="h-12 mx-auto"></SvgLoader>
+        <SvgLoader
+          fill="#fff"
+          class="h-12 mx-auto"
+        />
       </div>
       <router-view />
     </div>
@@ -152,29 +29,15 @@
 </template>
 
 <script lang="ts">
-import { mapGetters, mapActions } from "vuex";
-import { defineComponent } from "vue";
-import SvgLoader from "./components/SvgLoader.vue";
-import asciiLogo from "./assets/ascii-logo";
+import { mapGetters } from "vuex"
+import { defineComponent } from "vue"
+import SvgLoader from "./components/SvgLoader.vue"
+import NavBar from "./components/NavBar.vue"
+import asciiLogo from "./assets/ascii-logo"
 
 export default defineComponent({
   name: "App",
-  components: { SvgLoader },
-  data() {
-    return {
-      showMobileMenu: false,
-    };
-  },
-  methods: {
-    ...mapActions({ logoutState: "authUser/logout" }),
-    async logout() {
-      this.logoutState();
-      this.$router.push("/");
-    },
-    triggerBlock() {
-      this.showMobileMenu = !this.showMobileMenu;
-    },
-  },
+  components: { SvgLoader, NavBar },
   computed: {
     ...mapGetters({
       checkingAuth: "authUser/checkingAuth",
@@ -183,20 +46,20 @@ export default defineComponent({
     }),
   },
   mounted() {
-    //check if app is running in production
-    console.log("VALORIZE_APP_DEPLOY_0.1.8");
-    if (import.meta.env.VITE_ENV != "dev") {
+    // check if app is running in production
+    console.log("VALORIZE_APP_DEPLOY_0.1.8")
+    if (import.meta.env.VITE_ENV !== "dev") {
       console.log(
         `%c${asciiLogo}
   %cWELCOME TO VALORIZE, 
   We are on a mission to design better incentives that improve the technology of human collaboration.
   JOIN US! https://discord.gg/3PRMWrH9DT`,
         "color: purple; font-size:10px; line-height: 12 px;",
-        "color:unset; font-size: 1em"
-      );
+        "color:unset; font-size: 1em",
+      )
     }
   },
-});
+})
 </script>
 <style lang="postcss" scoped>
 .router-link-exact-active {

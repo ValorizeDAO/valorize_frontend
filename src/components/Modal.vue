@@ -41,13 +41,13 @@
         </button>
       </div>
       <div class="my-4 mx-auto">
-        <slot></slot>
+        <slot />
       </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { toRefs, defineComponent } from "vue";
+import { defineComponent } from "vue"
 export default defineComponent({
   name: "Modal",
   props: {
@@ -56,18 +56,16 @@ export default defineComponent({
       required: true,
     },
     bodyClass: {
-      default: ['bg-paper-light']
-    }
+      default: ["bg-paper-light"],
+    },
   },
   setup(props, { emit }) {
-    const { modalIsOpen } = toRefs(props);
     function toggle() {
-      emit('toggle')
+      emit("toggle")
     }
     return {
-      modalIsOpen,
-      toggle
-    };
+      toggle,
+    }
   },
-});
+})
 </script>

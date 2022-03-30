@@ -1,10 +1,18 @@
 <template>
   <div class="bg-purple-50 mt-20">
     <div class="max-w-sm mx-auto pt-24 px-6 md:px-0">
-      <h1 class="font-black text-3xl">Login</h1>
+      <h1 class="font-black text-3xl">
+        Login
+      </h1>
       <div class="my-8">
-        <form @submit.prevent="sendLogin" class="my-12">
-          <label for="name" class="">
+        <form
+          @submit.prevent="sendLogin"
+          class="my-12"
+        >
+          <label
+            for="name"
+            class=""
+          >
             <span class="text-xl font-black">Username</span>
           </label>
           <input
@@ -19,8 +27,11 @@
               bg-purple-50
             "
             v-model="name"
-          />
-          <label for="password" class="mt-24">
+          >
+          <label
+            for="password"
+            class="mt-24"
+          >
             <span class="text-xl font-black">Password</span>
           </label>
           <input
@@ -29,19 +40,28 @@
             class="p-2 w-full border-0 border-b-2 border-black bg-purple-50"
             id="password"
             v-model="password"
-          />
+          >
 
           <div class="text-sm h-12">
             <transition name="fade">
-              <div class="text-red-700" v-if="authError">
+              <div
+                class="text-red-700"
+                v-if="authError"
+              >
                 Username or password incorrect
               </div>
             </transition>
           </div>
-          <br />
-          <transition name="fade" mode="out-in">
+          <br>
+          <transition
+            name="fade"
+            mode="out-in"
+          >
             <div v-if="authenticating">
-              <SvgLoader fill="#cecece" class="h-12 mx-auto"></SvgLoader>
+              <SvgLoader
+                fill="#cecece"
+                class="h-12 mx-auto"
+              />
             </div>
             <button
               v-else
@@ -63,8 +83,9 @@
             <router-link
               :to="{ path: 'register', query: route.query }"
               class="font-black underline"
-              >Register New Account</router-link
             >
+              Register New Account
+            </router-link>
           </div>
         </form>
       </div>
@@ -73,71 +94,71 @@
 </template>
 
 <script lang="ts">
-import { ref, defineComponent } from "vue";
-import { useStore } from "vuex";
-import { useRoute, useRouter } from "vue-router";
-import SvgLoader from "../components/SvgLoader.vue";
-import auth from "../services/authentication";
+import { ref, defineComponent } from "vue"
+import { useStore } from "vuex"
+import { useRoute, useRouter } from "vue-router"
+import SvgLoader from "../components/SvgLoader.vue"
+import auth from "../services/authentication"
 
 export default defineComponent({
   name: "Login",
   components: { SvgLoader },
   props: {},
   setup: () => {
-    const store = useStore();
-    const router = useRouter();
-    const route = useRoute();
-    const name = ref("");
-    const password = ref("");
-    const authError = ref(false);
-    const authenticating = ref(false);
+    const store = useStore()
+    const router = useRouter()
+    const route = useRoute()
+    const name = ref("")
+    const password = ref("")
+    const authError = ref(false)
+    const authenticating = ref(false)
     const hasQueryToAddUserWallet =
-      route.query.redirectUri && route.query.registerAddress;
+      route.query.redirectUri && route.query.registerAddress
     async function sendLogin() {
-      authError.value = false;
-      authenticating.value = true;
-      const formdata = new FormData();
-      formdata.append("username", name.value);
-      formdata.append("password", password.value);
+      authError.value = false
+      authenticating.value = true
+      const formdata = new FormData()
+      formdata.append("username", name.value)
+      formdata.append("password", password.value)
 
       const requestOptions = {
         method: "POST",
         body: formdata,
         credentials: "include",
-      } as RequestInit;
+      } as RequestInit
       fetch(import.meta.env.VITE_BACKEND_URL + "/login", requestOptions)
         .then((response) => {
           if (response.status !== 200) {
-            authError.value = true;
+            authError.value = true
           }
-          return response.json();
+          return response.json()
         })
         .then((result) => {
           if (!authError.value) {
-            store.state.authenticated = true;
-            store.commit("authUser/setUser", result);
+            store.state.authenticated = true
+            store.commit("authUser/setUser", result)
             if (hasQueryToAddUserWallet) {
               route.query.registerAddress &&
                 auth
                   .addExternalWalletToAccount(
-                    route.query.registerAddress.toString()
+                    route.query.registerAddress.toString(),
                   )
                   .then(() => {
                     route.query.redirectUri &&
                       router.push(
-                        decodeURI(route.query.redirectUri.toString())
-                      );
-                  });
+                        decodeURI(route.query.redirectUri.toString()),
+                      )
+                  })
             } else {
-              router.push("/" + name.value);
+              router.push("/dashboard")
             }
           }
-          authenticating.value = false;
+          authenticating.value = false
         })
         .catch((error) => {
-          console.log(error);
-          authenticating.value = false;
-        });
+          console.log(error)
+          authenticating.value = false
+        })
     }
 
     return {
@@ -148,9 +169,9 @@ export default defineComponent({
       sendLogin,
       authError,
       authenticating,
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped>

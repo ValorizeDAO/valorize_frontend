@@ -1,6 +1,9 @@
 
 <template>
-  <transition name="fade" mode="out-in">
+  <transition
+    name="fade"
+    mode="out-in"
+  >
     <button
       v-if="!showDelete"
       @click="() => (showDelete = true)"
@@ -27,8 +30,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { Link } from "../models/Link";
+import { defineComponent } from "vue"
 
 export default defineComponent({
   name: "DeleteLink",
@@ -40,7 +42,7 @@ export default defineComponent({
   },
   methods: {
     deleteLink() {
-      this.$emit("deleteLink", this.index);
+      this.$emit("deleteLink", this.index)
     },
   },
 })
