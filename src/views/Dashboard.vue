@@ -56,11 +56,10 @@
             bg-purple-300
             p-8
             border-2 border-black
-            token-list-item
             drop-shadow-square
             transition
             font-bold
-            text-center col-span-3
+            text-center
             flex flex-col justify-between
             items-start
             col-span-1

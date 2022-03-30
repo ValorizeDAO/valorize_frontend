@@ -41,28 +41,4 @@ describe("<EditProfilePage \\>", () => {
     })
     expect(wrapper).toBeTruthy()
   })
-  describe("Alpha Users", () => {
-    it("Does not let a non-alpha user deploy a token", () => {
-      const wrapper = shallowMount(EditProfilePage, {
-        global: {
-          stubs: ["router-link"],
-        },
-      })
-      const tokenLaunchComponent = wrapper.find("create-token-stub")
-      expect(tokenLaunchComponent.exists()).toBe(false)
-    })
-    it("lets alpha users see the <CreateToken \\> component", () => {
-      mockStore.state.authUser.user.isAlphaUser = true
-      jest.mock("vuex", () => ({
-        useStore: jest.fn(() => mockStore),
-      }))
-      const wrapper = shallowMount(EditProfilePage, {
-        global: {
-          stubs: ["router-link"],
-        },
-      })
-      const tokenLaunchComponent = wrapper.find("create-token-stub")
-      expect(tokenLaunchComponent.exists()).toBe(true)
-    })
-  })
 })
