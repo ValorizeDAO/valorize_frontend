@@ -12,6 +12,7 @@ jest.mock("vue-router", () => ({
 const testUser = {
   id: 1,
   name: "test",
+  username: "testuser",
   email: "test@email.com",
   about: "test",
   isAlphaUser: false,
