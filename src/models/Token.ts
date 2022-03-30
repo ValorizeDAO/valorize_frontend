@@ -4,7 +4,7 @@ export interface Token {
   address: string,
   owner_address: string,
   symbol: string,
-  network: string,
+  chain_id: string,
   contract_version: string,
   tx_hash: string,
   user_id: number,
