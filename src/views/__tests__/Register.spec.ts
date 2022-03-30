@@ -1,15 +1,13 @@
-import { shallowMount, mount, DOMWrapper } from "@vue/test-utils"
+import { shallowMount, mount, DOMWrapper, VueWrapper } from "@vue/test-utils"
 import Register from "@/views/Register.vue"
 import api from "../../services/api"
+import auth from "../../services/authentication"
+import { createRouterMock, injectRouterMock } from "vue-router-mock"
 
-jest.mock("vue-router", () => ({
-  useRoute: jest.fn(() => ({
-    query: { redirectUri: "a", registerAddress: "b" },
-  })),
-  useRouter: jest.fn(() => ({ name: "Home" })),
-}))
 jest.mock("vuex", () => ({
-  useStore: jest.fn(),
+  useStore: jest.fn(() => ({
+    commit: jest.fn(),
+  })),
 }))
 jest.mock("../../services/api", () => ({
   get: jest.fn().mockResolvedValue({
@@ -17,7 +15,14 @@ jest.mock("../../services/api", () => ({
     json: jest.fn(),
   }),
 }))
+jest.mock("../../services/authentication", () => ({
+  register: jest.fn(),
+}))
 describe("<Register \\>", () => {
+  const router = createRouterMock()
+  beforeEach(() => {
+    injectRouterMock(router)
+  })
   it("mounts", () => {
     const wrapper = shallowMount(Register)
     expect(wrapper).toBeTruthy()
@@ -82,6 +87,27 @@ describe("<Register \\>", () => {
       )) as DOMWrapper<HTMLDivElement>
       expect(errorText.exists()).toBeTruthy()
       expect(errorText.text()).toBe("* fakename is not available")
+    })
+  })
+  describe("Register Success", () => {
+    beforeAll(() => {
+      auth.register = jest.fn().mockResolvedValue({
+        status: 201,
+        json: jest.fn(),
+      })
+    })
+    it("should redirect user to dashboard if registration is successful", async () => {
+      const wrapper = shallowMount(Register) as VueWrapper<any> & { router: any }
+      await wrapper.find("input[name='username']").setValue("fakename")
+      await wrapper.find("input[name='email']").setValue("test@test.com")
+      await wrapper.find("input[name='password']").setValue("test")
+      await wrapper.find("input[name='password2']").setValue("test")
+      await new Promise((resolve) => setTimeout(resolve, 500))
+      await wrapper.vm.$nextTick()
+      await wrapper.find("form").trigger("submit")
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      expect(auth.register).toHaveBeenCalledWith("fakename", "test@test.com", "test")
+      expect(wrapper.router.push).toHaveBeenCalledWith(expect.objectContaining({ path: "/dashboard" }))
     })
   })
 })
