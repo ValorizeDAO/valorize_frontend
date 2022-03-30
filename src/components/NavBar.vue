@@ -165,7 +165,7 @@ export default defineComponent({
 </script>
 <style lang="postcss" scoped>
 .navbar-button {
-  @apply sm:flex items-center sm:justify-center sm:h-full pb-8 sm:pb-0 sm:min-w-[11em] hover:font-bold hover:px-7 transition ease-in-out duration-300 border-white sm:border-b-4 hover:sm:border-purple-900;
+  @apply sm:flex items-center transition ease-in-out duration-300 border-white pb-8 sm:justify-center sm:h-full sm:pb-0 sm:min-w-[8em] lg:min-w-[11em] hover:font-bold hover:px-7 sm:border-b-4 hover:sm:border-purple-900;
 }
 .router-link {
   @apply sm:flex items-center;
