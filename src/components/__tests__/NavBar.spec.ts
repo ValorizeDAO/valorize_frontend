@@ -1,6 +1,6 @@
 import Vuex from "vuex"
 import { shallowMount } from "@vue/test-utils"
-import NavBar from "../NavBar.vue"
+import NavBar from "@/components/NavBar.vue"
 
 describe("<NavBar \\>", () => {
   let store: any

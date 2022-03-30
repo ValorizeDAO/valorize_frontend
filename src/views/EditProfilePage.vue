@@ -136,88 +136,6 @@
               </div>
             </form>
           </div>
-          <div
-            class="
-              col-span-5
-              lg:col-span-5 lg:col-start-5 lg:pl-8 lg:mt-16
-              mt-12
-              md:mt-0
-            "
-            :class="{ 'opacity-70': linksDeployStatus === 'DEPLOYING' }"
-          >
-            <h3 class="font-black text-xl mb-4">
-              Links:
-            </h3>
-            <div
-              v-for="(link, i) in links"
-              :key="link.id"
-              class="flex flex-col"
-            >
-              <label
-                class="font-black"
-              >Label:
-                <input
-                  type="text"
-                  class="bg-purple-50 border-black border-b-2 w-full mb-4"
-                  :value="link.label"
-                  @input="updateLabel"
-                  :data-index="i"
-                >
-              </label>
-              <label
-                class="font-black"
-              >Address:
-                <input
-                  type="text"
-                  class="bg-purple-50 border-black border-b-2 w-full"
-                  :value="link.url"
-                  @input="updateUrl"
-                  :data-index="i"
-                >
-              </label>
-              <div class="text-right my-4">
-                <DeleteLink
-                  :index="i"
-                  @deleteLink="deleteLink"
-                />
-              </div>
-            </div>
-            <div class="text-center">
-              <button
-                class="text-center"
-                @click="newLink"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="h-10 w-10 mx-auto"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                Add New Link
-              </button>
-            </div>
-            <transition name="fade">
-              <div
-                v-if="links"
-                class="text-center mb-24"
-              >
-                <button
-                  @click="saveLinks"
-                  class="btn w-48 mt-8 bg-purple-100 mx-auto"
-                >
-                  Save Links
-                </button>
-              </div>
-            </transition>
-          </div>
         </div>
       </div>
     </div>
@@ -230,111 +148,89 @@
         md:px-16 md:pt-4 md:border-l-2
         border-black
         h-full
-        md:bg-paper-light
       "
     >
-      <!-- <h2 class="text-3xl font-black mb-6 mt-24 sm:mt-0">Your Token</h2> -->
-      <div v-if="isAllowedUser">
-        <CreateToken />
-        <Modal
-          :modal-is-open="modalIsOpen"
-          @toggle="toggleModal"
-          :body-class="['bg-paper-light']"
-        >
-          <transition
-            name="fade"
-            mode="out-in"
-          >
-            <div
-              class="text-center"
-              v-if="tokenDeployStatus === 'INIT'"
-            >
-              <h1 class="text-2xl">
-                Deploy <span class="font-black mb-12">{{ tokenName }}</span>
-              </h1>
-              <button
-                @click="deployToTestNet"
-                class="btn w-48 mt-4 bg-purple-50"
-              >
-                Test Deploy {{ tokenSymbol }}
-              </button>
-            </div>
-
-            <div
-              v-else-if="tokenDeployStatus === 'ERROR'"
-              class="text-center mb-12"
-            >
-              <h2 class="font-black text-xl">
-                Error Deploying {{ tokenName }}
-              </h2>
-              <p class="mt-6">
-                Try again:
-              </p>
-              <button
-                @click="deployToTestNet"
-                class="btn w-48 mt-4 bg-purple-50"
-              >
-                Test Deploy {{ tokenSymbol }}
-              </button>
-            </div>
-            <div v-else-if="tokenDeployStatus === 'DEPLOYING'">
-              <p class="my-4 max-w-sm mx-auto">
-                Coin will be on the Ropsten Ethereum test network, you will have
-                a chance to confirm details there
-              </p>
-              <SvgLoader
-                class="text-center mx-auto h-12"
-                fill="#"
-              />
-            </div>
-            <div
-              v-else-if="tokenDeployStatus === 'SUCCESS'"
-              class="text-center my-6"
-            >
-              <h1 class="text-2xl font-black">
-                Woo! You can now review the test version of {{ tokenName }}!
-              </h1>
-              <p class="my-6">
-                Here is the launching transaction:<br>
-                <a
-                  class="font-black underline text-center text-lg"
-                  :href="'https://ropsten.etherscan.io/tx/' + tokenTestnetTx"
-                  target="_blank"
-                >
-                  {{ formatAddress(tokenTestnetTx) }}
-                </a>
-              </p>
-              <p>
-                And this is the deployed test contract:<br>
-                <a
-                  class="font-black underline text-center text-lg"
-                  :href="
-                    'https://ropsten.etherscan.io/address/' +
-                      tokenTestnetAddress
-                  "
-                  target="_blank"
-                >
-                  {{ formatAddress(tokenTestnetAddress) }} </a><br>(Takes a minute to appear)
-              </p>
-              <p class="mt-12 lg:w-2/5 mb-4 mx-auto">
-                The links above are on the ropsten test network, a playground to
-                verify how your tokens will work once they are live on the main
-                ethereum network (Mainnet).
-              </p>
-              <a :href="checkoutLink">
-                <div class="btn md:2/3 lg:w-1/3 mx-auto bg-purple-100 mb-12">
-                  Deploy on Ethereum for $10
-                </div>
-              </a>
-            </div>
-          </transition>
-        </Modal>
-      </div>
       <div
-        v-else
-        class="flex justify-center my-24"
+        class="
+              col-span-5
+              lg:col-span-5 lg:col-start-5 lg:pl-8 lg:mt-16
+              mt-12
+              md:mt-0
+            "
+        :class="{ 'opacity-70': linksDeployStatus === 'DEPLOYING' }"
       >
-        You are on the waiting list for deploying tokens
+        <h3 class="font-black text-xl mb-4">
+          Add Social Media Links:
+        </h3>
+        <div
+          v-for="(link, i) in links"
+          :key="link.id"
+          class="flex flex-col"
+        >
+          <label
+            class="font-black"
+          >Label:
+            <input
+              type="text"
+              class="bg-purple-50 border-black border-b-2 w-full mb-4"
+              :value="link.label"
+              @input="updateLabel"
+              :data-index="i"
+            >
+          </label>
+          <label
+            class="font-black"
+          >Address:
+            <input
+              type="text"
+              class="bg-purple-50 border-black border-b-2 w-full"
+              :value="link.url"
+              @input="updateUrl"
+              :data-index="i"
+            >
+          </label>
+          <div class="text-right my-4">
+            <DeleteLink
+              :index="i"
+              @deleteLink="deleteLink"
+            />
+          </div>
+        </div>
+        <div class="text-center">
+          <button
+            class="text-center"
+            @click="newLink"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-10 w-10 mx-auto"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Add New Link
+          </button>
+        </div>
+        <transition name="fade">
+          <div
+            v-if="links"
+            class="text-center mb-24"
+          >
+            <button
+              @click="saveLinks"
+              class="btn w-48 mt-8 bg-purple-100 mx-auto"
+            >
+              Save Links
+            </button>
+          </div>
+        </transition>
       </div>
     </div>
   </div>
@@ -347,10 +243,7 @@ import { formatAddress } from "../services/formatAddress"
 import { User } from "../models/User"
 import api, { TokenResponse } from "../services/api"
 import { useStore } from "vuex"
-import CreateToken from "../components/CreateToken.vue"
-import SvgLoader from "../components/SvgLoader.vue"
 import ImageContainer from "../components/ImageContainer.vue"
-import Modal from "../components/Modal.vue"
 import DeleteLink from "../components/DeleteLink.vue"
 import currency from "currency.js"
 
@@ -358,11 +251,8 @@ export default defineComponent({
   name: "EditProfilePage",
   props: {},
   components: {
-    SvgLoader,
     ImageContainer,
-    Modal,
     DeleteLink,
-    CreateToken,
   },
   setup() {
     return {

@@ -15,14 +15,17 @@
       z-10
     "
   >
-    <router-link to="/">
+    <router-link
+      to="/"
+      class="home"
+    >
       <img
         src="../assets/logo_large.png"
         alt="Valorize"
         class="h-8"
       >
     </router-link>
-    <div>
+    <div class="sm:flex sm:h-full">
       <div class="sm:hidden">
         <button
           @click="triggerBlock"
@@ -39,6 +42,7 @@
         class="
           absolute
           left-0
+          sm:h-full
           sm:relative
           bg-white
           border-b-2 border-black
@@ -50,32 +54,27 @@
           v-if="!authenticated"
           class="
             w-screen
-            sm:w-full
             left-0
             px-10
             py-4
-            sm:pr-6
             flex flex-col
-            sm:flex-row
             text-center
+            sm:w-full
+            sm:pr-6
+            sm:py-0
+            sm:h-full
+            sm:items-center
+            sm:flex-row
           "
         >
-          <router-link to="/beta-signup">
-            <button
-              class="
-                sm:flex sm:justify-center
-                pb-8
-                sm:pb-0 sm:px-2
-                hover:font-bold
-                transition
-                duration-100
-              "
-            >
-              Sign Up To Beta
-            </button>
+          <router-link
+            to="/beta-signup"
+            class="navbar-button"
+          >
+            Sign Up To Beta
           </router-link>
           <router-link
-            class="pb-8 sm:pb-0 sm:mx-4 hover:font-bold transition duration-100"
+            class="navbar-button"
             id="login"
             to="/login"
           >
@@ -91,36 +90,42 @@
             left-0
             px-10
             py-4
-            sm:pr-6
             flex flex-col
-            sm:flex-row
             text-center
-            hover:font-bold
             transition
             duration-100
+            sm:py-0
+            sm:h-full
+            sm:pr-6
+            sm:flex-row
+            sm:justify-center
+            hover:font-bold
           "
         >
+          <router-link
+            id="edit-profile"
+            to="/dashboard"
+          >
+            <button
+              class="navbar-button"
+            >
+              Dashboard
+            </button>
+          </router-link>
           <router-link
             id="edit-profile"
             to="/edit-profile"
           >
             <button
-              class="
-                sm:flex sm:justify-center
-                pb-8
-                sm:py-2 sm:px-2
-                hover:font-bold
-                transition
-                duration-100
-              "
+              class="navbar-button"
             >
-              Edit Profile
+              Profile
             </button>
           </router-link>
           <button
             id="logout"
             @click="logout"
-            class="px-4 py-2 hover:font-bold transition duration-100"
+            class="navbar-button"
           >
             Logout
           </button>
@@ -158,3 +163,20 @@ export default defineComponent({
   },
 })
 </script>
+<style lang="postcss" scoped>
+.navbar-button {
+  @apply sm:flex items-center transition ease-in-out duration-300 border-white pb-8 sm:justify-center sm:h-full sm:pb-0 sm:min-w-[8em] lg:min-w-[11em] hover:font-bold hover:px-7 sm:border-b-4 hover:sm:border-purple-900;
+}
+.router-link {
+  @apply sm:flex items-center;
+}
+.router-link-exact-active{
+  @apply sm:border-b-4 border-purple-900;
+}
+.router-link-exact-active .navbar-button {
+  @apply sm:border-b-0 border-purple-900;
+}
+.router-link-exact-active.home{
+  @apply sm:border-b-0;
+}
+</style>

@@ -10,7 +10,7 @@
         px-4
         pt-8
         border-r-0 border-black
-        md:bg-purple-200 md:border-r-2 md:px-16 md:col-span-5 md:min-h-screen
+        md:bg-purple-50 md:px-16 md:col-span-6 md:col-start-4 md:min-h-screen
       "
     >
       <h1 class="text-3xl font-black">
@@ -46,66 +46,6 @@
         >{{ link.label }}</a>
       </div>
     </div>
-    <div
-      class="
-        pt-8
-        border-black
-        px-4
-        col-span-12
-        md:col-span-7 md:px-16 md:min-h-screen
-      "
-    >
-      <div v-if="userInfo.hasDeployedToken">
-        <h2 class="text-3xl font-black mb-4">
-          Buy {{ username }}'s Token
-        </h2>
-        <TokenInfoComponent :username="username" />
-        <h2 class="text-2xl font-black mt-12 mb-6">
-          What is this?
-        </h2>
-        <div class="mb-24">
-          <p>
-            Creator Tokens are
-            <a
-              href="https://101blockchains.com/what-is-erc20/"
-              class="underline"
-            >ERC20</a>
-            tokens on Ethereum. Each time you buy from the contract new tokens
-            get generated. The more tokens there are the more expensive it is to
-            generate new tokens.
-          </p>
-          <p class="my-2">
-            <a
-              class="underline"
-              href="https://tokeneconomy.co/dynamic-token-bonding-curves-41d36e43befa"
-            >
-              Find out more about the math that generates the tokens
-            </a>
-          </p>
-          <router-link
-            to="login"
-            class="underline"
-          >
-            Get early access!
-          </router-link>
-        </div>
-      </div>
-      <div v-else>
-        <div v-if="authUser.username === username">
-          <h2 class="text-2xl font-black mt-12 mb-6">
-            Looks like you have not deployed your token yet
-          </h2>
-          <p>
-            If you have just deployed your token, please check in a few minutes
-          </p>
-        </div>
-        <div v-else>
-          <h2 class="text-2xl font-black mt-12 mb-6">
-            Looks like this user has not deployed a token yet
-          </h2>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -114,11 +54,10 @@ import { defineComponent, computed } from "vue"
 import { useRoute } from "vue-router"
 import composeUserInfo from "../composed/userInfo"
 import ImageContainer from "../components/ImageContainer.vue"
-import TokenInfoComponent from "../components/TokenInfoComponent.vue"
 import { useStore } from "vuex"
 export default defineComponent({
   name: "ProfilePage",
-  components: { ImageContainer, TokenInfoComponent },
+  components: { ImageContainer },
   setup() {
     const store = useStore()
     const router = useRoute()

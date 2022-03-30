@@ -201,4 +201,16 @@ export default {
     )) as Response
     return apiResponse
   },
+
+  async getTokens() {
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+      credentials: "include",
+    } as RequestInit
+    return await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/v0/me/tokens", requestOptions,
+    )
+  },
+
 }

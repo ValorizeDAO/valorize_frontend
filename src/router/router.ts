@@ -5,6 +5,7 @@ import Dashboard from "../views/Dashboard.vue"
 import Login from "../views/Login.vue"
 import Register from "../views/Register.vue"
 import EditProfilePage from "../views/EditProfilePage.vue"
+import CreateTokenPage from "../views/CreateTokenPage.vue"
 import TokenAdminPage from "../views/TokenAdminPage.vue"
 import ProfilePage from "../views/ProfilePage.vue"
 import TokenSuccess from "../views/TokenSuccess.vue"
@@ -53,6 +54,11 @@ const routes = [
     path: "/token-success",
     name: "Token Success",
     component: TokenSuccess,
+  },
+  {
+    path: "/token/create",
+    name: "Create Token",
+    component: CreateTokenPage,
   },
   {
     path: "/token/:id",

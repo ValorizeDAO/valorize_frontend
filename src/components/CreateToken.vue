@@ -197,7 +197,6 @@
                 </label>
               </div>
             </transition>
-            {{ isMaxSupplyValid }}
             <transition name="fade">
               <p
                 v-if="isMaxSupplyValid"
