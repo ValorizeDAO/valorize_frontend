@@ -24,7 +24,7 @@ export default defineComponent({
       jsConfetti.addConfetti({
         emojis: ["🚀", "🎉", "🦄", "✨", "🚀", "🔥", "🌈"],
       })
-      setTimeout(() => router.push("/token/" + route.query.tokenId), 2000)
+      setTimeout(() => router.push("/dashboard/token/" + route.query.tokenId), 2000)
     })
     return {
     }

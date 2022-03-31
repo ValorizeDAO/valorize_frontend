@@ -11,6 +11,7 @@ import ProfilePage from "../views/ProfilePage.vue"
 import TokenSuccess from "../views/TokenSuccess.vue"
 import Leadgen from "../views/Leadgen.vue"
 import AirdropCreationPage from "../views/AirdropCreationPage.vue"
+import AirdropClaimPage from "../views/AirdropClaimPage.vue"
 import TokenDashboard from "../views/TokenDashboard.vue"
 import store from "../vuex/store"
 
@@ -56,12 +57,17 @@ const routes = [
     component: TokenSuccess,
   },
   {
-    path: "/token/create",
+    path: "/token/:tokenAddress/airdrop/:airdropId",
+    name: "Claim Airdrop",
+    component: AirdropClaimPage,
+  },
+  {
+    path: "/dashboard/token/create",
     name: "Create Token",
     component: CreateTokenPage,
   },
   {
-    path: "/token/:id",
+    path: "/dashboard/token/:id",
     name: "Token",
     component: TokenDashboard,
     children: [
@@ -84,7 +90,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicRoutes = ["Landing", "Login", "Register", "Show Profile", "Join Beta"]
+  const publicRoutes = ["Landing", "Login", "Register", "Show Profile", "Join Beta", "Claim Airdrop"]
   let { name } = to
   const { username } = to.params
   name = name?.toString() || ""
