@@ -57,7 +57,7 @@ const routes = [
     component: TokenSuccess,
   },
   {
-    path: "/token/:tokenAddress/airdrop/:airdropId",
+    path: "/token/:tokenId/airdrop/:airdropId",
     name: "Claim Airdrop",
     component: AirdropClaimPage,
   },
