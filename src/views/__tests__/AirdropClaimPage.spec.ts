@@ -36,6 +36,7 @@ describe("<AirdropClaimPage \\>", () => {
       await wrapper.vm.$nextTick()
       const claimSection = wrapper.find("#claim-section")
       expect(claimSection.exists()).toBe(true)
+      await wrapper.vm.$nextTick()
       expect(claimSection.text()).toContain("18000000000000000000000")
     })
   })
@@ -47,7 +48,6 @@ function setupTest(options = { apiReturnsSuccess: true }) {
   const mockResolvedValue = {
     status: options.apiReturnsSuccess ? 200 : 404,
     json: jest.fn(() => {
-      console.log(options.apiReturnsSuccess); 
       return options.apiReturnsSuccess ? returnBodySuccess : returnBodyError
     })
   }

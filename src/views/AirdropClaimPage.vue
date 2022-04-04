@@ -19,13 +19,13 @@
       This address is not avaliable for an airdrop
     </div>
     <div v-if="claimStatus === 'CLAIM_AVAILABLE'" id="claim-section">
-      18000000000000000000000
+      You have {{ claimAmount }} tokens available!
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref } from "@vue/runtime-core"
+import { computed, defineComponent, Ref, ref } from "@vue/runtime-core"
 import { useRoute } from "vue-router"
 import api from "../services/api"
 
@@ -36,6 +36,8 @@ export default defineComponent({
     const address = ref("")
     const statuses = ["INIT", "CHECKING_VALIDITY", "CLAIM_AVAILABLE", "CLAIM_UNAVAILABLE"]
     const claimStatus = ref(statuses[0])
+    const claimAmount = ref("")
+    const merkleProof: Ref<string[]> = ref([])
     const tokenId = computed(() => {
       if (route.params.tokenId) {
         return typeof route.params.tokenId === "object"
@@ -51,11 +53,16 @@ export default defineComponent({
           claimStatus.value = statuses[3]
         } else {
           claimStatus.value = statuses[2]
+          const airdropData = await airdropRequest.json()
+          claimAmount.value = airdropData.claim
+          merkleProof.value = airdropData.merkleProof
         }
       }
     return {
       address,
       claimStatus,
+      claimAmount,
+      merkleProof,
       getAirdropClaimAmount
     }
   },
