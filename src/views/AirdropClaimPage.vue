@@ -1,26 +1,30 @@
 <template>
   <div class="flex justify-center items-middle">
-    <input
-      type="text"
-      v-model="address"
-      id="address-input"
-    >
-    <button
-      class="btn"
-      @click="getAirdropClaimAmount"
-      id="submit-button"
-    >
-      search
-    </button>
-    <div
-      v-if="claimStatus === 'CLAIM_UNAVAILABLE'"
-      id="search-error"
-    >
-      This address is not avaliable for an airdrop
-    </div>
-    <div v-if="claimStatus === 'CLAIM_AVAILABLE'" id="claim-section">
-      You have {{ claimAmount }} tokens available!
-    </div>
+    <transition name="fade" mode="out-in">
+      <div v-if="['INIT', 'CLAIM_UNAVAILABLE', 'CHECKING_VALIDITY'].includes(claimStatus)">
+        <input
+          type="text"
+          v-model="address"
+          id="address-input"
+        >
+        <button
+          class="btn"
+          @click="getAirdropClaimAmount"
+          id="submit-button"
+        >
+          search
+        </button>
+        <div
+          v-if="claimStatus === 'CLAIM_UNAVAILABLE'"
+          id="search-error"
+        >
+          This address is not avaliable for an airdrop
+        </div>
+      </div>
+      <div v-else-if="claimStatus === 'CLAIM_AVAILABLE'" id="claim-section">
+        You have {{ claimAmount }} tokens available!
+      </div>
+    </transition>
   </div>
 </template>
 
