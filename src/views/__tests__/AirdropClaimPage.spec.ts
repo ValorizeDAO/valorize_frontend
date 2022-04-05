@@ -49,6 +49,16 @@ describe("<AirdropClaimPage \\>", () => {
       expect(wrapper.find("#submit-button").exists()).toBe(false)
       expect(wrapper.find("#address-input").exists()).toBe(false)
     })
+    it("Shows a button to execute airdrop claim after requesting address claim", async () => {
+      const wrapper = setupTest()
+      expect(wrapper.find("#send-claim").exists()).toBe(false)
+      const inputBar = wrapper.find("#address-input")
+      await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
+      const submitButton = wrapper.find("#submit-button")
+      await submitButton.trigger("click")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#send-claim").exists()).toBe(true)
+    })
   })
 })
 

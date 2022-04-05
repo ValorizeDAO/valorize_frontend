@@ -23,6 +23,7 @@
       </div>
       <div v-else-if="claimStatus === 'CLAIM_AVAILABLE'" id="claim-section">
         You have {{ claimAmount }} tokens available!
+        <button class="btn" id="send-claim">Claim Tokens</button>
       </div>
     </transition>
   </div>
