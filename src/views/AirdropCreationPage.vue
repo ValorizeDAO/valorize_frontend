@@ -258,6 +258,7 @@ import authentication from "../services/authentication"
 import { networkInfo } from "../services/network"
 import { formatAddress } from "../services/formatAddress"
 import dateFormat from "dateformat"
+import { getProviderAndSigner } from "../services/getMetamaskInfo"
 import { ref, computed } from "vue"
 
 const props = defineProps<{
@@ -386,22 +387,6 @@ const totalAirdropAmount = computed(() => {
   return amountsOnly.reduce((partialSum, a) => partialSum + parseInt(a), 0)
 })
 
-const metamaskError = ref("")
-async function getProviderAndSigner() {
-  if (ethereum) {
-    await ethereum.request({
-      method: "eth_requestAccounts",
-    })
-    const provider = new ethers.providers.Web3Provider(
-      ethereum,
-    ) as ethers.providers.Web3Provider
-    const signer = provider.getSigner() as ethers.providers.JsonRpcSigner
-    return { provider, signer }
-  } else {
-    metamaskError.value = "Please install MetaMask"
-    return { provider: null, signer: null }
-  }
-}
 async function saveAirdropInfo() {
   transitionState()
   const { signer } = await getProviderAndSigner()

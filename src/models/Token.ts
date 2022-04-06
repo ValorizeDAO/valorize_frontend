@@ -12,3 +12,18 @@ export interface Token {
   updated_at: string | null,
   deleted_at: string | null
 }
+
+export const emptyToken: Token = {
+  id: 0,
+  name: "",
+  address: "",
+  owner_address: "",
+  symbol: "",
+  chain_id: "",
+  contract_version: "",
+  tx_hash: "",
+  user_id: 0,
+  created_at: "",
+  updated_at: null,
+  deleted_at: null
+}
