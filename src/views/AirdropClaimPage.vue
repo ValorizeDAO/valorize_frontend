@@ -21,9 +21,12 @@
           This address is not avaliable for an airdrop
         </div>
       </div>
-      <div v-else-if="claimStatus === 'CLAIM_AVAILABLE'" id="claim-section">
+      <div v-else-if="['CLAIM_AVAILABLE', 'TX_PENDING', 'TX_SUCCESS', 'ERROR'].includes(claimStatus)" id="claim-section">
         You have {{ claimAmount }} tokens available!
         <button class="btn" id="send-claim" @click="sendClaim">Claim Tokens</button>
+        <transition name="fade">
+          <div id="transaction-executing" v-if="claimStatus==='TX_PENDING'">Confirming Transaction</div>
+        </transition>
       </div>
     </transition>
   </div>
@@ -51,6 +54,8 @@ export default defineComponent({
       "CLAIM_UNAVAILABLE",
       "METAMASK_REQUESTED",
       "METAMASK_UNAVAILABLE",
+      "TX_PENDING",
+      "TX_SUCCESS",
       "ERROR"
     ]
     const claimStatus = ref(statuses[0])
@@ -95,9 +100,11 @@ export default defineComponent({
       const token = new SimpleTokenFactory(signer as Signer)
         .attach(tokenData.value.address)
       try {
-        token.claimTokens(BigNumber.from(claimAmount.value), merkleProof.value)
+        claimStatus.value = statuses[6] // TX_PENDING
+        await token.claimTokens(BigNumber.from(claimAmount.value), merkleProof.value)
+        claimStatus.value = statuses[7] // TX_SUCCESS
       } catch (err: any) {
-        claimStatus.value = statuses[6] // ERROR
+        claimStatus.value = statuses.at(-1) as string // ERROR
         console.log(err)
       }
     }

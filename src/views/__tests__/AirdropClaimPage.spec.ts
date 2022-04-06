@@ -23,7 +23,9 @@ jest.mock("../../services/getProviderInfo", () => ({
     }))
   })
 )
-const mockClaimFunction = jest.fn();
+const mockClaimFunction = jest.fn(() => {
+  return new Promise(resolve => setTimeout(resolve, 0))}
+);
 const mockTokenContract = {
   claimTokens: mockClaimFunction,
 }
@@ -110,6 +112,17 @@ describe("<AirdropClaimPage \\>", () => {
       await wrapper.vm.$nextTick()
       await wrapper.find("#send-claim").trigger("click")
       expect(mockClaimFunction).toHaveBeenCalledWith("BN18000000000000000000000", ["1", "2"])
+    })
+    it("Displays a loading message when the claim function has been called", async () => {
+      const wrapper = setupTest()
+      const inputBar = wrapper.find("#address-input")
+      await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
+      const submitButton = wrapper.find("#submit-button")
+      await submitButton.trigger("click")
+      await wrapper.vm.$nextTick()
+      await wrapper.find("#send-claim").trigger("click")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#transaction-executing").exists()).toBe(true)
     })
   })
 })
