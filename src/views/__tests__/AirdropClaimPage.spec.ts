@@ -26,15 +26,16 @@ jest.mock("../../services/getProviderInfo", () => ({
 const mockClaimFunction = jest.fn(() => {
   return new Promise(resolve => setTimeout(resolve, 0))}
 );
-const mockTokenContract = {
+const mockTokenContractSuccess = {
   claimTokens: mockClaimFunction,
 }
+const mockClaimFunctionFail = jest.fn(() => {
+  return new Promise((resolve, reject) => setTimeout(reject, 0))}
+);
+const mockTokenContractFail = {
+  claimTokens: mockClaimFunctionFail,
+}
 jest.mock("../../contracts/SimpleTokenFactory")
-SimpleTokenFactory.mockImplementation(() => {
-  return {
-    attach: jest.fn(() => mockTokenContract),
-  }
-})
 
 describe("<AirdropClaimPage \\>", () => {
   beforeEach(() => {
@@ -53,6 +54,7 @@ describe("<AirdropClaimPage \\>", () => {
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
+
       expect(wrapper.find("#search-error").exists()).toBe(true)
     })
     it("Displays the claim amount if the address is elegible", async () => {
@@ -120,14 +122,49 @@ describe("<AirdropClaimPage \\>", () => {
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
+      expect(wrapper.find("#transaction-executing").exists()).toBe(false)
       await wrapper.find("#send-claim").trigger("click")
       await wrapper.vm.$nextTick()
       expect(wrapper.find("#transaction-executing").exists()).toBe(true)
     })
+    it("Displays success message after succesful claim", async () => {
+      const wrapper = setupTest()
+      const inputBar = wrapper.find("#address-input")
+      await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
+      const submitButton = wrapper.find("#submit-button")
+      await submitButton.trigger("click")
+      await wrapper.vm.$nextTick()
+      await wrapper.find("#send-claim").trigger("click")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#transaction-success").exists()).toBe(false)
+      await new Promise(resolve => setTimeout(resolve, 1))
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#transaction-executing").exists()).toBe(false)
+      expect(wrapper.find("#transaction-success").exists()).toBe(true)
+      expect(wrapper.find("#transaction-error").exists()).toBe(false)
+    })
+    it("Displays error message after unsuccesful claim", async () => {
+      const wrapper = setupTest({ contractClaimSuccess: false })
+      const inputBar = wrapper.find("#address-input")
+      await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
+      const submitButton = wrapper.find("#submit-button")
+      await submitButton.trigger("click")
+      await wrapper.vm.$nextTick()
+      await wrapper.find("#send-claim").trigger("click")
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#transaction-error").exists()).toBe(false)
+      await new Promise(resolve => setTimeout(resolve, 1))
+      await wrapper.vm.$nextTick()
+      expect(wrapper.find("#transaction-executing").exists()).toBe(false)
+      expect(wrapper.find("#transaction-success").exists()).toBe(false)
+      expect(wrapper.find("#transaction-error").exists()).toBe(true)
+    })
   })
 })
 
-function setupTest(options = { apiReturnsSuccess: true }) {
+function setupTest(options = {} as setupOptions) {
+  options.apiReturnsSuccess = options.apiReturnsSuccess !== undefined ? false : true
+  options.contractClaimSuccess = options.contractClaimSuccess !== undefined ? false : true
   const returnBodyError = { error: "this airdrop is not available for this address" }
   const returnBodySuccess = { claim: "18000000000000000000000", merkleProof: ["1", "2"] }
   const mockResolvedValue = {
@@ -142,5 +179,17 @@ function setupTest(options = { apiReturnsSuccess: true }) {
     name: "Test Token",
     symbol: "TST"
   })
+  SimpleTokenFactory.mockImplementation(() => {
+    return {
+      attach: jest.fn(() => {
+        return options.contractClaimSuccess ? mockTokenContractSuccess : mockTokenContractFail
+      })
+    }
+  })
   return shallowMount(AirdropClaimPage)
+}
+
+type setupOptions = {
+  apiReturnsSuccess?: boolean;
+  contractClaimSuccess?: boolean;
 }

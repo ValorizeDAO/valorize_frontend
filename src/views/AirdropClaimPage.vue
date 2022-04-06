@@ -26,6 +26,8 @@
         <button class="btn" id="send-claim" @click="sendClaim">Claim Tokens</button>
         <transition name="fade">
           <div id="transaction-executing" v-if="claimStatus==='TX_PENDING'">Confirming Transaction</div>
+          <div id="transaction-error" v-else-if="claimStatus==='ERROR'">{{ errorMessage }}</div>
+          <div id="transaction-success" v-else-if="claimStatus==='TX_SUCCESS'">SUCCESS!</div>
         </transition>
       </div>
     </transition>
@@ -62,6 +64,7 @@ export default defineComponent({
     const claimAmount = ref("")
     const tokenData = ref(emptyToken)
     const merkleProof: Ref<string[]> = ref([])
+    const errorMessage = ref("")
     const tokenId = computed(() => {
       if (route.params.tokenId) {
         return typeof route.params.tokenId === "object"
@@ -113,6 +116,7 @@ export default defineComponent({
       claimStatus,
       claimAmount,
       merkleProof,
+      errorMessage,
       getAirdropClaimAmount,
       sendClaim
     }
