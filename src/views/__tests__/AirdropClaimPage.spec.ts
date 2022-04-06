@@ -1,5 +1,6 @@
 import { shallowMount } from "@vue/test-utils"
 import AirdropClaimPage from "@/views/AirdropClaimPage.vue"
+import { SimpleTokenFactory } from '@/contracts/SimpleTokenFactory';
 import api from "../../services/api"
 
 jest.mock("vue-router", () => ({
@@ -9,9 +10,34 @@ jest.mock("vue-router", () => ({
   useRouter: jest.fn(() => ({ name: "Home" })),
 }))
 jest.mock("../../services/api")
-
+jest.mock("ethers", () => ({
+  BigNumber: {
+    from: jest.fn((value: any) => "BN" + value)
+  }
+}))
+jest.mock("../../services/getProviderInfo", () => ({
+  getProviderAndSigner: jest.fn(() => ({
+      signer: {} as any,
+      provider: {} as any,
+      error: false
+    }))
+  })
+)
+const mockClaimFunction = jest.fn();
+const mockTokenContract = {
+  claimTokens: mockClaimFunction,
+}
+jest.mock("../../contracts/SimpleTokenFactory")
+SimpleTokenFactory.mockImplementation(() => {
+  return {
+    attach: jest.fn(() => mockTokenContract),
+  }
+})
 
 describe("<AirdropClaimPage \\>", () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
   it("mounts", () => {
     const wrapper = setupTest()
     expect(wrapper).toBeTruthy()
@@ -83,15 +109,14 @@ describe("<AirdropClaimPage \\>", () => {
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
       await wrapper.find("#send-claim").trigger("click")
-      await wrapper.vm.$nextTick()
-      expect((window as any).ethereum).toHaveBeenCalled()
+      expect(mockClaimFunction).toHaveBeenCalledWith("BN18000000000000000000000", ["1", "2"])
     })
   })
 })
 
 function setupTest(options = { apiReturnsSuccess: true }) {
   const returnBodyError = { error: "this airdrop is not available for this address" }
-  const returnBodySuccess = { claim: "18000000000000000000000", merkleProof: [""] }
+  const returnBodySuccess = { claim: "18000000000000000000000", merkleProof: ["1", "2"] }
   const mockResolvedValue = {
     status: options.apiReturnsSuccess ? 200 : 404,
     json: jest.fn(() => {
@@ -99,5 +124,10 @@ function setupTest(options = { apiReturnsSuccess: true }) {
     })
   }
   api.getAirdropClaim = jest.fn().mockResolvedValue(mockResolvedValue)
+  api.getTokenData = jest.fn().mockResolvedValue({
+    address: "0x4B4E9835E6519e81ad07d491D347955C7117a08E",
+    name: "Test Token",
+    symbol: "TST"
+  })
   return shallowMount(AirdropClaimPage)
 }

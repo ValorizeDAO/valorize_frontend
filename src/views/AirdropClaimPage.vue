@@ -34,7 +34,7 @@ import { computed, defineComponent, onMounted, Ref, ref } from "@vue/runtime-cor
 import { useRoute } from "vue-router"
 import { emptyToken } from "../models/Token"
 import api from "../services/api"
-import { getProviderAndSigner } from "../services/getMetamaskInfo"
+import { getProviderAndSigner } from "../services/getProviderInfo"
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
 import { Signer } from "ethers/lib/ethers"
 import { BigNumber } from "ethers"
@@ -68,7 +68,6 @@ export default defineComponent({
       claimStatus.value = statuses[1]
       if (!tokenId.value) return
       const airdropRequest = await api.getAirdropClaim(tokenId.value, address.value)
-      console.log({ airdropRequest })
       if (airdropRequest.status === 404) {
         claimStatus.value = statuses[3]
       } else {
@@ -76,7 +75,6 @@ export default defineComponent({
         const airdropData = await airdropRequest.json()
         claimAmount.value = airdropData.claim
         merkleProof.value = airdropData.merkleProof
-        console.log({ airdropData })
       }
     }
     onMounted(async () => {

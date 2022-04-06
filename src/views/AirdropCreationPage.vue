@@ -258,7 +258,7 @@ import authentication from "../services/authentication"
 import { networkInfo } from "../services/network"
 import { formatAddress } from "../services/formatAddress"
 import dateFormat from "dateformat"
-import { getProviderAndSigner } from "../services/getMetamaskInfo"
+import { getProviderAndSigner } from "../services/getProviderInfo"
 import { ref, computed } from "vue"
 
 const props = defineProps<{
