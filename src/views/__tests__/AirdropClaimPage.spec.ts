@@ -17,7 +17,7 @@ jest.mock("ethers", () => ({
 }))
 jest.mock("../../services/getProviderInfo", () => ({
   getProviderAndSigner: jest.fn(() => ({
-      signer: {} as any,
+      signer: { getAddress: jest.fn(() => "0xtest")} as any,
       provider: {} as any,
       error: false
     }))
@@ -158,6 +158,25 @@ describe("<AirdropClaimPage \\>", () => {
       expect(wrapper.find("#transaction-executing").exists()).toBe(false)
       expect(wrapper.find("#transaction-success").exists()).toBe(false)
       expect(wrapper.find("#transaction-error").exists()).toBe(true)
+    })
+  })
+  describe("Redirecting to register", () => {
+    let wrapper
+    beforeEach(async () => {
+      (window as any).ethereum = jest.fn()
+      wrapper = setupTest()
+      const inputBar = wrapper.find("#address-input")
+      await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
+      const submitButton = wrapper.find("#submit-button")
+      await submitButton.trigger("click")
+      await wrapper.vm.$nextTick()
+      await wrapper.find("#send-claim").trigger("click")
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 1))
+      await wrapper.vm.$nextTick()
+    })
+    it("Should show user a message to register their address if not logged in", async () => {
+      expect(wrapper.find("router-link").exists()).toBeTruthy()
     })
   })
 })

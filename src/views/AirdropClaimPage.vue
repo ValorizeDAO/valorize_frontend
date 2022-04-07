@@ -2,32 +2,32 @@
   <div class="flex justify-center items-middle">
     <transition name="fade" mode="out-in">
       <div v-if="['INIT', 'CLAIM_UNAVAILABLE', 'CHECKING_VALIDITY'].includes(claimStatus)">
-        <input
-          type="text"
-          v-model="address"
-          id="address-input"
-        >
-        <button
-          class="btn"
-          @click="getAirdropClaimAmount"
-          id="submit-button"
-        >
-          search
-        </button>
+        <input type="text" v-model="address" id="address-input" />
+        <button class="btn" @click="getAirdropClaimAmount" id="submit-button">search</button>
         <div
           v-if="claimStatus === 'CLAIM_UNAVAILABLE'"
           id="search-error"
-        >
-          This address is not avaliable for an airdrop
-        </div>
+        >This address is not avaliable for an airdrop</div>
       </div>
-      <div v-else-if="['CLAIM_AVAILABLE', 'TX_PENDING', 'TX_SUCCESS', 'ERROR'].includes(claimStatus)" id="claim-section">
+      <div
+        v-else-if="['CLAIM_AVAILABLE', 'TX_PENDING', 'TX_SUCCESS', 'ERROR'].includes(claimStatus)"
+        id="claim-section"
+      >
         You have {{ claimAmount }} tokens available!
-        <button class="btn" id="send-claim" @click="sendClaim">Claim Tokens</button>
+        <button
+          class="btn"
+          id="send-claim"
+          @click="sendClaim"
+        >Claim Tokens</button>
         <transition name="fade">
-          <div id="transaction-executing" v-if="claimStatus==='TX_PENDING'">Confirming Transaction</div>
-          <div id="transaction-error" v-else-if="claimStatus==='ERROR'">{{ errorMessage }}</div>
-          <div id="transaction-success" v-else-if="claimStatus==='TX_SUCCESS'">SUCCESS!</div>
+          <div id="transaction-executing" v-if="claimStatus === 'TX_PENDING'">Confirming Transaction</div>
+          <div id="transaction-error" v-else-if="claimStatus === 'ERROR'">{{ errorMessage }}</div>
+          <div id="transaction-success" v-else-if="claimStatus === 'TX_SUCCESS'">
+            SUCCESS!
+            <router-link :to="{ path: '/register', query: { registerAddress: userAddress, redirectUri: currentRoute } }">
+              Register this address to your Valorize Profile and get notified of new airdrops!
+            </router-link>
+          </div>
         </transition>
       </div>
     </transition>
@@ -65,6 +65,8 @@ export default defineComponent({
     const tokenData = ref(emptyToken)
     const merkleProof: Ref<string[]> = ref([])
     const errorMessage = ref("")
+    const userAddress = ref("")
+    const currentRoute = ref("")
     const tokenId = computed(() => {
       if (route.params.tokenId) {
         return typeof route.params.tokenId === "object"
@@ -92,10 +94,12 @@ export default defineComponent({
       else {
         claimStatus.value = statuses.at(-1) as string
       }
+      currentRoute.value = route.fullPath
     })
     async function sendClaim() {
       claimStatus.value = statuses[4] // METAMASK_REQUESTED
       const { signer, error } = await getProviderAndSigner()
+      userAddress.value = await signer?.getAddress() as string
       if (error) {
         claimStatus.value = statuses[5] // METAMASK_UNAVAILABLE
         return
@@ -108,7 +112,8 @@ export default defineComponent({
         claimStatus.value = statuses[7] // TX_SUCCESS
       } catch (err: any) {
         claimStatus.value = statuses.at(-1) as string // ERROR
-        console.log(err)
+        console.error(err)
+        errorMessage.value = "There was an error claiming your tokens. Please try again later."
       }
     }
     return {
@@ -117,6 +122,8 @@ export default defineComponent({
       claimAmount,
       merkleProof,
       errorMessage,
+      userAddress,
+      currentRoute,
       getAirdropClaimAmount,
       sendClaim
     }
