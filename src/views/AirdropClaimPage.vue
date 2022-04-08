@@ -91,7 +91,7 @@ import { emptyToken } from "../models/Token"
 import api from "../services/api"
 import { getProviderAndSigner } from "../services/getProviderInfo"
 import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
-import { BigNumberish, Signer } from "ethers/lib/ethers"
+import { Signer } from "ethers/lib/ethers"
 import { BigNumber, utils } from "ethers"
 import currency from "currency.js"
 import { formatAddress } from "../services/formatAddress"
@@ -109,6 +109,7 @@ export default defineComponent({
       "METAMASK_REQUESTED",
       "METAMASK_UNAVAILABLE",
       "TX_PENDING",
+      "TX_SENT",
       "TX_SUCCESS",
       "ADDRESS_MISMATCH",
       "ERROR"
@@ -159,7 +160,7 @@ export default defineComponent({
         return
       }
       if (userAddress.value !== address.value) {
-        claimStatus.value = statuses[8] as string // ADDRESS_MISMATCH
+        claimStatus.value = statuses[9] as string // ADDRESS_MISMATCH
         addressMismatch.value = true
         addEventListenerToAddressInput()
         return
@@ -168,8 +169,10 @@ export default defineComponent({
         .attach(tokenData.value.address)
       try {
         claimStatus.value = statuses[6] // TX_PENDING
-        await token.claimTokens(BigNumber.from(claimAmount.value), merkleProof.value)
-        claimStatus.value = statuses[7] // TX_SUCCESS
+        const tx = await token.claimTokens(BigNumber.from(claimAmount.value), merkleProof.value)
+        claimStatus.value = statuses[7] // TX_SENT
+        const receipt = await tx.wait()
+        claimStatus.value = statuses[8] // TX_SUCCESS
       } catch (err: any) {
         claimStatus.value = statuses.at(-1) as string // ERROR
         console.error(err)
