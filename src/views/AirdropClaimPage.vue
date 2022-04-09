@@ -88,11 +88,30 @@
           <transition name="fade">
             <div id="transaction-executing" v-if="claimStatus === 'TX_PENDING'">Confirming Transaction</div>
             <div id="transaction-error" v-else-if="claimStatus === 'ERROR'">{{ errorMessage }}</div>
-            <div id="transaction-success" v-else-if="claimStatus === 'TX_SUCCESS'">
-              SUCCESS!
-              <router-link
-                :to="{ path: '/register', query: { registerAddress: userAddress, redirectUri: currentRoute } }"
-              >Register this address to your Valorize Profile and get notified of new airdrops!</router-link>
+            <div v-else-if="claimStatus === 'TX_SUCCESS'" id="transaction-success">
+              <h3 class="font-black text-xl">SUCCESS!</h3> <br>
+              <div v-if="!isAuthenticated">
+                <router-link
+                  :to="{ path: '/register', query: { registerAddress: userAddress, redirectUri: currentRoute } }"
+                >
+                  <span
+                    class="border-b-2 border-black"
+                  >
+                    Register 
+                  </span>
+                </router-link>
+                Or
+                <router-link
+                  :to="{ path: '/login', query: { registerAddress: userAddress, redirectUri: currentRoute } }"
+                >
+                  <span
+                    class="border-b-2 border-black"
+                  >
+                    Login 
+                  </span>
+                </router-link>
+                to associate this address to your Valorize Profile and get notified of new airdrops!
+              </div>
             </div>
           </transition>
         </div>
@@ -112,11 +131,14 @@ import { Signer } from "ethers/lib/ethers"
 import { BigNumber, utils } from "ethers"
 import currency from "currency.js"
 import { formatAddress } from "../services/formatAddress"
+import { useStore } from "vuex"
 
 export default defineComponent({
   name: "AirdropClaimPage",
   setup() {
     const route = useRoute()
+    const store = useStore()
+    const isAuthenticated = store.getters["authUser/authenticated"]
     const address = ref("")
     const statuses = [
       "INIT",
@@ -231,6 +253,7 @@ export default defineComponent({
       sendClaim,
       formatAddress,
       tokenStatus,
+      isAuthenticated,
       toDecimals: (value: string) => utils.formatEther(value).toString(),
       c: (value: string | number) =>
         currency(Number(value), {
