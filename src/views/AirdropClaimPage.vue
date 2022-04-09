@@ -1,14 +1,24 @@
 <template>
-  <div>
+  <div class="mx-auto w-[28rem] mt-8">
     <transition name="fade" mode="out-in">
-      <div v-if="claimStatus === 'TRANSACTION_SENT'" class="mx-auto w-[28rem]">
+      <div v-if="['INIT', 'LOADING'].includes(tokenStatus)">
+        <h1 class="font-black text-3xl">Loading Token Data</h1>
+      </div>
+      <div v-else>
+        <h1 class="font-black text-3xl">
+          {{ tokenData.name }} Token Airdrop  
+        </h1>
+      </div>
+    </transition>
+    <transition name="fade" mode="out-in">
+      <div v-if="claimStatus === 'TRANSACTION_SENT'">
         <div class="mx-auto mt-4 text-center">
           <h2 class="text-xl font-black">
             Search an address to claim airdrop tokens
           </h2>
         </div>
       </div>
-      <div v-else class="mx-auto w-[28rem]">
+      <div v-else>
         <div class="h-40 mt-12 flex flex-col justify-between">
           <transition name="fade" mode="out-in">
             <div v-if="['INIT', 'CHECKING_VALIDITY'].includes(claimStatus)">
@@ -122,6 +132,8 @@ export default defineComponent({
       "ERROR"
     ]
     const claimStatus = ref(statuses[0])
+    const tokenStatuses = ["INIT", "LOADING", "LOADED"]
+    const tokenStatus = ref(tokenStatuses[0])
     const claimAmount = ref("")
     const tokenData = ref(emptyToken)
     const merkleProof: Ref<string[]> = ref([])
@@ -151,7 +163,13 @@ export default defineComponent({
     }
     onMounted(async () => {
       if (tokenId.value) {
-        tokenData.value = await api.getTokenData(parseInt(tokenId.value))
+        try {
+          tokenStatus.value = tokenStatuses[1]
+          tokenData.value = await api.getTokenData(parseInt(tokenId.value))
+          tokenStatus.value = tokenStatuses[2]
+        } catch (e:any) {
+          tokenStatus.value = tokenStatuses[3]
+        }
       }
       else {
         claimStatus.value = statuses.at(-1) as string
@@ -212,6 +230,7 @@ export default defineComponent({
       getAirdropClaimAmount,
       sendClaim,
       formatAddress,
+      tokenStatus,
       toDecimals: (value: string) => utils.formatEther(value).toString(),
       c: (value: string | number) =>
         currency(Number(value), {
