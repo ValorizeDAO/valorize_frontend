@@ -29,7 +29,7 @@
               </label>
               <div :class="claimStatus === 'CHECKING_VALIDITY' || 'opacity-0'" class=" font-black transition duration-100">Checking . . .</div>
             </div>
-            <div v-else-if="claimStatus === 'CLAIM_AVAILABLE'" class="text-center">
+            <div v-else-if="claimStatus === 'CLAIM_AVAILABLE'" class="text-center" id="claim-button-section">
               <span class="font-bold">{{ formatAddress(address) }}</span>
               has {{ c(toDecimals(claimAmount)) }} {{ tokenData.symbol }} tokens available to claim!
               <div class="text-center">

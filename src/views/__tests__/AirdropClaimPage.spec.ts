@@ -23,6 +23,19 @@ jest.mock("../../services/getProviderInfo", () => ({
     }))
   })
 )
+const mockStore = {
+  getters: {
+    "authUser/isAuthenticated": jest.fn(() => false),
+  },
+}
+jest.mock("vuex", () => ({
+  useStore: jest.fn(() => mockStore),
+}))
+jest.mock("ethers", () => ({
+  utils: {
+    formatEther: jest.fn((val) => val / 10 ** 18) 
+  }
+}))
 const mockClaimFunction = jest.fn(() => {
   return new Promise(resolve => setTimeout(resolve, 0))}
 );
@@ -36,6 +49,10 @@ const mockTokenContractFail = {
   claimTokens: mockClaimFunctionFail,
 }
 jest.mock("../../contracts/SimpleTokenFactory")
+jest.mock("currency.js", () => ({
+   __esModule: true, 
+  default: jest.fn(jest.fn((val) => ({ format : () => "$" + val })))
+}))
 
 describe("<AirdropClaimPage \\>", () => {
   beforeEach(() => {
@@ -59,26 +76,18 @@ describe("<AirdropClaimPage \\>", () => {
     })
     it("Displays the claim amount if the address is elegible", async () => {
       const wrapper = setupTest()
-      expect(wrapper.find("#claim-section").exists()).toBe(false)
+      expect(wrapper.find("#claim-button-section").exists()).toBe(false)
       const inputBar = wrapper.find("#address-input")
       await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
-      const claimSection = wrapper.find("#claim-section")
+      await new Promise(resolve => setTimeout(resolve, 0))
+      await wrapper.vm.$nextTick()
+      const claimSection = wrapper.find("#claim-button-section")
+      console.log(wrapper.html())
       expect(claimSection.exists()).toBe(true)
-      await wrapper.vm.$nextTick()
-      expect(claimSection.text()).toContain("18000000000000000000000")
-    })
-    it("Hides the input bar after succesfully getting a claim amount", async () => {
-      const wrapper = setupTest()
-      const inputBar = wrapper.find("#address-input")
-      await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
-      const submitButton = wrapper.find("#submit-button")
-      await submitButton.trigger("click")
-      await wrapper.vm.$nextTick()
-      expect(wrapper.find("#submit-button").exists()).toBe(false)
-      expect(wrapper.find("#address-input").exists()).toBe(false)
+      expect(claimSection.text()).toContain("$18000")
     })
   })
   describe("Claiming Airdrop", () => {
@@ -97,7 +106,6 @@ describe("<AirdropClaimPage \\>", () => {
     })
     it("Shows a button to execute airdrop claim after requesting address claim", async () => {
       const wrapper = setupTest()
-      expect(wrapper.find("#send-claim").exists()).toBe(false)
       const inputBar = wrapper.find("#address-input")
       await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
       const submitButton = wrapper.find("#submit-button")
