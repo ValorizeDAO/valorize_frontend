@@ -33,7 +33,7 @@
           v-for="token in userTokens"
           :id="'token-' + token.id"
           :key="token.id"
-          :to="'/token/' + token.id"
+          :to="'/dashboard/token/' + token.id"
         >
           <h3 class="text-lg font-black">
             {{ token.name }} ({{ token.symbol }})
@@ -51,7 +51,7 @@
           </div>
         </router-link>
         <router-link
-          to="/token/create"
+          to="/dashboard/token/create"
           class="
             bg-purple-300
             p-8

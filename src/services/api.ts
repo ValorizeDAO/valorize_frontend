@@ -69,6 +69,12 @@ class Api {
     return await req.json()
   }
 
+  async getAirdropClaim(tokenId: string, address: string) {
+    return fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v0/token/${tokenId}/airdrops/${address}/claim`,
+    )
+  }
+
   get(route: string) {
     return fetch(import.meta.env.VITE_BACKEND_URL + route)
   }
