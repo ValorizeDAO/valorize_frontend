@@ -1,7 +1,7 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers"
 
 async function getProviderAndSigner() {
-  let ethereum = (window as any).ethereum
+  const ethereum = (window as any).ethereum
   if (ethereum) {
     const accounts: string[] = await ethereum.request({
       method: "eth_requestAccounts",

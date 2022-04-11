@@ -1,16 +1,24 @@
 <template>
   <div class="mx-auto w-[28rem] mt-8">
-    <transition name="fade" mode="out-in">
+    <transition
+      name="fade"
+      mode="out-in"
+    >
       <div v-if="['INIT', 'LOADING'].includes(tokenStatus)">
-        <h1 class="font-black text-3xl">Loading Token Data</h1>
+        <h1 class="font-black text-3xl">
+          Loading Token Data
+        </h1>
       </div>
       <div v-else>
         <h1 class="font-black text-3xl">
-          {{ tokenData.name }} Token Airdrop  
+          {{ tokenData.name }} Token Airdrop
         </h1>
       </div>
     </transition>
-    <transition name="fade" mode="out-in">
+    <transition
+      name="fade"
+      mode="out-in"
+    >
       <div v-if="claimStatus === 'TRANSACTION_SENT'">
         <div class="mx-auto mt-4 text-center">
           <h2 class="text-xl font-black">
@@ -20,29 +28,52 @@
       </div>
       <div v-else>
         <div class="h-40 mt-12 flex flex-col justify-between">
-          <transition name="fade" mode="out-in">
+          <transition
+            name="fade"
+            mode="out-in"
+          >
             <div v-if="['INIT', 'CHECKING_VALIDITY'].includes(claimStatus)">
               <label for="address-input">
                 <h2
                   class="font-black text-2xl max-w-md"
                 >Check if your address is available for claiming this airdrop</h2>
               </label>
-              <div :class="claimStatus === 'CHECKING_VALIDITY' || 'opacity-0'" class=" font-black transition duration-100">Checking . . .</div>
+              <div
+                :class="claimStatus === 'CHECKING_VALIDITY' || 'opacity-0'"
+                class=" font-black transition duration-100"
+              >
+                Checking . . .
+              </div>
             </div>
-            <div v-else-if="claimStatus === 'CLAIM_AVAILABLE'" class="text-center" id="claim-button-section">
+            <div
+              v-else-if="claimStatus === 'CLAIM_AVAILABLE'"
+              class="text-center"
+              id="claim-button-section"
+            >
               <span class="font-bold">{{ formatAddress(address) }}</span>
               has {{ c(toDecimals(claimAmount)) }} {{ tokenData.symbol }} tokens available to claim!
               <div class="text-center">
-                <button class="btn mt-4" id="send-claim" @click="sendClaim">Claim Now</button>
+                <button
+                  class="btn mt-4"
+                  id="send-claim"
+                  @click="sendClaim"
+                >
+                  Claim Now
+                </button>
               </div>
             </div>
 
-          <div v-else-if="claimStatus === 'METAMASK_REQUESTED'" class="h-20 w-[28rem] mx-auto mt-8 text-center">
-            <h2
-              class="font-black text-xl max-w-md"
-              v-if="claimStatus === 'METAMASK_REQUESTED'"
-            >Please confirm your transaction on a web3 provider like Metamask</h2>
-          </div>
+            <div
+              v-else-if="claimStatus === 'METAMASK_REQUESTED'"
+              class="h-20 w-[28rem] mx-auto mt-8 text-center"
+            >
+              <h2
+                class="font-black text-xl max-w-md"
+                v-if="claimStatus === 'METAMASK_REQUESTED'"
+              >
+                Please confirm your transaction on a web3 provider like Metamask
+              </h2>
+            </div>
             <div
               v-else-if="claimStatus === 'ADDRESS_MISMATCH'"
               id="transaction-addressMismatch"
@@ -52,8 +83,8 @@
               <span
                 class="font-black"
               >{{ formatAddress(userAddress) }}</span>,
-              <br />and cannot claim tokens allocated to
-              <br />
+              <br>and cannot claim tokens allocated to
+              <br>
               <span class="font-black">{{ address }}</span>.<br>
               <br>
               <h2 class="text-xl font-black">
@@ -70,15 +101,21 @@
               type="text"
               v-model="address"
               id="address-input"
-            />
-            <button class="btn" @click="getAirdropClaimAmount" id="submit-button">search</button>
+            >
+            <button
+              class="btn"
+              @click="getAirdropClaimAmount"
+              id="submit-button"
+            >
+              search
+            </button>
           </div>
           <div
             v-if="claimStatus === 'CLAIM_UNAVAILABLE'"
             id="search-error"
             class="mx-auto mt-4 text-red-900 text-center font-black"
           >
-          * Address is not avaliable for this airdrop
+            * Address is not avaliable for this airdrop
           </div>
         </div>
         <div
@@ -86,10 +123,25 @@
           id="claim-section"
         >
           <transition name="fade">
-            <div id="transaction-executing" v-if="claimStatus === 'TX_SENT'">Confirming Transaction</div>
-            <div id="transaction-error" v-else-if="claimStatus === 'ERROR'">{{ errorMessage }}</div>
-            <div v-else-if="claimStatus === 'TX_SUCCESS'" id="transaction-success">
-              <h3 class="font-black text-xl">SUCCESS!</h3> <br>
+            <div
+              id="transaction-executing"
+              v-if="claimStatus === 'TX_SENT'"
+            >
+              Confirming Transaction
+            </div>
+            <div
+              id="transaction-error"
+              v-else-if="claimStatus === 'ERROR'"
+            >
+              {{ errorMessage }}
+            </div>
+            <div
+              v-else-if="claimStatus === 'TX_SUCCESS'"
+              id="transaction-success"
+            >
+              <h3 class="font-black text-xl">
+                SUCCESS!
+              </h3> <br>
               <div v-if="!isAuthenticated">
                 <router-link
                   :to="{ path: '/register', query: { registerAddress: userAddress, redirectUri: currentRoute } }"
@@ -97,7 +149,7 @@
                   <span
                     class="border-b-2 border-black"
                   >
-                    Register 
+                    Register
                   </span>
                 </router-link>
                 Or
@@ -107,7 +159,7 @@
                   <span
                     class="border-b-2 border-black"
                   >
-                    Login 
+                    Login
                   </span>
                 </router-link>
                 to associate this address to your Valorize Profile and get notified of new airdrops!
@@ -151,7 +203,7 @@ export default defineComponent({
       "TX_SENT",
       "TX_SUCCESS",
       "ADDRESS_MISMATCH",
-      "ERROR"
+      "ERROR",
     ]
     const claimStatus = ref(statuses[0])
     const tokenStatuses = ["INIT", "LOADING", "LOADED"]
@@ -192,8 +244,7 @@ export default defineComponent({
         } catch (e:any) {
           tokenStatus.value = tokenStatuses[3]
         }
-      }
-      else {
+      } else {
         claimStatus.value = statuses.at(-1) as string
       }
       currentRoute.value = route.fullPath
@@ -235,10 +286,10 @@ export default defineComponent({
       }
     }
     function addEventListenerToAddressInput() {
-      (window as any).ethereum.on('accountsChanged', async (accounts: string[]) => {
-        if (claimStatus.value === 'ADDRESS_MISMATCH' && accounts.length > 0) {
-            return accounts[0] === address.value && sendClaim()
-          }
+      (window as any).ethereum.on("accountsChanged", async (accounts: string[]) => {
+        if (claimStatus.value === "ADDRESS_MISMATCH" && accounts.length > 0) {
+          return accounts[0] === address.value && sendClaim()
+        }
       })
     }
     return {

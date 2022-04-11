@@ -25,5 +25,5 @@ export const emptyToken: Token = {
   user_id: 0,
   created_at: "",
   updated_at: null,
-  deleted_at: null
+  deleted_at: null,
 }

@@ -1,6 +1,6 @@
 import { shallowMount } from "@vue/test-utils"
 import AirdropClaimPage from "@/views/AirdropClaimPage.vue"
-import { SimpleTokenFactory } from '@/contracts/SimpleTokenFactory';
+import { SimpleTokenFactory } from "@/contracts/SimpleTokenFactory"
 import api from "../../services/api"
 
 jest.mock("vue-router", () => ({
@@ -12,18 +12,18 @@ jest.mock("vue-router", () => ({
 jest.mock("../../services/api")
 jest.mock("ethers", () => ({
   BigNumber: {
-    from: jest.fn((value: any) => "BN" + value)
+    from: jest.fn((value: any) => "BN" + value),
   },
   utils: {
-    formatEther: jest.fn((val) => val / 10 ** 18) 
-  }
+    formatEther: jest.fn((val) => val / 10 ** 18),
+  },
 }))
 jest.mock("../../services/getProviderInfo", () => ({
   getProviderAndSigner: jest.fn(() => ({
-      signer: { getAddress: jest.fn(() => "0x4B4E9835E6519e81ad07d491D347955C7117a08E")} as any,
-      error: false
-    }))
-  })
+    signer: { getAddress: jest.fn(() => "0x4B4E9835E6519e81ad07d491D347955C7117a08E") } as any,
+    error: false,
+  })),
+}),
 )
 const mockStore = {
   getters: {
@@ -35,8 +35,8 @@ jest.mock("vuex", () => ({
 }))
 jest.mock("../../contracts/SimpleTokenFactory")
 jest.mock("currency.js", () => ({
-   __esModule: true, 
-  default: jest.fn(jest.fn((val) => ({ format : () => "$" + val })))
+  __esModule: true,
+  default: jest.fn(jest.fn((val) => ({ format: () => "$" + val }))),
 }))
 
 describe("<AirdropClaimPage \\>", () => {
@@ -187,41 +187,41 @@ describe("<AirdropClaimPage \\>", () => {
 })
 
 const mockClaimFunction = jest.fn(() => {
-    return Promise.resolve({ wait: () => Promise.resolve() })
-  }
-);
+  return Promise.resolve({ wait: () => Promise.resolve() })
+},
+)
 const mockTokenContractSuccess = {
-  claimTokens: mockClaimFunction
+  claimTokens: mockClaimFunction,
 }
 const mockClaimFunctionFail = jest.fn(() => {
-  return new Promise((_, reject) => setTimeout(() => reject({ code: '' }), 0))}
-);
+  return new Promise((_, reject) => setTimeout(() => reject({ code: "" }), 0))
+},
+)
 const mockTokenContractFail = {
   claimTokens: mockClaimFunctionFail,
 }
 function setupTest(options = {} as setupOptions) {
-  options.apiReturnsSuccess = options.apiReturnsSuccess !== undefined ? false : true
-  options.contractClaimSuccess = options.contractClaimSuccess !== undefined ? false : true
+  options.apiReturnsSuccess = options.apiReturnsSuccess === undefined
+  options.contractClaimSuccess = options.contractClaimSuccess === undefined
   const returnBodyError = { error: "this airdrop is not available for this address" }
   const returnBodySuccess = { claim: "18000000000000000000000", merkleProof: ["1", "2"] }
   const mockResolvedValue = {
     status: options.apiReturnsSuccess ? 200 : 404,
     json: jest.fn(() => {
       return options.apiReturnsSuccess ? returnBodySuccess : returnBodyError
-    })
+    }),
   }
   api.getAirdropClaim = jest.fn().mockResolvedValue(mockResolvedValue)
   api.getTokenData = jest.fn().mockResolvedValue({
     address: "0x4B4E9835E6519e81ad07d491D347955C7117a08E",
     name: "Test Token",
-    symbol: "TST"
+    symbol: "TST",
   })
   SimpleTokenFactory.mockImplementation(() => {
     return {
       attach: jest.fn(() => {
         return options.contractClaimSuccess ? mockTokenContractSuccess : mockTokenContractFail
       }),
-
 
     }
   })
