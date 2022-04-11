@@ -3,7 +3,7 @@
     <div
       v-if="
         airdropStatus === 'COMPLETE' ||
-          (tokenData.airdrop.airdropIndex !== -1 && !tokenData.airdrop.isComplete)
+          (tokenData.airdrop.airdropOnChainIndex !== -1 && !tokenData.airdrop.isComplete)
       "
     >
       <h2
@@ -27,7 +27,6 @@
           Administrators will be able to sweep the unclaimed funds for this
           airdrop on:
         </p>
-        <p />
         <div
           class="mt-2 text-xl"
           v-if="!isSweepingAllowed"
@@ -53,6 +52,13 @@
             Mark Airdrop as Complete
           </button>
         </div>
+        <router-link
+          :to="{ name: 'Claim Airdrop', params: { tokenId: tokenData.id, airdropId }}"
+        >
+          <div class="w-48 mx-auto btn mt-8">
+            Go To Claim Page
+          </div>
+        </router-link>
       </div>
     </div>
     <div v-else>
@@ -121,7 +127,6 @@
               'CONFIRMING_BACKEND',
               'CONFIRMING_BACKEND_ERROR',
               'METAMASK_NETWORK_ERROR',
-              'SENDING_TX',
               'SENDING_TX_ERROR',
             ].includes(airdropStatus)
           "
@@ -235,11 +240,23 @@
         </div>
         <div
           v-else-if="
-            airdropStatus === 'CONFIRMING_BACKEND' ||
-              airdropStatus === 'SENDING_TX'
+            airdropStatus === 'CONFIRMING_BACKEND'
           "
         >
           Confirming your airdrop information
+        </div>
+        <div v-else-if="airdropStatus === 'SENDING_TX'">
+          <div class="text-center">
+            <div class="font-black text-2xl">
+              Creating Airdrop
+            </div>
+            <SvgLoader
+              class="mt-8 mx-auto"
+              fill="#000"
+              :width="100"
+              :height="100"
+            />
+          </div>
         </div>
       </transition>
     </div>
@@ -259,7 +276,8 @@ import { networkInfo } from "../services/network"
 import { formatAddress } from "../services/formatAddress"
 import dateFormat from "dateformat"
 import { getProviderAndSigner } from "../services/getProviderInfo"
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
+import SvgLoader from "../components/SvgLoader.vue"
 
 const props = defineProps<{
   state: any;
@@ -276,6 +294,7 @@ const csvDump = ref("")
 const merkleRoot = ref("")
 const airdropDuration = ref(180)
 const metamaskError = ref("")
+const airdropId = ref(0)
 const airdropStatuses = [
   "INIT",
   "UPLOADED_CSV",
@@ -287,11 +306,15 @@ const airdropStatuses = [
   "CHECKING_NETWORK",
   "METAMASK_NETWORK_ERROR",
   "SENDING_TX",
+  "CONFIRMING_TX",
   "SENDING_TX_ERROR",
   "COMPLETE",
   "ERROR",
 ]
 const airdropStatus = ref(airdropStatuses[0])
+onMounted(() => {
+  airdropId.value = props.state.tokenData.airdrop.id
+})
 function checkForDuplicateAddresses() {
   const airdropSet = new Set(airdropData.value.map((item) => item[0]))
   if (airdropSet.size !== airdropData.value.length) {
@@ -336,6 +359,9 @@ function transitionState(success: boolean = true) {
       airdropStatus.value = "CHECKING_NETWORK"
       break
     case "CHECKING_NETWORK" || "METAMASK_NETWORK_ERROR":
+      airdropStatus.value = "CONFIRMING_TX"
+      break
+    case "CONFIRMING_TX":
       airdropStatus.value = "SENDING_TX"
       break
     case "SENDING_TX":
@@ -404,6 +430,7 @@ async function saveAirdropInfo() {
       transitionState()
       const data = await request.json()
       merkleRoot.value = data.merkleRoot
+      airdropId.value = data.airdropId
       let tokenInstance: SimpleToken | TimedMintToken
       if (tokenData.value.tokenType === "timed_mint") {
         tokenInstance = new TimedMintTokenFactory(signer).attach(
@@ -419,7 +446,7 @@ async function saveAirdropInfo() {
       }
       await switchOrAddNetwork(parseInt(tokenData.value.chainId))
       try {
-        await tokenInstance.newAirdrop(
+        const tx = await tokenInstance.newAirdrop(
           merkleRoot.value,
           BigNumber.from(airdropDuration.value).mul(24 * 60 * 60),
         )
@@ -428,6 +455,8 @@ async function saveAirdropInfo() {
           BigNumber.from(airdropDuration.value)
             .mul(24 * 60 * 60)
             .toNumber()
+        transitionState()
+        await tx.wait()
         transitionState()
       } catch (err: any) {
         transitionState(false)

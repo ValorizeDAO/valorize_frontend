@@ -52,6 +52,7 @@ export default defineComponent({
     const route = useRoute()
     const state = reactive({
       tokenData: {
+        id: 0,
         name: "",
         symbol: "",
         totalSupply: "",
@@ -97,6 +98,7 @@ export default defineComponent({
         airdropInfo,
       } = await api.getTokenData(tokenId)
       state.tokenData = {
+        id: tokenId,
         name,
         symbol,
         totalSupply,
