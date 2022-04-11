@@ -82,11 +82,11 @@
           </div>
         </div>
         <div
-          v-if="['METAMASK_REQUESTED', 'TX_PENDING', 'TX_SUCCESS', 'ERROR'].includes(claimStatus)"
+          v-if="['METAMASK_REQUESTED', 'TX_PENDING', 'TX_SENT', 'TX_SUCCESS', 'ERROR'].includes(claimStatus)"
           id="claim-section"
         >
           <transition name="fade">
-            <div id="transaction-executing" v-if="claimStatus === 'TX_PENDING'">Confirming Transaction</div>
+            <div id="transaction-executing" v-if="claimStatus === 'TX_SENT'">Confirming Transaction</div>
             <div id="transaction-error" v-else-if="claimStatus === 'ERROR'">{{ errorMessage }}</div>
             <div v-else-if="claimStatus === 'TX_SUCCESS'" id="transaction-success">
               <h3 class="font-black text-xl">SUCCESS!</h3> <br>
@@ -200,7 +200,7 @@ export default defineComponent({
     })
     async function sendClaim() {
       claimStatus.value = statuses[4] // METAMASK_REQUESTED
-      const { signer, accounts, error } = await getProviderAndSigner()
+      const { signer, error } = await getProviderAndSigner()
       userAddress.value = await signer?.getAddress() as string
       if (error) {
         claimStatus.value = statuses[5] // METAMASK_UNAVAILABLE
@@ -218,8 +218,9 @@ export default defineComponent({
         claimStatus.value = statuses[6] // TX_PENDING
         const tx = await token.claimTokens(BigNumber.from(claimAmount.value), merkleProof.value)
         claimStatus.value = statuses[7] // TX_SENT
-        const receipt = await tx.wait()
+        await tx.wait()
         claimStatus.value = statuses[8] // TX_SUCCESS
+        console.log(claimStatus.value)
       } catch (err: any) {
         claimStatus.value = statuses.at(-1) as string // ERROR
         console.error(err.code)

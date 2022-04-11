@@ -13,12 +13,14 @@ jest.mock("../../services/api")
 jest.mock("ethers", () => ({
   BigNumber: {
     from: jest.fn((value: any) => "BN" + value)
+  },
+  utils: {
+    formatEther: jest.fn((val) => val / 10 ** 18) 
   }
 }))
 jest.mock("../../services/getProviderInfo", () => ({
   getProviderAndSigner: jest.fn(() => ({
-      signer: { getAddress: jest.fn(() => "0xtest")} as any,
-      provider: {} as any,
+      signer: { getAddress: jest.fn(() => "0x4B4E9835E6519e81ad07d491D347955C7117a08E")} as any,
       error: false
     }))
   })
@@ -31,23 +33,6 @@ const mockStore = {
 jest.mock("vuex", () => ({
   useStore: jest.fn(() => mockStore),
 }))
-jest.mock("ethers", () => ({
-  utils: {
-    formatEther: jest.fn((val) => val / 10 ** 18) 
-  }
-}))
-const mockClaimFunction = jest.fn(() => {
-  return new Promise(resolve => setTimeout(resolve, 0))}
-);
-const mockTokenContractSuccess = {
-  claimTokens: mockClaimFunction,
-}
-const mockClaimFunctionFail = jest.fn(() => {
-  return new Promise((resolve, reject) => setTimeout(reject, 0))}
-);
-const mockTokenContractFail = {
-  claimTokens: mockClaimFunctionFail,
-}
 jest.mock("../../contracts/SimpleTokenFactory")
 jest.mock("currency.js", () => ({
    __esModule: true, 
@@ -71,7 +56,6 @@ describe("<AirdropClaimPage \\>", () => {
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
-
       expect(wrapper.find("#search-error").exists()).toBe(true)
     })
     it("Displays the claim amount if the address is elegible", async () => {
@@ -85,7 +69,6 @@ describe("<AirdropClaimPage \\>", () => {
       await new Promise(resolve => setTimeout(resolve, 0))
       await wrapper.vm.$nextTick()
       const claimSection = wrapper.find("#claim-button-section")
-      console.log(wrapper.html())
       expect(claimSection.exists()).toBe(true)
       expect(claimSection.text()).toContain("$18000")
     })
@@ -102,6 +85,8 @@ describe("<AirdropClaimPage \\>", () => {
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      await wrapper.vm.$nextTick()
       expect(wrapper.find("#send-claim").exists()).toBe(true)
     })
     it("Shows a button to execute airdrop claim after requesting address claim", async () => {
@@ -111,14 +96,18 @@ describe("<AirdropClaimPage \\>", () => {
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      await wrapper.vm.$nextTick()
       expect(wrapper.find("#send-claim").exists()).toBe(true)
     })
-    it("Sends a request to user when send-claim is pressed", async () => {
+    it("Sends a request to tokenContract when send-claim is pressed", async () => {
       const wrapper = setupTest()
       const inputBar = wrapper.find("#address-input")
       await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
       await wrapper.vm.$nextTick()
       await wrapper.find("#send-claim").trigger("click")
       expect(mockClaimFunction).toHaveBeenCalledWith("BN18000000000000000000000", ["1", "2"])
@@ -129,6 +118,8 @@ describe("<AirdropClaimPage \\>", () => {
       await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
       await wrapper.vm.$nextTick()
       expect(wrapper.find("#transaction-executing").exists()).toBe(false)
       await wrapper.find("#send-claim").trigger("click")
@@ -141,6 +132,8 @@ describe("<AirdropClaimPage \\>", () => {
       await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
+      await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
       await wrapper.vm.$nextTick()
       await wrapper.find("#send-claim").trigger("click")
       await wrapper.vm.$nextTick()
@@ -158,6 +151,8 @@ describe("<AirdropClaimPage \\>", () => {
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 0))
+      await wrapper.vm.$nextTick()
       await wrapper.find("#send-claim").trigger("click")
       await wrapper.vm.$nextTick()
       expect(wrapper.find("#transaction-error").exists()).toBe(false)
@@ -171,24 +166,39 @@ describe("<AirdropClaimPage \\>", () => {
   describe("Redirecting to register", () => {
     let wrapper
     beforeEach(async () => {
-      (window as any).ethereum = jest.fn()
       wrapper = setupTest()
       const inputBar = wrapper.find("#address-input")
       await inputBar.setValue("0x4B4E9835E6519e81ad07d491D347955C7117a08E")
       const submitButton = wrapper.find("#submit-button")
       await submitButton.trigger("click")
       await wrapper.vm.$nextTick()
+      await new Promise(resolve => setTimeout(resolve, 1))
+      await wrapper.vm.$nextTick()
       await wrapper.find("#send-claim").trigger("click")
       await wrapper.vm.$nextTick()
       await new Promise(resolve => setTimeout(resolve, 1))
       await wrapper.vm.$nextTick()
+      console.log(wrapper.html())
     })
     it("Should show user a message to register their address if not logged in", async () => {
-      expect(wrapper.find("router-link").exists()).toBeTruthy()
+      expect(wrapper.find("#transaction-success").exists()).toBeTruthy()
     })
   })
 })
 
+const mockClaimFunction = jest.fn(() => {
+    return Promise.resolve({ wait: () => Promise.resolve() })
+  }
+);
+const mockTokenContractSuccess = {
+  claimTokens: mockClaimFunction
+}
+const mockClaimFunctionFail = jest.fn(() => {
+  return new Promise((_, reject) => setTimeout(() => reject({ code: '' }), 0))}
+);
+const mockTokenContractFail = {
+  claimTokens: mockClaimFunctionFail,
+}
 function setupTest(options = {} as setupOptions) {
   options.apiReturnsSuccess = options.apiReturnsSuccess !== undefined ? false : true
   options.contractClaimSuccess = options.contractClaimSuccess !== undefined ? false : true
@@ -210,7 +220,9 @@ function setupTest(options = {} as setupOptions) {
     return {
       attach: jest.fn(() => {
         return options.contractClaimSuccess ? mockTokenContractSuccess : mockTokenContractFail
-      })
+      }),
+
+
     }
   })
   return shallowMount(AirdropClaimPage)
