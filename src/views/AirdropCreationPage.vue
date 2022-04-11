@@ -53,9 +53,10 @@
           </button>
         </div>
         <router-link
-          :to="{ name: 'Claim Airdrop', params: { tokenId: tokenData.id, airdropId }}">
+          :to="{ name: 'Claim Airdrop', params: { tokenId: tokenData.id, airdropId }}"
+        >
           <div class="w-48 mx-auto btn mt-8">
-              Go To Claim Page
+            Go To Claim Page
           </div>
         </router-link>
       </div>
@@ -247,13 +248,14 @@
         <div v-else-if="airdropStatus === 'SENDING_TX'">
           <div class="text-center">
             <div class="font-black text-2xl">
-            Creating Airdrop
+              Creating Airdrop
             </div>
             <SvgLoader
               class="mt-8 mx-auto"
               fill="#000"
               :width="100"
-              :height="100" />
+              :height="100"
+            />
           </div>
         </div>
       </transition>
