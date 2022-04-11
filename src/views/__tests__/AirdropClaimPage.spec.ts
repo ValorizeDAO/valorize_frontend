@@ -194,7 +194,7 @@ const mockTokenContractSuccess = {
   claimTokens: mockClaimFunction,
 }
 const mockClaimFunctionFail = jest.fn(() => {
-  return new Promise((_, reject) => setTimeout(() => reject({ code: "" }), 0))
+  return new Promise((resolve, reject) => setTimeout(() => reject({ code: "" }), 0))
 },
 )
 const mockTokenContractFail = {

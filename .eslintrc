@@ -69,6 +69,7 @@
     }],
       "promise/always-return": "off",
       "promise/avoid-new": "off",
+      "prefer-promise-reject-errors": ["warn", {"allowEmptyReject": true}],
   
       "vue/script-indent": ["warn", 2, {
         "baseIndent": 0

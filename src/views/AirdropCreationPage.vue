@@ -275,6 +275,7 @@ const { formatEther, parseUnits } = ethers.utils
 const csvDump = ref("")
 const merkleRoot = ref("")
 const airdropDuration = ref(180)
+const metamaskError = ref("")
 const airdropStatuses = [
   "INIT",
   "UPLOADED_CSV",
