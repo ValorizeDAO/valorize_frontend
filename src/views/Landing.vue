@@ -1,11 +1,14 @@
 
 <template>
-  <section id="hero" class="heroSection flex items-center">
+  <section
+    id="hero"
+    class="heroSection flex items-center"
+  >
     <div class="flex flex-col justify-center max-w-4xl mt-28">
       <h1 class="text-5xl lg:text-7xl font-black mb-8">
         Multiply the Power of Your Community.
       </h1>
-      <div class="divider"></div>
+      <div class="divider" />
       <h2 class="heroSection__supportCopy">
         Launch a Token, turn your <em>discord</em> into a DAO.
       </h2>
@@ -16,8 +19,9 @@
         <router-link
           to="beta-signup"
           class="cta_button text-center font-bold text-2xl"
-          >Sign Up</router-link
         >
+          Sign Up
+        </router-link>
       </div>
     </div>
     <div
@@ -46,25 +50,28 @@
           srcset=""
           class="transform translate-y-[140%] down fadeIn1"
           ref="image1"
-        />
+        >
         <img
           src="/product-screenshot2.png"
           alt="product screenshot"
           srcset=""
           class="z-0 transform translate-x-0 fadeIn2"
           ref="image2"
-        />
+        >
         <img
           src="/product-screenshot3.png"
           alt="product screenshot"
           srcset=""
           class="transform -translate-y-[140%] up fadeIn3"
           ref="image3"
-        />
+        >
       </div>
     </div>
   </section>
-  <section id="describe" class="describeSection bg-white border-4 border-black">
+  <section
+    id="describe"
+    class="describeSection bg-white border-4 border-black"
+  >
     <div class="describeSection__heading mb-24 pt-28">
       <h2 class="text-4xl font-black">
         Choose a smart contract template. Launch a token.
@@ -76,82 +83,128 @@
     </div>
 
     <div class="describeSection__heading--right">
-      <h2 class="text-4xl font-black">Create rewards, aridrops, and more.</h2>
+      <h2 class="text-4xl font-black">
+        Create rewards, aridrops, and more.
+      </h2>
       <h3 class="text-2xl mt-4">
         We have easy to use tools to manage and distribute your tokens
       </h3>
       <a
         href="https://medium.com/@valorize_app/introducing-valorize-c2c3b2fcf8b"
-        ><button class="cta_button mt-8">Find Out More</button></a
-      >
+      ><button class="cta_button mt-8">Find Out More</button></a>
     </div>
   </section>
-  <section id="FAQ" class="faqSection">
+  <section
+    id="FAQ"
+    class="faqSection"
+  >
     <h2>FAQ</h2>
-    <div class="divider"></div>
+    <div class="divider" />
     <ul class="faqSection__accordionContainer">
       <li class="faqSection__accordion">
-        <button class="faqSection__question" @click="open0">
-          <h3 class="faqSection__questionTitle">What is a Governance Token?</h3>
+        <button
+          class="faqSection__question"
+          @click="open0"
+        >
+          <h3 class="faqSection__questionTitle">
+            What is a Governance Token?
+          </h3>
           <div
             class="faqSection__questionButton"
             :class="isHidden0 ? '' : 'open'"
-          ></div>
+          />
         </button>
-        <p class="faqSection__answer" v-show="!isHidden0">
+        <p
+          class="faqSection__answer"
+          v-show="!isHidden0"
+        >
           Governance tokens are cryptocurrency contracts living on a blockchain
           like ethereum. They are used to reward, incentivize, manage, and vote
           on the future of organizations
         </p>
       </li>
-      <div class="divider"></div>
-      <li x-data="accordion" class="faqSection__accordion">
-        <button class="faqSection__question" @click="open1">
-          <h3 class="faqSection__questionTitle">How Do I Get My Own?</h3>
+      <div class="divider" />
+      <li
+        x-data="accordion"
+        class="faqSection__accordion"
+      >
+        <button
+          class="faqSection__question"
+          @click="open1"
+        >
+          <h3 class="faqSection__questionTitle">
+            How Do I Get My Own?
+          </h3>
           <div
             class="faqSection__questionButton"
             :class="isHidden1 ? '' : 'open'"
-          ></div>
+          />
         </button>
-        <div class="faqSection__answer mb-4" v-show="!isHidden1">
+        <div
+          class="faqSection__answer mb-4"
+          v-show="!isHidden1"
+        >
           <p>
             Join the platform to get on the waitlist. Let us know who you are by
             filling this form and we will get back to you.
           </p>
           <div class="mt-4">
-            <router-link to="beta-signup" class="cta_button">
+            <router-link
+              to="beta-signup"
+              class="cta_button"
+            >
               Get Early Access
             </router-link>
           </div>
         </div>
       </li>
-      <div class="divider"></div>
-      <li x-data="accordion" class="faqSection__accordion">
-        <button class="faqSection__question" @click="open2">
+      <div class="divider" />
+      <li
+        x-data="accordion"
+        class="faqSection__accordion"
+      >
+        <button
+          class="faqSection__question"
+          @click="open2"
+        >
           <h3 class="faqSection__questionTitle">
             How do we know how many tokens to mint?
           </h3>
           <div
             class="faqSection__questionButton"
             :class="isHidden2 ? '' : 'open'"
-          ></div>
+          />
         </button>
-        <p class="faqSection__answer mt-8" v-show="!isHidden2">
+        <p
+          class="faqSection__answer mt-8"
+          v-show="!isHidden2"
+        >
           If you want a consultation, you can get in touch with us. We are
           building out resources that will be available to you soon! Fill out
           the Sign Up Form or contact us in the chat!
         </p>
       </li>
-      <div class="divider"></div>
-      <li x-data="accordion" class="faqSection__accordion">
-        <button class="faqSection__question" @click="open3">
-          <h3 class="faqSection__questionTitle">Do I Have to Pay A Fee?</h3>
+      <div class="divider" />
+      <li
+        x-data="accordion"
+        class="faqSection__accordion"
+      >
+        <button
+          class="faqSection__question"
+          @click="open3"
+        >
+          <h3 class="faqSection__questionTitle">
+            Do I Have to Pay A Fee?
+          </h3>
           <div
             class="faqSection__questionButton"
             :class="isHidden3 ? '' : 'open'"
-          ></div>
+          />
         </button>
-        <p class="faqSection__answer" v-show="!isHidden3">
+        <p
+          class="faqSection__answer"
+          v-show="!isHidden3"
+        >
           Yes, network fees as well as launching fees are required to launch a
           token. Proceeds go to continue the development of Valorize and are
           managed by Valorize DAO.
@@ -159,9 +212,12 @@
       </li>
     </ul>
   </section>
-  <section id="footer" class="section mb-4">
+  <section
+    id="footer"
+    class="section mb-4"
+  >
     <!-- <h2 class="text-right">Links</h2>  -->
-    <div class="divider my-6"></div>
+    <div class="divider my-6" />
     <div class="flex justify-end items-center">
       <a
         href="https://twitter.com/valorizedao"
@@ -172,7 +228,7 @@
           class="w-12"
           src="/src/assets/img/logos/twitter.svg"
           alt="Twitter"
-        />
+        >
       </a>
       <a
         href="https://discord.gg/3PRMWrH9DT"
@@ -183,15 +239,15 @@
           class="w-12"
           src="/src/assets/img/logos/discord.svg"
           alt="Discord"
-        />
+        >
       </a>
     </div>
   </section>
 </template>
 
 <script lang="ts">
-import { ref, defineComponent, onMounted, Ref, computed } from "vue";
-import { useStore } from "vuex";
+import { ref, defineComponent, onMounted } from "vue"
+import { useStore } from "vuex"
 export default defineComponent({
   name: "Dashboard",
   props: {},
@@ -201,52 +257,52 @@ export default defineComponent({
       isHidden1: true,
       isHidden2: true,
       isHidden3: true,
-    };
+    }
   },
   methods: {
-    //sorry to whoever cleans this or to future me
+    // sorry to whoever cleans this or to future me
     open0() {
-      this.isHidden0 = !this.isHidden0;
+      this.isHidden0 = !this.isHidden0
     },
     open1() {
-      this.isHidden1 = !this.isHidden1;
+      this.isHidden1 = !this.isHidden1
     },
     open2() {
-      this.isHidden2 = !this.isHidden2;
+      this.isHidden2 = !this.isHidden2
     },
     open3() {
-      this.isHidden3 = !this.isHidden3;
+      this.isHidden3 = !this.isHidden3
     },
   },
   setup() {
-    const store = useStore();
-    store.dispatch("authUser/checkAuth");
-    return { ...composeAnimateProductImages() };
+    const store = useStore()
+    store.dispatch("authUser/checkAuth")
+    return { ...composeAnimateProductImages() }
   },
-});
+})
 
 function composeAnimateProductImages() {
-  const image1 = ref<HTMLImageElement | null>(null);
-  const image2 = ref<HTMLImageElement | null>(null);
-  const image3 = ref<HTMLImageElement | null>(null);
+  const image1 = ref < HTMLImageElement | null >(null)
+  const image2 = ref < HTMLImageElement | null >(null)
+  const image3 = ref < HTMLImageElement | null >(null)
   onMounted(() => {
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 0)
     setTimeout(() => {
       if (image1.value) {
-        image1.value.classList.add("productImage_image");
-        image1.value.classList.remove("fadeIn1");
+        image1.value.classList.add("productImage_image")
+        image1.value.classList.remove("fadeIn1")
       }
       if (image2.value) {
-        image2.value.classList.add("productImage_image");
-        image2.value.classList.remove("fadeIn2");
+        image2.value.classList.add("productImage_image")
+        image2.value.classList.remove("fadeIn2")
       }
       if (image3.value) {
-        image3.value.classList.add("productImage_image");
-        image3.value.classList.remove("fadeIn3");
+        image3.value.classList.add("productImage_image")
+        image3.value.classList.remove("fadeIn3")
       }
-    }, 4700);
-  });
-  return { image1, image2, image3 };
+    }, 4700)
+  })
+  return { image1, image2, image3 }
 }
 </script>
 

@@ -16,6 +16,7 @@ export default {
         username: "",
         avatar: "",
         about: "",
+        links: [],
       },
     }
   },

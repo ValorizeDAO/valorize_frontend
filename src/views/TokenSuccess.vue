@@ -8,28 +8,28 @@
     </div>
   </div>
 </template>
- 
+
 <script lang="ts">
-import { ref, defineComponent, onMounted, Ref } from "vue";
-import JSConfetti from 'js-confetti'
-import { useRoute, useRouter } from "vue-router";
+import { defineComponent, onMounted } from "vue"
+import JSConfetti from "js-confetti"
+import { useRoute, useRouter } from "vue-router"
 
 export default defineComponent({
-  name: "Token Success",
+  name: "TokenSuccess",
   setup: () => {
-    const route = useRoute();
-    const router = useRouter();
+    const route = useRoute()
+    const router = useRouter()
     onMounted(() => {
       const jsConfetti = new JSConfetti()
       jsConfetti.addConfetti({
-        emojis: ['🚀', '🎉', '🦄', '✨', '🚀', '🔥', '🌈']
+        emojis: ["🚀", "🎉", "🦄", "✨", "🚀", "🔥", "🌈"],
       })
-      setTimeout(() => router.push("/token/" + route.query.tokenId), 2000)
+      setTimeout(() => router.push("/dashboard/token/" + route.query.tokenId), 2000)
     })
     return {
-    };
+    }
   },
-});
+})
 </script>
 
 <style scoped>

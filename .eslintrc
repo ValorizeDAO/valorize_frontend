@@ -2,9 +2,15 @@
     "extends" : [
       "standard",
       "plugin:promise/recommended",
+      "plugin:vue/vue3-essential",
+      "plugin:vue/vue3-strongly-recommended",
       "eslint:recommended"
     ],
-    "parser": "babel-eslint",
+    "parser": "vue-eslint-parser",
+      "parserOptions": {
+          "parser": "@typescript-eslint/parser",
+          "sourceType": "module"
+    },
     "plugins": [
       "promise",
       "vue"
@@ -18,7 +24,10 @@
     "globals" : {
       "ethereum": true,
       "web3": false,
-      "Web3": false
+      "Web3": false,
+      "defineProps": true,
+      "defineEmits": true,
+      "RequestInit": true
     },
     "rules": {
   
@@ -26,7 +35,7 @@
       "strict": ["error", "global"],
   
       // Code style
-      "camelcase": ["error", {"properties": "always"}],
+      "camelcase": ["off"],
       "comma-dangle": ["warn", "always-multiline"],
       "comma-spacing": ["error", {"before": false, "after": true}],
       "dot-notation": ["error", {"allowKeywords": true, "allowPattern": ""}],
@@ -60,6 +69,7 @@
     }],
       "promise/always-return": "off",
       "promise/avoid-new": "off",
+      "prefer-promise-reject-errors": ["warn", {"allowEmptyReject": true}],
   
       "vue/script-indent": ["warn", 2, {
         "baseIndent": 0

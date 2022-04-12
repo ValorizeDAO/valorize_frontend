@@ -2,17 +2,20 @@
   <div>
     <div
       v-if="
-        airdropStatus == 'COMPLETE' ||
-        (tokenData.airdrop.airdropIndex != -1 && !tokenData.airdrop.isComplete)
+        airdropStatus === 'COMPLETE' ||
+          (tokenData.airdrop.airdropOnChainIndex !== -1 && !tokenData.airdrop.isComplete)
       "
     >
       <h2
-        v-if="airdropStatus == 'COMPLETE'"
+        v-if="airdropStatus === 'COMPLETE'"
         class="font-black text-2xl text-center mt-8"
       >
         You have successfully created an airdrop for {{ tokenData.name }}!
       </h2>
-      <h2 v-else class="font-black text-2xl text-center mt-8">
+      <h2
+        v-else
+        class="font-black text-2xl text-center mt-8"
+      >
         {{ tokenData.name }} has an active airdrop
       </h2>
       <div class="font-black text-center mt-4">
@@ -24,21 +27,38 @@
           Administrators will be able to sweep the unclaimed funds for this
           airdrop on:
         </p>
-        <p />
-        <div class="mt-2 text-xl" v-if="!isSweepingAllowed">
+        <div
+          class="mt-2 text-xl"
+          v-if="!isSweepingAllowed"
+        >
           {{
             dateFormat(
               new Date(tokenData.airdrop.claimPeriodEnds * 1000),
               "mmm d, yyyy h:MM TT"
             )
-          }}<br />
-          <p class="font-normal text-base">(Shown in local time)</p>
+          }}<br>
+          <p class="font-normal text-base">
+            (Shown in local time)
+          </p>
         </div>
-        <div class="mt-2 text-xl" v-else>
-          <button @click="completeAirdrop" class="btn">
+        <div
+          class="mt-2 text-xl"
+          v-else
+        >
+          <button
+            @click="completeAirdrop"
+            class="btn"
+          >
             Mark Airdrop as Complete
           </button>
         </div>
+        <router-link
+          :to="{ name: 'Claim Airdrop', params: { tokenId: tokenData.id, airdropId }}"
+        >
+          <div class="w-48 mx-auto btn mt-8">
+            Go To Claim Page
+          </div>
+        </router-link>
       </div>
     </div>
     <div v-else>
@@ -46,29 +66,34 @@
         {{ c(formatEther(tokenData.airdropSupply)) }} ({{ tokenData.symbol }})
         Available for Airdrop
       </div>
-      <transition name="fade" mode="out-in">
+      <transition
+        name="fade"
+        mode="out-in"
+      >
         <div
           v-if="
-            airdropStatus == 'INIT' ||
-            airdropStatus == 'UPLOADED_CSV_ERROR' ||
-            airdropStatus == 'ERROR'
+            airdropStatus === 'INIT' ||
+              airdropStatus === 'UPLOADED_CSV_ERROR' ||
+              airdropStatus === 'ERROR'
           "
           id="drop-airdrop-csv"
           class="md:px-16 mt-4"
         >
           <transition name="fade">
             <div
-              v-if="airdropStatus == 'UPLOADED_CSV_ERROR'"
+              v-if="airdropStatus === 'UPLOADED_CSV_ERROR'"
               class="my-4 text-red-900 font-black text-center"
             >
-              <p class="text-lg">We found duplicate addresses in the CSV!</p>
+              <p class="text-lg">
+                We found duplicate addresses in the CSV!
+              </p>
               <p class="text-black">
                 This will cause an error, please check your CSV file and upload
                 again.
               </p>
             </div>
             <div
-              v-else-if="airdropStatus == 'ERROR'"
+              v-else-if="airdropStatus === 'ERROR'"
               class="my-4 text-red-900 font-black text-center"
             >
               There was an error with the request, please try again.
@@ -79,7 +104,10 @@
           >
             <div class="h-[20rem] flex flex-col justify-center items-center">
               Add a CSV File
-              <button @click="triggerUploadForm" class="btn my-4">
+              <button
+                @click="triggerUploadForm"
+                class="btn my-4"
+              >
                 Upload
               </button>
               <input
@@ -87,7 +115,7 @@
                 type="file"
                 ref="uploadButton"
                 class="sr-only"
-              />
+              >
             </div>
           </div>
         </div>
@@ -98,20 +126,22 @@
               'VERIFIED_CSV',
               'CONFIRMING_BACKEND',
               'CONFIRMING_BACKEND_ERROR',
-              'SENDING_TX',
+              'METAMASK_NETWORK_ERROR',
               'SENDING_TX_ERROR',
             ].includes(airdropStatus)
           "
           class="md:mx-16 mt-4 w-100"
         >
-          <h2 class="text-3xl font-black">Please Verify Airdrop Ammounts</h2>
+          <h2 class="text-3xl font-black">
+            Please Verify Airdrop Ammounts
+          </h2>
           <h3 class="font-black my-3 text-red-900">
             <transition name="fade">
-              <div v-if="airdropStatus == 'CONFIRMING_BACKEND_ERROR'">
+              <div v-if="airdropStatus === 'CONFIRMING_BACKEND_ERROR'">
                 There was an internal error verifying your data, please try
                 again or contact customer service
               </div>
-              <div v-else-if="airdropStatus == 'SENDING_TX_ERROR'">
+              <div v-else-if="airdropStatus === 'SENDING_TX_ERROR'">
                 {{ metamaskError }}
               </div>
             </transition>
@@ -144,7 +174,9 @@
                   border-b-2 border-paper-dark
                 "
               >
-                <p class="mr-6">{{ data[0] }}</p>
+                <p class="mr-6">
+                  {{ data[0] }}
+                </p>
                 <p>{{ c(formatEther(data[1])) }}</p>
               </div>
             </div>
@@ -165,9 +197,10 @@
               <h2>{{ c(totalAirdropAmount) }} ({{ tokenData.symbol }})</h2>
             </div>
             <div class="flex justify-between px-4 items-center">
-              <label class="my-4 font-black" for="airdrop-duration"
-                >Airdrop Duration</label
-              >
+              <label
+                class="my-4 font-black"
+                for="airdrop-duration"
+              >Airdrop Duration</label>
               <div>
                 <input
                   type="number"
@@ -181,75 +214,87 @@
                     font-black
                   "
                   id="airdrop-duration"
-                />
+                >
                 <span class="font-black">Days</span>
               </div>
             </div>
           </div>
           <div class="text-center">
-            <button class="btn bg-purple-200 my-4" @click="saveAirdropInfo">
-              Confirm Data</button
-            ><br />
+            <button
+              class="btn bg-purple-200 my-4"
+              @click="saveAirdropInfo"
+            >
+              Confirm Data
+            </button><br>
             (Once confirmed, this cannot be changed)
           </div>
           <div class="text-center my-8">
-            Or, <br />
-            <button @click="() => (airdropStatus = 'INIT')" class="btn mt-4">
+            Or, <br>
+            <button
+              @click="() => (airdropStatus = 'INIT')"
+              class="btn mt-4"
+            >
               Upload another CSV
             </button>
           </div>
         </div>
         <div
           v-else-if="
-            airdropStatus == 'CONFIRMING_BACKEND' ||
-            airdropStatus == 'SENDING_TX'
+            airdropStatus === 'CONFIRMING_BACKEND'
           "
         >
           Confirming your airdrop information
+        </div>
+        <div v-else-if="airdropStatus === 'SENDING_TX'">
+          <div class="text-center">
+            <div class="font-black text-2xl">
+              Creating Airdrop
+            </div>
+            <SvgLoader
+              class="mt-8 mx-auto"
+              fill="#000"
+              :width="100"
+              :height="100"
+            />
+          </div>
         </div>
       </transition>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, onMounted, ref, computed } from "vue";
-export default defineComponent({
-  name: "Create Airdrop",
-});
-</script>
-
 <script setup lang="ts">
-import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory";
-import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory";
-import type { SimpleToken } from "../contracts/SimpleToken";
-import type { TimedMintToken } from "../contracts/TimedMintToken";
-import detectEthereumProvider from "@metamask/detect-provider";
-import currency from "currency.js";
-import { ethers, BigNumber } from "ethers";
-import api from "../services/api";
-import { useRoute } from "vue-router";
-import authentication from "../services/authentication";
-import { networkInfo } from "../services/network";
-import functions from "../services/functions";
-import { formatAddress } from "../services/formatAddress";
-import dateFormat from "dateformat";
+import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
+import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
+import type { SimpleToken } from "../contracts/SimpleToken"
+import type { TimedMintToken } from "../contracts/TimedMintToken"
+import currency from "currency.js"
+import { ethers, BigNumber } from "ethers"
+import { useRoute } from "vue-router"
+import authentication from "../services/authentication"
+import { networkInfo } from "../services/network"
+import { formatAddress } from "../services/formatAddress"
+import dateFormat from "dateformat"
+import { getProviderAndSigner } from "../services/getProviderInfo"
+import { ref, computed, onMounted } from "vue"
+import SvgLoader from "../components/SvgLoader.vue"
 
 const props = defineProps<{
   state: any;
-}>();
+}>()
 
-const uploadButton = ref<HTMLInputElement | null>(null);
-const route = useRoute();
-const { state } = props;
-const { tokenData, tokenAdmins } = state;
-const contractTokenBalance = ref("");
-const token = ref<SimpleToken | null>(null);
-const ethereum: any = (window as any).ethereum;
-const { formatEther, parseUnits } = ethers.utils;
-const csvDump = ref("");
-const merkleRoot = ref("");
-const airdropDuration = ref(180);
+const uploadButton = ref<HTMLInputElement | null>(null)
+const route = useRoute()
+const tokenData = computed(() => {
+  return props.state.tokenData
+})
+const ethereum: any = (window as any).ethereum
+const { formatEther, parseUnits } = ethers.utils
+const csvDump = ref("")
+const merkleRoot = ref("")
+const airdropDuration = ref(180)
+const metamaskError = ref("")
+const airdropId = ref(0)
 const airdropStatuses = [
   "INIT",
   "UPLOADED_CSV",
@@ -261,254 +306,238 @@ const airdropStatuses = [
   "CHECKING_NETWORK",
   "METAMASK_NETWORK_ERROR",
   "SENDING_TX",
+  "CONFIRMING_TX",
   "SENDING_TX_ERROR",
   "COMPLETE",
   "ERROR",
-];
-const airdropStatus = ref(airdropStatuses[0]);
+]
+const airdropStatus = ref(airdropStatuses[0])
+onMounted(() => {
+  airdropId.value = props.state.tokenData.airdrop.id
+})
 function checkForDuplicateAddresses() {
-  const airdropSet = new Set(airdropData.value.map((item) => item[0]));
+  const airdropSet = new Set(airdropData.value.map((item) => item[0]))
   if (airdropSet.size !== airdropData.value.length) {
-    transitionState(false);
+    transitionState(false)
   } else {
-    transitionState();
+    transitionState()
   }
 }
 
 const isSweepingAllowed = computed(() => {
-  return new Date() > new Date(tokenData.airdrop.claimPeriodEnds * 1000);
-});
+  return new Date() > new Date(tokenData.value.airdrop.claimPeriodEnds * 1000)
+})
 async function completeAirdrop() {
-  const { signer } = await getProviderAndSigner();
-  let tokenInstance: SimpleToken;
+  const { signer } = await getProviderAndSigner()
+  let tokenInstance: SimpleToken
   if (signer) {
-    tokenInstance = new SimpleTokenFactory(signer).attach(tokenData.address);
+    tokenInstance = new SimpleTokenFactory(signer).attach(tokenData.value.address)
     try {
-      await tokenInstance.completeAirdrop();
+      await tokenInstance.completeAirdrop()
     } catch (error: any) {
-      console.error(error);
+      console.error(error)
     }
   }
 }
 function transitionState(success: boolean = true) {
   if (success) {
     switch (airdropStatus.value) {
-      case "INIT":
-        airdropStatus.value = "UPLOADED_CSV";
-        checkForDuplicateAddresses();
-        break;
-      case "UPLOADED_CSV" || "UPLOADED_CSV_ERROR":
-        airdropStatus.value = "VERIFIED_CSV";
-        break;
-      case "VERIFIED_CSV":
-        airdropStatus.value = "CONFIRMING_BACKEND";
-        break;
-      case "CONFIRMING_BACKEND":
-        airdropStatus.value = "CONFIRMED_BACKEND";
-        break;
-      case "CONFIRMED_BACKEND":
-        airdropStatus.value = "CHECKING_NETWORK";
-        break;
-      case "CHECKING_NETWORK" || "METAMASK_NETWORK_ERROR":
-        airdropStatus.value = "SENDING_TX";
-        break;
-      case "SENDING_TX":
-        airdropStatus.value = "COMPLETE";
-        break;
-      default:
-        airdropStatus.value = "INIT";
-        break;
+    case "INIT":
+      airdropStatus.value = "UPLOADED_CSV"
+      checkForDuplicateAddresses()
+      break
+    case "UPLOADED_CSV" || "UPLOADED_CSV_ERROR":
+      airdropStatus.value = "VERIFIED_CSV"
+      break
+    case "VERIFIED_CSV":
+      airdropStatus.value = "CONFIRMING_BACKEND"
+      break
+    case "CONFIRMING_BACKEND":
+      airdropStatus.value = "CONFIRMED_BACKEND"
+      break
+    case "CONFIRMED_BACKEND":
+      airdropStatus.value = "CHECKING_NETWORK"
+      break
+    case "CHECKING_NETWORK" || "METAMASK_NETWORK_ERROR":
+      airdropStatus.value = "CONFIRMING_TX"
+      break
+    case "CONFIRMING_TX":
+      airdropStatus.value = "SENDING_TX"
+      break
+    case "SENDING_TX":
+      airdropStatus.value = "COMPLETE"
+      break
+    default:
+      airdropStatus.value = "INIT"
+      break
     }
   } else {
     switch (airdropStatus.value) {
-      case "INIT":
-        airdropStatus.value = "UPLOADED_CSV_ERROR";
-        break;
-      case "UPLOADED_CSV":
-        airdropStatus.value = "UPLOADED_CSV_ERROR";
-        break;
-      case "CONFIRMING_BACKEND":
-        airdropStatus.value = "CONFIRMING_BACKEND_ERROR";
-        break;
-      case "CONFIRMED_BACKEND":
-        airdropStatus.value = "METAMASK_NETWORK_ERROR";
-        break;
-      case "SENDING_TX":
-        airdropStatus.value = "SENDING_TX_ERROR";
-        break;
-      default:
-        airdropStatus.value = "ERROR";
-        break;
+    case "INIT":
+      airdropStatus.value = "UPLOADED_CSV_ERROR"
+      break
+    case "UPLOADED_CSV":
+      airdropStatus.value = "UPLOADED_CSV_ERROR"
+      break
+    case "CONFIRMING_BACKEND":
+      airdropStatus.value = "CONFIRMING_BACKEND_ERROR"
+      break
+    case "CONFIRMED_BACKEND":
+      airdropStatus.value = "METAMASK_NETWORK_ERROR"
+      break
+    case "SENDING_TX":
+      airdropStatus.value = "SENDING_TX_ERROR"
+      break
+    default:
+      airdropStatus.value = "ERROR"
+      break
     }
   }
-  return state;
 }
 const airdropData = computed(() => {
-  const csvSplit = csvDump.value.split("\r\n");
+  const csvSplit = csvDump.value.split("\r\n")
   const airdropTuple = csvSplit.map((item) => {
-    if (!item) return ["", ""];
-    const tuple = item.split(",");
-    //We're expecting that user passes decimals
-    const amount = tuple[1] ? parseUnits(tuple[1], 18) : "0";
-    return [tuple[0] || "", amount.toString()];
-  });
-  return airdropTuple;
-});
+    if (!item) return ["", ""]
+    const tuple = item.split(",")
+    // We're expecting that user passes decimals
+    const amount = tuple[1] ? parseUnits(tuple[1], 18) : "0"
+    return [tuple[0] || "", amount.toString()]
+  })
+  return airdropTuple
+})
 
-async function getMerkleRootFromLeaves() {
-  const response = await functions.getMerkleRoot(airdropData.value);
-  if (response.status == 200) {
-    const data = await response.json();
-    merkleRoot.value = data.root;
-  } else {
-    transitionState(false);
-    console.error(response);
-  }
-}
 const totalAirdropAmount = computed(() => {
-  const csvSplit = csvDump.value.split("\r\n");
+  const csvSplit = csvDump.value.split("\r\n")
   const amountsOnly = csvSplit.map((item) => {
-    return item.split(",")[1];
-  });
-  return amountsOnly.reduce((partialSum, a) => partialSum + parseInt(a), 0);
-});
+    return item.split(",")[1]
+  })
+  return amountsOnly.reduce((partialSum, a) => partialSum + parseInt(a), 0)
+})
 
-const metamaskError = ref("");
-async function getProviderAndSigner() {
-  if (ethereum) {
-    await ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    const provider = new ethers.providers.Web3Provider(
-      ethereum
-    ) as ethers.providers.Web3Provider;
-    const signer = provider.getSigner() as ethers.providers.JsonRpcSigner;
-    return { provider, signer };
-  } else {
-    metamaskError.value = "Please install MetaMask";
-    return { provider: null, signer: null };
-  }
-}
 async function saveAirdropInfo() {
-  transitionState();
-  await getMerkleRootFromLeaves();
-  const { signer } = await getProviderAndSigner();
+  transitionState()
+  const { signer } = await getProviderAndSigner()
   if (!signer) {
-    transitionState(false);
-    return;
+    transitionState(false)
+    return
   }
-  const { id } = route.params;
-  if (typeof id == "string") {
+  const { id } = route.params
+  if (typeof id === "string") {
     const request = await authentication.saveAirdropInfo(id, {
       payload: airdropData.value,
-      merkleRoot: merkleRoot.value,
-    });
-    if (request.status == 200) {
-      transitionState();
-      let tokenInstance: SimpleToken | TimedMintToken;
-      if (tokenData.tokenType == "timed_mint") {
+    })
+    if (request.status === 200) {
+      transitionState()
+      const data = await request.json()
+      merkleRoot.value = data.merkleRoot
+      airdropId.value = data.airdropId
+      let tokenInstance: SimpleToken | TimedMintToken
+      if (tokenData.value.tokenType === "timed_mint") {
         tokenInstance = new TimedMintTokenFactory(signer).attach(
-          tokenData.address
-        );
-      } else if (tokenData.tokenType == "simple") {
+          tokenData.value.address,
+        )
+      } else if (tokenData.value.tokenType === "simple") {
         tokenInstance = new SimpleTokenFactory(signer).attach(
-          tokenData.address
-        );
+          tokenData.value.address,
+        )
       } else {
-        transitionState(false);
-        throw new Error("Token type not supported");
+        transitionState(false)
+        throw new Error("Token type not supported")
       }
-      await switchOrAddNetwork(parseInt(tokenData.chainId));
+      await switchOrAddNetwork(parseInt(tokenData.value.chainId))
       try {
-        await tokenInstance.newAirdrop(
+        const tx = await tokenInstance.newAirdrop(
           merkleRoot.value,
-          BigNumber.from(airdropDuration.value).mul(24 * 60 * 60)
-        );
-        tokenData.airdrop.claimPeriodEnds =
+          BigNumber.from(airdropDuration.value).mul(24 * 60 * 60),
+        )
+        tokenData.value.airdrop.claimPeriodEnds =
           new Date().getTime() / 1000 +
           BigNumber.from(airdropDuration.value)
             .mul(24 * 60 * 60)
-            .toNumber();
-        transitionState();
+            .toNumber()
+        transitionState()
+        await tx.wait()
+        transitionState()
       } catch (err: any) {
-        transitionState(false);
+        transitionState(false)
         switch (err.code) {
-          case 4001:
-            metamaskError.value = "You need to approve the transaction";
-            break;
-          case "UNPREDICTABLE_GAS_LIMIT":
-            metamaskError.value = `Your account: ${formatAddress(
-              await signer.getAddress()
-            )} is not an administrator account, please switch to an account with administrator privileges`;
-            break;
-          default:
-            metamaskError.value = "Something went wrong";
-            break;
+        case 4001:
+          metamaskError.value = "You need to approve the transaction"
+          break
+        case "UNPREDICTABLE_GAS_LIMIT":
+          metamaskError.value = `Your account: ${formatAddress(
+            await signer.getAddress(),
+          )} is not an administrator account, please switch to an account with administrator privileges`
+          break
+        default:
+          console.error(err)
+          metamaskError.value = "Something went wrong"
+          break
         }
       }
     } else {
-      transitionState(false);
+      transitionState(false)
     }
   }
 }
 function triggerUploadForm() {
   if (uploadButton.value) {
-    uploadButton.value.click();
+    uploadButton.value.click()
     uploadButton.value.addEventListener("change", (e: Event) => {
-      var fr = new FileReader();
-      const target = e.target as HTMLInputElement;
+      const fr = new FileReader()
+      const target = e.target as HTMLInputElement
       fr.onload = function () {
-        csvDump.value = fr.result as string;
-        transitionState();
-      };
+        csvDump.value = fr.result as string
+        transitionState()
+      }
       try {
         if (!target || !target?.files?.length) {
-          throw new Error("Error reading files");
+          throw new Error("Error reading files")
         }
-        fr.readAsText(target.files[0]);
+        fr.readAsText(target.files[0])
       } catch (err) {
-        console.error(err);
-        transitionState(false);
+        console.error(err)
+        transitionState(false)
       }
-    });
+    })
   }
 }
 
 async function switchOrAddNetwork(chainId: number): Promise<void> {
-  const hexIdOfChain = ethers.utils.hexValue(chainId);
-  transitionState();
+  const hexIdOfChain = ethers.utils.hexValue(chainId)
+  transitionState()
   try {
     await ethereum.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId: hexIdOfChain }],
-    });
+    })
   } catch (switchError: any) {
-    console.error(switchError);
-    transitionState(false);
+    console.error(switchError)
+    transitionState(false)
     if (switchError.code === 4902) {
-      metamaskError.value = `You need to add ${networkInfo[chainId].name} to your wallet`;
+      metamaskError.value = `You need to add ${networkInfo[chainId].name} to your wallet`
       try {
         await ethereum.request({
           method: "wallet_addEthereumChain",
           params: [
             {
               chainId: hexIdOfChain,
-              chainName: networkInfo[tokenData.chainId].name,
-              rpcUrls: [networkInfo[tokenData.chainId].rpcUrl],
+              chainName: networkInfo[tokenData.value.chainId].name,
+              rpcUrls: [networkInfo[tokenData.value.chainId].rpcUrl],
             },
           ],
-        });
+        })
       } catch (addError: any) {
-        transitionState(false);
-        console.error(addError);
+        transitionState(false)
+        console.error(addError)
       } finally {
-        transitionState();
+        transitionState()
       }
     } else {
-      metamaskError.value = `There was an error switching your wallet network to ${networkInfo[chainId].name}`;
+      metamaskError.value = `There was an error switching your wallet network to ${networkInfo[chainId].name}`
     }
   } finally {
-    transitionState();
+    transitionState()
   }
 }
 
@@ -517,9 +546,6 @@ function c(value: string | number) {
     separator: ",",
     precision: 0,
     symbol: "",
-  }).format();
+  }).format()
 }
 </script>
-
-<style scoped>
-</style>
