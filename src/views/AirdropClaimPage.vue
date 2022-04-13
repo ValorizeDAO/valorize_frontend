@@ -271,12 +271,10 @@ export default defineComponent({
         claimStatus.value = statuses[7] // TX_SENT
         await tx.wait()
         claimStatus.value = statuses[8] // TX_SUCCESS
-        console.log(claimStatus.value)
       } catch (err: any) {
         claimStatus.value = statuses.at(-1) as string // ERROR
         console.error(err.code)
         if (err.code === "UNPREDICTABLE_GAS_LIMIT") {
-          console.log(err.message)
           const errorBody = JSON.parse("{" + err.message.split("{")[1]
             .split("}")[0] + "}").message
           errorMessage.value = errorBody || "Transaction failed. Please try again."
