@@ -3,7 +3,7 @@
     <div
       v-if="
         airdropStatus === 'COMPLETE' ||
-          (tokenData.airdrop.airdropOnChainIndex !== -1 && !tokenData.airdrop.isComplete)
+          (tokenData.airdrop.airdropOnChainIndex !== null && !tokenData.airdrop.isComplete)
       "
     >
       <h2

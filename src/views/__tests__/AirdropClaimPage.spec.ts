@@ -178,7 +178,6 @@ describe("<AirdropClaimPage \\>", () => {
       await wrapper.vm.$nextTick()
       await new Promise(resolve => setTimeout(resolve, 1))
       await wrapper.vm.$nextTick()
-      console.log(wrapper.html())
     })
     it("Should show user a message to register their address if not logged in", async () => {
       expect(wrapper.find("#transaction-success").exists()).toBeTruthy()
