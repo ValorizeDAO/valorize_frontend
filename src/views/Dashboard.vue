@@ -38,7 +38,7 @@
           <h3 class="text-lg font-black">
             {{ token.name }} ({{ token.symbol }})
           </h3>
-          <p class="font-black">
+          <p v-if="token.chain_id" class="font-black">
             Active on:
             <span class="network-name">{{
               networkInfo[token.chain_id].name
@@ -97,8 +97,9 @@ export default defineComponent({
     onMounted(async () => {
       const req = await auth.getTokens()
       if (req.status === 200) {
-        const { tokens } = await req.json()
-        userTokens.push(...tokens)
+        const { tokens } = await req.json() as { tokens: Token[] }
+        const filtered = tokens.filter(t => t.token_type !== 'creator')
+        userTokens.push(...filtered)
       }
     })
     return { store, user, userTokens, networkInfo }
