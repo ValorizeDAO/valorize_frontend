@@ -1,5 +1,6 @@
 export interface Token {
   id: number,
+  token_type: string
   name: string,
   address: string,
   owner_address: string,
@@ -15,6 +16,7 @@ export interface Token {
 
 export const emptyToken: Token = {
   id: 0,
+  token_type: "",
   name: "",
   address: "",
   owner_address: "",
