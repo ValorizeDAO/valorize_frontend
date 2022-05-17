@@ -19,15 +19,7 @@
         md:bg-paper-light
       "
     >
-      <div v-if="isAllowedUser">
-        <CreateToken />
-      </div>
-      <div
-        v-else
-        class="flex justify-center my-24"
-      >
-        You are on the waiting list for deploying tokens
-      </div>
+      <CreateToken />
     </div>
   </div>
 </template>
