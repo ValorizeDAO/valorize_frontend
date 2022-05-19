@@ -383,8 +383,8 @@
           <div
             v-else-if="
               metamaskStatus === 'SUCCESSFULLY_ENABLED' ||
-                metamaskStatus === 'TX_ERROR' ||
-                metamaskStatus === 'TX_REJECTED'
+              metamaskStatus === 'TX_ERROR' ||
+              metamaskStatus === 'TX_REJECTED'
             "
           >
             <div
