@@ -482,7 +482,6 @@ import { formatAddress } from "../services/formatAddress"
 import { Deployer } from "../contracts/Deployer"
 import { DeployerFactory } from "../contracts/DeployerFactory"
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers"
-import { log } from "console"
 
 export default defineComponent({
   name: "CreateToken",
@@ -620,7 +619,9 @@ function composeDeployGovToken() {
     metamaskStatus.value = metamaskAuthStatuses[5]
     let params = ''
     const encoder =  new ethers.utils.AbiCoder()
+    let contractNum:tokenTypes = 0
     if (tokenParams.minting === "false") {
+      contractNum = 0
       params = encoder.encode(
         [ "uint", "uint", "address", "string", "string", "address[]" ],
         [
@@ -632,6 +633,7 @@ function composeDeployGovToken() {
           parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
         ]);
     } else if (tokenParams.minting === "true") {
+      contractNum = 1
       let maxTokenSupply: BigNumber
       if (tokenParams.supplyCap === "false") {
         maxTokenSupply = BigNumber.from(0)
@@ -654,7 +656,7 @@ function composeDeployGovToken() {
     } else { return }
       const deployerAddress = import.meta.env.VITE_DEPLOYER_ADDRESS as string
       const deployerContract = new DeployerFactory(signer).attach(deployerAddress)
-      const { tx, error } = await deployContract(deployerContract, 0, params)
+      const { tx, error } = await deployContract(deployerContract, contractNum, params)
       tokenTxHash.value = (tx as ethers.ContractTransaction).hash
     if (error) {
       if (error.code === 4001){
@@ -725,7 +727,6 @@ function composeDeployGovToken() {
       ]
     }, createTx.blockHash)
     const event = info.find(e => e.transactionHash === createTx.hash) as ethers.Event 
-    console.log(event)
     if (event) {
       return event.args?.contractAddress || ''
     }
