@@ -467,20 +467,21 @@
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
-import { ethers, BigNumber, Signer, providers } from "ethers"
+import { ethers, BigNumber, Signer, providers, Contract } from "ethers"
 import { networkInfo, network } from "../services/network"
 import detectEthereumProvider from "@metamask/detect-provider"
 import currency from "currency.js"
 import auth from "../services/authentication"
 import useVuelidate from "@vuelidate/core"
 import { required, minLength } from "@vuelidate/validators"
-import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
 import { TimedMintToken } from "../contracts/TimedMintToken"
-import { SimpleToken } from "../contracts/SimpleToken"
 import Modal from "../components/Modal.vue"
 import SvgLoader from "../components/SvgLoader.vue"
 import { formatAddress } from "../services/formatAddress"
+import { Deployer } from "../contracts/Deployer"
+import { DeployerFactory } from "../contracts/DeployerFactory"
+import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers"
 
 export default defineComponent({
   name: "CreateToken",
@@ -576,9 +577,10 @@ function composeDeployGovToken() {
   onMounted(async () => {
     const res = await auth.getContractKeys()
     if (res.ok) {
-      const {keys} = await res.json()
-      contractKeys.push(...keys)
+      const { smartContractKeys } = await res.json()
+      contractKeys.push(...smartContractKeys)
     }
+
   })
   
   function toggleSimpleTokenModal() {
@@ -614,63 +616,121 @@ function composeDeployGovToken() {
     // @ts-ignore the lies
     const signer = provider.getSigner()
     metamaskStatus.value = metamaskAuthStatuses[3]
-    let token: SimpleToken | TimedMintToken | undefined
-    try {
-      metamaskStatus.value = metamaskAuthStatuses[5]
-      if (tokenParams.minting === "false") {
-        token = await deploySimpleToken(signer)
-      } else if (tokenParams.minting === "true") {
-        token = await deployTimedMintToken(signer)
+    metamaskStatus.value = metamaskAuthStatuses[5]
+    let params = ''
+    const encoder =  new ethers.utils.AbiCoder()
+    if (tokenParams.minting === "false") {
+      params = encoder.encode(
+        [ "uint", "uint", "address", "string", "string", "address[]" ],
+        [
+          BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
+          BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
+          ethers.utils.getAddress(tokenParams.vaultAddress),
+          tokenParams.tokenName,
+          tokenParams.tokenSymbol,
+          parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
+        ]);
+    } else if (tokenParams.minting === "true") {
+      let maxTokenSupply: BigNumber
+      if (tokenParams.supplyCap === "false") {
+        maxTokenSupply = BigNumber.from(0)
       } else {
-        return
+        maxTokenSupply = BigNumber.from(maxSupply.value).mul(decimalsMultiplyer)
       }
-    } catch (err) {
-      metamaskStatus.value = metamaskAuthStatuses[9]
-    }
-    if (token) {
-      metamaskStatus.value = metamaskAuthStatuses[6]
-      const tokenRequest = await storeTokenData()
-      const tokenResponse = await tokenRequest.json()
-      await token.deployed()
-      metamaskStatus.value = metamaskAuthStatuses[7]
-      await router.push({
-        path: "/token-success",
-        query: { tokenId: tokenResponse.token.id },
-      })
-    }
-  }
-
-  async function deploySimpleToken(signer: Signer) {
-    console.groupCollapsed("tokenInfo")
-    console.log("Deploying Simple Token v0.1.0")
-    let simpleToken: SimpleToken | undefined
-    try {
-      simpleToken = await new SimpleTokenFactory(signer).deploy(
-        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
-        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
-        ethers.utils.getAddress(tokenParams.vaultAddress),
+      params = encoder.encode(
+        [ "uint", "uint", "uint", "address", "uint", "uint", "string", "string", "address[]" ],
+        [
+        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer), // vault
+        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer), // airdrop
+        maxTokenSupply, // supplycap
+        ethers.utils.getAddress(tokenParams.vaultAddress), // vault
+        BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), // timeDelay
+        BigNumber.from(mintCap.value).mul(decimalsMultiplyer), // mintCap
         tokenParams.tokenName,
         tokenParams.tokenSymbol,
         parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
-      )
-      tokenTxHash.value = simpleToken.deployTransaction.hash
-      deployedTokenAddress.value = simpleToken.address
-      console.log({ simpleToken })
-      return simpleToken
-    } catch (err: any) {
-      console.error(err)
-      if (err.code === 4001) {
+      ]);
+    } else { return }
+      const deployerAddress = import.meta.env.VITE_DEPLOYER_ADDRESS as string
+      const deployerContract = new DeployerFactory(signer).attach(deployerAddress)
+      const { tx, error } = await deployContract(deployerContract, 0, params)
+      tokenTxHash.value = (tx as ethers.ContractTransaction).hash
+    if (error) {
+      if (error.code === 4001){
         metamaskStatus.value = metamaskAuthStatuses[8]
       } else {
         metamaskStatus.value = metamaskAuthStatuses[9]
-        errorText.value = "Error confirming transaction"
+        errorText.value = error.msg || "Error confirming transaction"
       }
-      return
+    }
+    metamaskStatus.value = metamaskAuthStatuses[6]
+    await tx?.wait(1)
+    const deployedContractAddress = await retrieveContractAddress(deployerContract as Contract, tx as ethers.ContractTransaction)
+    deployedTokenAddress.value = deployedContractAddress || ''
+    const tokenRequest = await storeTokenData()
+    const tokenResponse = await tokenRequest.json()
+    metamaskStatus.value = metamaskAuthStatuses[7]
+    console.log({ tokenResponse })
+    await router.push({
+      path: "/token-success",
+      query: { tokenId: tokenResponse.token.id },
+    })
+  }
+  enum tokenTypes {
+    simple,
+    timedMint,
+    creator
+  }
+  const tokenKeys = ["simple_token_v0.1.0", "timedMint_token_v0.1.0", "creator_token_v0.1.0"]
+  async function deployContract(
+    deployer: Deployer,
+    type: tokenTypes,
+    params: string
+  ): Promise<{
+    deployedContractAddress?: string,
+    tx?: ethers.ContractTransaction,
+    error: any
+  }> {
+    
+    const req = await auth.getContractBytecode(tokenKeys[type])
+    if (!req.ok) { return { error: { msg: "Error getting bytecode" }}}
+
+    const { byte_code } = await req.json() as { id: number, key: string, byte_code: string }
+    console.groupCollapsed("tokenInfo")
+    console.log("Deploying " + tokenKeys[type])
+    try {
+      const tx = await deployer.deployContract(
+        tokenKeys[type], 
+        byte_code,
+        params,
+        ethers.utils.hexZeroPad("0x0", 32), 
+        { value: ethers.utils.parseEther("0.3") }
+      )
+      return { error: false, tx }
+    } catch (err: any) {
+      return { error: err }
     } finally {
       console.groupEnd()
     }
   }
 
+  async function retrieveContractAddress(
+    deployerContract: Contract,
+    createTx: ethers.ContractTransaction
+  ): Promise<string> {
+    const info = await deployerContract.queryFilter({
+      address: deployerContract.address,
+      topics: [
+        ethers.utils.id("ContractDeployed(address,string,uint256)"),
+      ]
+    }, createTx.blockHash)
+    const event = info.find(e => e.transactionHash === createTx.hash) as ethers.Event 
+    console.log(event)
+    if (event) {
+      return event.args?.contractAddress || ''
+    }
+    return ''
+  }
   async function deployTimedMintToken(signer: Signer) {
     console.groupCollapsed("tokenInfo")
     console.log("Deploying Timed Mint Token v0.1.0")
