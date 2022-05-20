@@ -670,7 +670,6 @@ function composeDeployGovToken() {
     const tokenRequest = await storeTokenData()
     const tokenResponse = await tokenRequest.json()
     metamaskStatus.value = metamaskAuthStatuses[7]
-    console.log({ tokenResponse })
     await router.push({
       path: "/token-success",
       query: { tokenId: tokenResponse.token.id },
