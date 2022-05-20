@@ -199,7 +199,7 @@
             </transition>
             <transition name="fade">
               <p
-                v-if="isMaxSupplyValid"
+                v-if="!isMaxSupplyValid"
                 class="mt-4"
               >
                 Should be greater than innitial supply + airdrop supply
@@ -482,6 +482,7 @@ import { formatAddress } from "../services/formatAddress"
 import { Deployer } from "../contracts/Deployer"
 import { DeployerFactory } from "../contracts/DeployerFactory"
 import { JsonRpcProvider, Web3Provider } from "@ethersproject/providers"
+import { log } from "console"
 
 export default defineComponent({
   name: "CreateToken",
@@ -851,7 +852,7 @@ function composeDeployGovToken() {
       maxSupply: {
         isValidMaxSupply: (value: any) => {
           return (
-            value !== "" && (
+            value === "0" || (
               parseInt(getNumbersFromString(value)) >
               parseInt(getNumbersFromString(tokenParams.initialSupply)) +
               parseInt(getNumbersFromString(tokenParams.airdropSupply))
@@ -883,7 +884,7 @@ function composeDeployGovToken() {
   const isMaxSupplyValid = computed(() => {
     return (
       // @ts-ignore
-      v$.value.maxSupply.$dirty && v$.value.maxSupply.isValidMaxSupply.$invalid
+      (v$.value.maxSupply.$dirty && !v$.value.maxSupply.isValidMaxSupply.$invalid) || !v$.value.maxSupply.$dirty
     )
   })
   return {
