@@ -17,7 +17,7 @@
       </h2>
       <div class="p-8 mx-auto flex justify-center">
         <router-link
-          to="beta-signup"
+          to="register"
           class="cta_button text-center font-bold text-2xl"
         >
           Sign Up
@@ -150,7 +150,7 @@
           </p>
           <div class="mt-4">
             <router-link
-              to="beta-signup"
+              to="register"
               class="cta_button"
             >
               Get Early Access

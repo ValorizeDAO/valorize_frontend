@@ -68,17 +68,10 @@
           "
         >
           <router-link
-            to="/beta-signup"
+            to="/register"
             class="navbar-button"
           >
-            Sign Up To Beta
-          </router-link>
-          <router-link
-            class="navbar-button"
-            id="login"
-            to="/login"
-          >
-            Login
+            Sign Up
           </router-link>
         </div>
         <div
