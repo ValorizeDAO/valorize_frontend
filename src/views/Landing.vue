@@ -1,4 +1,3 @@
-
 <template>
   <section
     id="hero"
@@ -94,11 +93,53 @@
       ><button class="cta_button mt-8">Find Out More</button></a>
     </div>
   </section>
+  <section id="pricing" class="px-6 pt-12 md:px-12 lg:px-24">
+    <h2 class="text-4xl">Pricing</h2>
+    <div class="flex flex-wrap mx-auto mt-12 justify-center">
+      <div id="card-1" class="bg-white border-4 md:w-2/5 border-black p-8 md:mr-2 flex flex-col justify-between">
+        <h3 class="font-black text-2xl">Create Your Own Token</h3>
+        <ul class="mt-4">
+          <li class="mt-2">Use one of our templates</li>
+          <li class="mt-2">Get Access To A Personalized Management Console</li>
+          <li class="mt-2">Create Unlimited Airdrops for an Unlimited Amount of Users</li>
+          <li class="mt-2">Manage Minting Now and Into the Future</li>
+        </ul>
+        <div class="mt-8">
+          <div class="divider mt-4"></div>
+          <div class="flex justify-between text-xl">
+            <span>Price:</span><span>0.3 ETH</span>
+          </div>
+          <div class="text-center mt-4">
+            <router-link to="dashboard" class="btn bg-purple-50 font-black p-4">
+              <button>Get Started</button>
+            </router-link>
+          </div>
+        </div>
+      </div>
+      <div id="card-2" class="bg-white border-4 md:w-2/5 mt-4 md:mt-0 border-black p-8 flex flex-col justify-between">
+        <h3 class="font-black text-2xl">Get a Consultation</h3>
+        <ul class="mt-4">
+          <li class="mt-2">Get in touch to speak to experts in the field of token design</li>
+          <li class="mt-2">Use our token management tools once your token is live</li>
+        </ul>
+        <div class="mt-8">
+          <div class="divider mt-4"></div>
+          <div class="flex justify-between text-xl">
+            <span>Price:</span><span>Based on Requirements</span>
+          </div>
+        <div class="text-center mt-4">
+          <router-link to="beta-signup" class="btn bg-purple-50 font-black p-4">
+            <button>Book a Call</button>
+          </router-link>
+        </div></div>
+      </div>
+    </div>
+  </section>
   <section
     id="FAQ"
     class="faqSection"
   >
-    <h2>FAQ</h2>
+    <h2 class="text-4xl">FAQ</h2>
     <div class="divider" />
     <ul class="faqSection__accordionContainer">
       <li class="faqSection__accordion">
@@ -447,212 +488,6 @@ img {
   height: 0.2em;
 }
 
-.nav {
-  padding: 0 6em;
-  opacity: 90%;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-@media (max-width: 640px) {
-  .nav {
-    padding: 0 3em;
-  }
-}
-@media (max-width: 420px) {
-  .nav {
-    padding: 0 1em;
-  }
-}
-.nav,
-.nav nav.nav {
-  padding-top: 1em;
-  padding-bottom: 1em;
-}
-@media (max-width: 640px) {
-  .nav {
-    flex-wrap: wrap;
-    align-items: baseline;
-  }
-}
-.nav__logo {
-  max-height: 2.5em;
-  margin: 0;
-}
-@media (max-width: 420px) {
-  .nav__logo {
-    max-width: 60vw;
-  }
-}
-.nav.sticky {
-  background-color: white;
-  backdrop-filter: blur(5px);
-  border-bottom: solid 2px black;
-  position: sticky;
-  top: 0;
-  transform: translateY(0%);
-  animation-name: slideDown;
-  animation-duration: 0.8s;
-}
-.nav.notSticky {
-  position: sticky;
-  top: 0;
-  transform: translateY(0%);
-  animation-name: slideUp;
-  animation-duration: 0.8s;
-}
-.nav.fade {
-  position: relative;
-  animation-name: fade;
-  animation-duration: 0.8s;
-}
-.nav.noBackground {
-  background: none;
-}
-.nav__items {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  padding: 0.8em;
-  align-items: center;
-}
-@media (max-width: 640px) {
-  .nav__items {
-    display: block;
-    width: 100%;
-  }
-}
-.nav__items.hidden {
-  display: flex;
-}
-@media (max-width: 640px) {
-  .nav__items.hidden {
-    display: none;
-  }
-}
-.nav__item {
-  font-weight: 900;
-  width: 100%;
-  display: flex;
-  text-align: center;
-  justify-content: center;
-  margin-right: 2em;
-}
-.nav__item button {
-  text-decoration: none;
-}
-@media (max-width: 640px) {
-  .nav__item button {
-    width: 40%;
-    padding: 0.6em;
-  }
-}
-.nav__item a {
-  text-decoration: none;
-}
-@media (max-width: 640px) {
-  .nav__item a {
-    padding: 1.2em 4em;
-  }
-}
-.nav__item:last-child a {
-  border: none;
-}
-.nav__hamburger {
-  background-attachment: fixed;
-  animation: 1s;
-}
-.nav__hamburgerButton {
-  border: none;
-  padding: 6px;
-  background-color: unset;
-}
-@media (min-width: 640px) {
-  .nav__hamburgerButton {
-    display: none;
-  }
-}
-.nav__hamburgerButton.open {
-  padding: 8px;
-  background: none;
-  border: none;
-}
-@media (min-width: 900px) {
-  .nav__hamburgerButton {
-    right: 30%;
-    top: 0.8em;
-  }
-}
-.nav__hamburger #nav-icon3 {
-  width: 2.2em;
-  height: 28px;
-  position: relative;
-  -webkit-transform: rotate(0deg);
-  -moz-transform: rotate(0deg);
-  -o-transform: rotate(0deg);
-  transform: rotate(0deg);
-  -webkit-transition: 0.5s ease-in-out;
-  -moz-transition: 0.5s ease-in-out;
-  -o-transition: 0.5s ease-in-out;
-  transition: 0.5s ease-in-out;
-  cursor: pointer;
-}
-.nav__hamburger #nav-icon3 span {
-  display: block;
-  position: absolute;
-  height: 4px;
-  width: 100%;
-  background: black;
-  border-radius: 9px;
-  opacity: 1;
-  left: 0;
-  -webkit-transform: rotate(0deg);
-  -moz-transform: rotate(0deg);
-  -o-transform: rotate(0deg);
-  transform: rotate(0deg);
-  -webkit-transition: 0.25s ease-in-out;
-  -moz-transition: 0.25s ease-in-out;
-  -o-transition: 0.25s ease-in-out;
-  transition: 0.25s ease-in-out;
-}
-.nav__hamburger #nav-icon3 span:nth-child(1) {
-  top: 0px;
-}
-.nav__hamburger #nav-icon3 span:nth-child(2),
-.nav__hamburger #nav-icon3 span:nth-child(3) {
-  top: 10px;
-}
-.nav__hamburger #nav-icon3 span:nth-child(4) {
-  top: 20px;
-}
-.nav__hamburger #nav-icon3.open span:nth-child(1) {
-  top: 2em;
-  width: 0%;
-  left: 50%;
-}
-.nav__hamburger #nav-icon3.open span {
-  background: #303030;
-}
-.nav__hamburger #nav-icon3.open span:nth-child(2) {
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
-.nav__hamburger #nav-icon3.open span:nth-child(3) {
-  -webkit-transform: rotate(-45deg);
-  -moz-transform: rotate(-45deg);
-  -o-transform: rotate(-45deg);
-  transform: rotate(-45deg);
-}
-.nav__hamburger #nav-icon3.open span:nth-child(4) {
-  top: 14px;
-  width: 0%;
-  left: 50%;
-}
-
 h3 {
   font-size: 22pt;
 }
@@ -690,113 +525,11 @@ h3 {
   text-align: right;
   margin-left: auto;
 }
-.describeSection__imageContainer {
-  width: 50vw;
-  margin: 4em auto;
-}
-@media (max-width: 640px) {
-  .describeSection__imageContainer {
-    width: 80vw;
-    margin: 4em 0;
-    display: block;
-  }
-}
-.describeSection__imageContainer * {
-  margin-top: 0;
-}
-.describeSection__imageContainer--slider {
-  display: flex;
-  position: relative;
-}
-@media (max-width: 640px) {
-  .describeSection__imageContainer--slider {
-    display: block;
-  }
-}
-@media (max-width: 640px) {
-  .describeSection__imageContainer--slider img {
-    width: 100%;
-  }
-}
-.describeSection__imageContainer--text {
-  transition-duration: 0.4s;
-  transition-timing-function: linear;
-  margin-left: 0.8em;
-  color: white;
-  font-size: 36pt;
-  position: relative;
-  z-index: 1;
-}
-@media (max-width: 920px) {
-  .describeSection__imageContainer--text {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-}
-@media (max-width: 420px) {
-  .describeSection__imageContainer--text {
-    font-size: 28pt;
-  }
-}
-.describeSection__imageContainer--text h3 {
-  font-size: 42pt;
-}
-@media (max-width: 420px) {
-  .describeSection__imageContainer--text h3 {
-    font-size: 34pt;
-  }
-}
-.describeSection__imageContainer--text * {
-  margin: 0;
-}
-.describeSection__imageContainer--chart {
-  position: absolute;
-  width: 50vw;
-  height: 400px;
-  transform: translate(50%, 0%);
-}
-@media (max-width: 920px) {
-  .describeSection__imageContainer--chart {
-    display: none;
-  }
-}
-
-.howItWorksSection {
-  padding: 0 6em;
-  margin-top: 0em;
-  padding-top: 8em;
-}
-@media (max-width: 640px) {
-  .howItWorksSection {
-    padding: 0 3em;
-  }
-}
-@media (max-width: 420px) {
-  .howItWorksSection {
-    padding: 0 1em;
-  }
-}
-@media (max-width: 640px) {
-  .howItWorksSection {
-    margin-top: 8em;
-  }
-}
-.howItWorksSection__header {
-  font-size: 24pt;
-}
-.howItWorksSection__body {
-  font-size: 18pt;
-  margin: 2em 0;
-}
-.howItWorksSection__cta {
-  text-align: center;
-}
 
 .faqSection {
   padding: 0 6em;
   margin: 8em 0;
-  max-width: 50vw;
+  max-width: 60vw;
 }
 @media (max-width: 640px) {
   .faqSection {
@@ -808,16 +541,13 @@ h3 {
     padding: 0 1em;
   }
 }
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
   .faqSection {
     max-width: unset;
   }
 }
 .faqSection * {
   transition-duration: 0.3s;
-}
-.faqSection h2 {
-  font-size: 2.5rem;
 }
 .faqSection__accordionContainer {
   padding: 0;
@@ -888,10 +618,6 @@ h3 {
   margin-bottom: 3em;
 }
 
-.button:hover {
-  cursor: pointer;
-}
-
 .fadeIn1 {
   opacity: 0;
   animation: fade 1.2s forwards;
@@ -937,13 +663,6 @@ h3 {
   .productImage__section {
     display: none;
   }
-}
-.productImage_image {
-  animation-duration: 3s;
-  animation-timing-function: ease-in-out;
-  animation-direction: alternate;
-  animation-fill-mode: forwards;
-  animation-iteration-count: infinite;
 }
 .productImage_image.up {
   animation-name: floatUp;
