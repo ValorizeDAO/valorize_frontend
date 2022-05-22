@@ -1,6 +1,5 @@
 import { shallowMount } from "@vue/test-utils"
 import CreateToken from "../CreateToken"
-import authenication from "@/services/authenication"
 
 jest.mock("vue-router", () => ({
   useRoute: jest.fn(() => ({

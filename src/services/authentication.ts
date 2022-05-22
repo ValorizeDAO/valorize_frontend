@@ -252,5 +252,5 @@ export default {
       import.meta.env.VITE_BACKEND_URL + "/api/v0/me/contracts/" + key,
       requestOptions,
     )
-  }
+  },
 }
