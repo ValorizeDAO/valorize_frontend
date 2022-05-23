@@ -30,7 +30,7 @@ import CreateToken from "../components/CreateToken.vue"
 import { useStore } from "vuex"
 
 export default defineComponent({
-  name: "CreateTokenPage",
+  name: "EditProfilePage",
   props: {},
   components: {
     CreateToken,
