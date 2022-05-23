@@ -1,7 +1,26 @@
 <template>
+    <div id="banner"
+      class="bg-purple-900 fixed top-20 w-full py-6 transform text-center font-bold text-white flex justify-between items-center duration-1000"
+      :class="{ '-translate-y-48': !shouldShowBanner }"
+    >
+      <div class="px-12"> </div>
+      <div>
+        We Offer Consultation Services to Help You Plan Your Token!
+        <router-link to="/beta-signup" class="mx-8">
+          <button class="bg-white font-normal p-2 rounded-sm text-black">
+            Find Out More
+          </button>
+        </router-link>
+      </div>
+      <button class="px-8" @click="shouldShowBanner = false">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
   <div
     id="edit-profile-page"
-    class="md:grid grid-cols-12 gap-8 min-h-screen px-8 bg-paper-lighter"
+    class="md:grid grid-cols-12 gap-8 min-h-screen px-8 bg-paper-lighter block"
   >
     <div
       id="right-pane"
@@ -25,7 +44,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue"
+import { defineComponent, onMounted, ref } from "vue"
 import CreateToken from "../components/CreateToken.vue"
 import { useStore } from "vuex"
 
@@ -36,7 +55,14 @@ export default defineComponent({
     CreateToken,
   },
   setup() {
+    const shouldShowBanner = ref(false)
+    onMounted(() => {
+      setTimeout(() => {
+        shouldShowBanner.value = true
+      }, 7000)
+    })
     return {
+      shouldShowBanner,
       ...composeProfileInfo(),
     }
   },
