@@ -93,45 +93,79 @@
       ><button class="cta_button mt-8">Find Out More</button></a>
     </div>
   </section>
-  <section id="pricing" class="px-6 pt-12 md:px-12 lg:px-24">
-    <h2 class="text-4xl">Pricing</h2>
+  <section
+    id="pricing"
+    class="px-6 pt-12 md:px-12 lg:px-24"
+  >
+    <h2 class="text-4xl">
+      Pricing
+    </h2>
     <div class="flex flex-wrap mx-auto mt-12 justify-center">
-      <div id="card-1" class="bg-white border-4 md:w-2/5 border-black p-8 md:mr-2 flex flex-col justify-between">
-        <h3 class="font-black text-2xl">Create Your Own Token</h3>
+      <div
+        id="card-1"
+        class="bg-white border-4 md:w-2/5 border-black p-8 md:mr-2 flex flex-col justify-between"
+      >
+        <h3 class="font-black text-2xl">
+          Create Your Own Token
+        </h3>
         <ul class="mt-4">
-          <li class="mt-2">Use one of our templates</li>
-          <li class="mt-2">Get Access To A Personalized Management Console</li>
-          <li class="mt-2">Create Unlimited Airdrops for an Unlimited Amount of Users</li>
-          <li class="mt-2">Manage Minting Now and Into the Future</li>
+          <li class="mt-2">
+            Use one of our templates
+          </li>
+          <li class="mt-2">
+            Get Access To A Personalized Management Console
+          </li>
+          <li class="mt-2">
+            Create Unlimited Airdrops for an Unlimited Amount of Users
+          </li>
+          <li class="mt-2">
+            Manage Minting Now and Into the Future
+          </li>
         </ul>
         <div class="mt-8">
-          <div class="divider mt-4"></div>
+          <div class="divider mt-4" />
           <div class="flex justify-between text-xl">
             <span>Price:</span><span>0.3 ETH</span>
           </div>
           <div class="text-center mt-4">
-            <router-link to="dashboard" class="btn bg-purple-50 font-black p-4">
+            <router-link
+              to="dashboard"
+              class="btn bg-purple-50 font-black p-4"
+            >
               <button>Get Started</button>
             </router-link>
           </div>
         </div>
       </div>
-      <div id="card-2" class="bg-white border-4 md:w-2/5 mt-4 md:mt-0 border-black p-8 flex flex-col justify-between">
-        <h3 class="font-black text-2xl">Get a Consultation</h3>
+      <div
+        id="card-2"
+        class="bg-white border-4 md:w-2/5 mt-4 md:mt-0 border-black p-8 flex flex-col justify-between"
+      >
+        <h3 class="font-black text-2xl">
+          Get a Consultation
+        </h3>
         <ul class="mt-4">
-          <li class="mt-2">Get in touch to speak to experts in the field of token design</li>
-          <li class="mt-2">Use our token management tools once your token is live</li>
+          <li class="mt-2">
+            Get in touch to speak to experts in the field of token design
+          </li>
+          <li class="mt-2">
+            Use our token management tools once your token is live
+          </li>
         </ul>
         <div class="mt-8">
-          <div class="divider mt-4"></div>
+          <div class="divider mt-4" />
           <div class="flex justify-between text-xl">
             <span>Price:</span><span class="text-right">Based on Requirements</span>
           </div>
-        <div class="text-center mt-4">
-          <router-link to="beta-signup" class="btn bg-purple-50 font-black p-4">
-            <button>Book a Call</button>
-          </router-link>
-        </div></div>
+          <div class="text-center mt-4">
+            <router-link
+              to="beta-signup"
+              class="btn bg-purple-50 font-black p-4"
+            >
+              <button>Book a Call</button>
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -139,7 +173,9 @@
     id="FAQ"
     class="faqSection"
   >
-    <h2 class="text-4xl">FAQ</h2>
+    <h2 class="text-4xl">
+      FAQ
+    </h2>
     <div class="divider" />
     <ul class="faqSection__accordionContainer">
       <li class="faqSection__accordion">
