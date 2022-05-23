@@ -8,7 +8,7 @@
         We Offer Consultation Services to Help You Plan Your Token!
         <router-link to="/beta-signup" class="mx-8">
           <button class="bg-white font-normal p-2 rounded-sm text-black">
-            Find Out More
+            Get In Touch
           </button>
         </router-link>
       </div>
