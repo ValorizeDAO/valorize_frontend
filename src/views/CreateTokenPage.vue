@@ -19,15 +19,7 @@
         md:bg-paper-light
       "
     >
-      <div v-if="isAllowedUser">
-        <CreateToken />
-      </div>
-      <div
-        v-else
-        class="flex justify-center my-24"
-      >
-        You are on the waiting list for deploying tokens
-      </div>
+      <CreateToken />
     </div>
   </div>
 </template>
@@ -38,7 +30,7 @@ import CreateToken from "../components/CreateToken.vue"
 import { useStore } from "vuex"
 
 export default defineComponent({
-  name: "EditProfilePage",
+  name: "CreateTokenPage",
   props: {},
   components: {
     CreateToken,
@@ -55,13 +47,11 @@ function composeProfileInfo() {
   const fullName = ref(userInfo.name)
   const about = ref(userInfo.about)
   const hasToken = store.getters["authUser/hasToken"]
-  const isAllowedUser = ref(store.state.authUser.user.isAlphaUser)
 
   return {
     fullName,
     about,
     hasToken,
-    isAllowedUser,
   }
 }
 </script>
