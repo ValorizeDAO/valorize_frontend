@@ -1,18 +1,11 @@
 import { shallowMount } from "@vue/test-utils"
 import CreateToken from "../CreateToken"
-import authenication from "@/services/authenication"
 
 jest.mock("vue-router", () => ({
   useRoute: jest.fn(() => ({
     query: { redirectUri: "a", registerAddress: "b" },
   })),
   useRouter: jest.fn(() => ({ name: "Home" })),
-}))
-
-jest.mock("../../services/authentication", () => ({
-  getContractKeys: jest.fn(() => ({
-    smartContractKeys: ["1", "2"],
-  })),
 }))
 jest.mock("ethers", () => ({
   ethers: {

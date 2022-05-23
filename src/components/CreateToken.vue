@@ -465,7 +465,7 @@
   </div>
 </template>
 <script lang="ts">
-import { ref, reactive, defineComponent, computed, onMounted } from "vue"
+import { ref, reactive, defineComponent, computed } from "vue"
 import { useRouter } from "vue-router"
 import { ethers, BigNumber, Signer, providers } from "ethers"
 import { networkInfo, network } from "../services/network"
@@ -572,15 +572,6 @@ function composeDeployGovToken() {
   let ethereum: any = {}
   let provider: providers.Provider
   const decimalsMultiplyer = BigNumber.from("1000000000000000000")
-  const contractKeys: string[] = []
-  onMounted(async () => {
-    const res = await auth.getContractKeys()
-    if (res.ok) {
-      const {keys} = await res.json()
-      contractKeys.push(...keys)
-    }
-  })
-  
   function toggleSimpleTokenModal() {
     checkProvider()
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value
