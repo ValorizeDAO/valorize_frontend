@@ -47,11 +47,13 @@ function composeProfileInfo() {
   const fullName = ref(userInfo.name)
   const about = ref(userInfo.about)
   const hasToken = store.getters["authUser/hasToken"]
+  const isAllowedUser = ref(store.state.authUser.user.isAlphaUser)
 
   return {
     fullName,
     about,
     hasToken,
+    isAllowedUser,
   }
 }
 </script>
