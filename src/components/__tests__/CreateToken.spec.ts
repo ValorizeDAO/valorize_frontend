@@ -7,6 +7,12 @@ jest.mock("vue-router", () => ({
   })),
   useRouter: jest.fn(() => ({ name: "Home" })),
 }))
+
+jest.mock("../../services/authentication", () => ({
+  getContractKeys: jest.fn(() => ({
+    smartContractKeys: ["1", "2"],
+  })),
+}))
 jest.mock("ethers", () => ({
   ethers: {
     utils: {
