@@ -125,7 +125,7 @@
         <div class="mt-8">
           <div class="divider mt-4"></div>
           <div class="flex justify-between text-xl">
-            <span>Price:</span><span>Based on Requirements</span>
+            <span>Price:</span><span class="text-right">Based on Requirements</span>
           </div>
         <div class="text-center mt-4">
           <router-link to="beta-signup" class="btn bg-purple-50 font-black p-4">
@@ -663,6 +663,13 @@ h3 {
   .productImage__section {
     display: none;
   }
+}
+.productImage_image {
+  animation-duration: 3s;
+  animation-timing-function: ease-in-out;
+  animation-direction: alternate;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
 }
 .productImage_image.up {
   animation-name: floatUp;
