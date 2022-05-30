@@ -405,12 +405,15 @@
                 Try Again?
               </p>
             </div>
+
             <button
               class="btn text-center"
               @click="deployToken"
+              v-if="networkName !== 'Unsupported'"
             >
               <span class="px-8">Deploy to {{ networkName }}</span>
             </button>
+            <div v-else>Please change networks on your wallet to a supported network</div>
           </div>
           <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
             To launch a token, you need a web3 provider such as
@@ -543,7 +546,7 @@ function composeDeployGovToken() {
   })
   const networks = { ...networkInfo }
   const networkName = computed((): string => {
-    return networks[network.value]?.name || "Unsuported"
+    return networks[network.value]?.name || "Unsupported"
   })
   const isKnownNetwork = computed((): network => {
     return networks[network.value]
