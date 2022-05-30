@@ -466,6 +466,7 @@
       </div>
     </Modal>
   </div>
+  <button @click="clearForm" class="btn">clear form</button>
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, onMounted } from "vue"
@@ -545,7 +546,7 @@ function composeDeployGovToken() {
   const network = ref("")
   const tokenTxHash = ref("")
   const deployedTokenAddress = ref("")
-  const tokenParams = reactive({
+  const emptyTokenParams = {
     tokenName: "",
     tokenSymbol: "",
     initialSupply: "",
@@ -557,7 +558,8 @@ function composeDeployGovToken() {
     maxSupply: "0",
     timeDelay: 0,
     mintCap: "",
-  }) as TokenParams
+  }
+  const tokenParams = reactive({ ...emptyTokenParams })
   const networks = { ...networkInfo }
   const networkName = computed((): string => {
     return networks[network.value]?.name || "Unsupported"
@@ -607,6 +609,11 @@ function composeDeployGovToken() {
 
   function saveTokenParams() {
     localStorage.setItem("tokenData", JSON.stringify(tokenParams))
+  }
+
+  function clearForm() {
+    Object.assign(tokenParams, { ...emptyTokenParams })
+    localStorage.removeItem("tokenData")
   }
 
   function toggleSimpleTokenModal() {
@@ -899,7 +906,8 @@ function composeDeployGovToken() {
     blockExplorer,
     isKnownNetwork,
     errorText,
-    saveTokenParams
+    saveTokenParams,
+    clearForm
   }
 }
 </script>
