@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form>
+    <form @change="saveTokenParams">
       <h2 class="text-3xl font-black">
         Launch A Token
       </h2>
@@ -488,6 +488,20 @@ enum tokenTypes {
   timedMint,
   creator
 }
+
+type TokenParams = {
+    tokenName: string,
+    tokenSymbol: string,
+    initialSupply: string,
+    vaultAddress: string,
+    airdropSupply: string,
+    adminAddresses: string,
+    minting: string,
+    supplyCap: string,
+    maxSupply: string,
+    timeDelay: number,
+    mintCap: string,
+}
 export default defineComponent({
   name: "CreateToken",
   components: {
@@ -543,7 +557,7 @@ function composeDeployGovToken() {
     maxSupply: "0",
     timeDelay: 0,
     mintCap: "",
-  })
+  }) as TokenParams
   const networks = { ...networkInfo }
   const networkName = computed((): string => {
     return networks[network.value]?.name || "Unsupported"
@@ -585,7 +599,15 @@ function composeDeployGovToken() {
       const { smartContractKeys } = await res.json()
       contractKeys.push(...smartContractKeys)
     }
+    const tokenRawData = localStorage.getItem("tokenData") || ""
+    if (tokenRawData) {
+      Object.assign(tokenParams, JSON.parse(tokenRawData) as TokenParams)
+    }  
   })
+
+  function saveTokenParams() {
+    localStorage.setItem("tokenData", JSON.stringify(tokenParams))
+  }
 
   function toggleSimpleTokenModal() {
     checkProvider()
@@ -877,6 +899,7 @@ function composeDeployGovToken() {
     blockExplorer,
     isKnownNetwork,
     errorText,
+    saveTokenParams
   }
 }
 </script>
