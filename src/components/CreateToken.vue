@@ -598,13 +598,16 @@ function composeDeployGovToken() {
       ethereum = (window as any).ethereum
       provider = new ethers.providers.Web3Provider(ethereum, "any")
       ethereum.request({ method: "eth_requestAccounts" })
-      const networkInfo = await provider.getNetwork()
-      network.value = networkInfo.chainId.toString()
+      const networkData = await provider.getNetwork()
+      network.value = networkData.chainId.toString()
       provider.on("network", (newNetwork, oldNetwork) => {
         if (oldNetwork) {
           network.value = newNetwork.chainId
         }
       })
+      if (!networkInfo[network.value]) {
+        alert("Unsupported Network, please connect to ethereum, polygon, or arbitrum")
+      }
       metamaskStatus.value = metamaskAuthStatuses[3]
       tokenStatus.value = tokenStatuses[2]
     } else {
