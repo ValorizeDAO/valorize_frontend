@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form>
+    <form @change="saveTokenParams">
       <h2 class="text-3xl font-black">
         Launch A Token
       </h2>
@@ -405,12 +405,15 @@
                 Try Again?
               </p>
             </div>
+
             <button
               class="btn text-center"
               @click="deployToken"
+              v-if="networkName !== 'Unsupported'"
             >
               <span class="px-8">Deploy to {{ networkName }}</span>
             </button>
+            <div v-else>Please change networks on your wallet to a supported network</div>
           </div>
           <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
             To launch a token, you need a web3 provider such as
@@ -463,6 +466,7 @@
       </div>
     </Modal>
   </div>
+  <button @click="clearForm" class="btn">clear form</button>
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, onMounted } from "vue"
@@ -484,6 +488,20 @@ enum tokenTypes {
   simple,
   timedMint,
   creator
+}
+
+type TokenParams = {
+    tokenName: string,
+    tokenSymbol: string,
+    initialSupply: string,
+    vaultAddress: string,
+    airdropSupply: string,
+    adminAddresses: string,
+    minting: string,
+    supplyCap: string,
+    maxSupply: string,
+    timeDelay: number,
+    mintCap: string,
 }
 export default defineComponent({
   name: "CreateToken",
@@ -528,7 +546,7 @@ function composeDeployGovToken() {
   const network = ref("")
   const tokenTxHash = ref("")
   const deployedTokenAddress = ref("")
-  const tokenParams = reactive({
+  const emptyTokenParams = {
     tokenName: "",
     tokenSymbol: "",
     initialSupply: "",
@@ -540,10 +558,11 @@ function composeDeployGovToken() {
     maxSupply: "0",
     timeDelay: 0,
     mintCap: "",
-  })
+  }
+  const tokenParams = reactive({ ...emptyTokenParams })
   const networks = { ...networkInfo }
   const networkName = computed((): string => {
-    return networks[network.value]?.name || "Unsuported"
+    return networks[network.value]?.name || "Unsupported"
   })
   const isKnownNetwork = computed((): network => {
     return networks[network.value]
@@ -582,7 +601,20 @@ function composeDeployGovToken() {
       const { smartContractKeys } = await res.json()
       contractKeys.push(...smartContractKeys)
     }
+    const tokenRawData = localStorage.getItem("tokenData") || ""
+    if (tokenRawData) {
+      Object.assign(tokenParams, JSON.parse(tokenRawData) as TokenParams)
+    }  
   })
+
+  function saveTokenParams() {
+    localStorage.setItem("tokenData", JSON.stringify(tokenParams))
+  }
+
+  function clearForm() {
+    Object.assign(tokenParams, { ...emptyTokenParams })
+    localStorage.removeItem("tokenData")
+  }
 
   function toggleSimpleTokenModal() {
     checkProvider()
@@ -598,13 +630,16 @@ function composeDeployGovToken() {
       ethereum = (window as any).ethereum
       provider = new ethers.providers.Web3Provider(ethereum, "any")
       ethereum.request({ method: "eth_requestAccounts" })
-      const networkInfo = await provider.getNetwork()
-      network.value = networkInfo.chainId.toString()
+      const networkData = await provider.getNetwork()
+      network.value = networkData.chainId.toString()
       provider.on("network", (newNetwork, oldNetwork) => {
         if (oldNetwork) {
           network.value = newNetwork.chainId
         }
       })
+      if (!networkInfo[network.value]) {
+        alert("Unsupported Network, please connect to ethereum, polygon, or arbitrum")
+      }
       metamaskStatus.value = metamaskAuthStatuses[3]
       tokenStatus.value = tokenStatuses[2]
     } else {
@@ -871,6 +906,8 @@ function composeDeployGovToken() {
     blockExplorer,
     isKnownNetwork,
     errorText,
+    saveTokenParams,
+    clearForm
   }
 }
 </script>
