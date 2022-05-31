@@ -153,9 +153,12 @@
           </li>
         </ul>
         <div class="mt-8">
-          <div class="divider mt-4" />
           <div class="flex justify-between text-xl">
-            <span>Price:</span><span class="text-right">Based on Requirements</span>
+            <span>Consultation:</span><span class="text-right">Initial Call Free</span>
+          </div>
+          <div class="divider my-4" />
+          <div class="flex justify-between text-xl">
+            <span>Cost:</span><span class="text-right">Based on Requirements</span>
           </div>
           <div class="text-center mt-4">
             <router-link

@@ -5,10 +5,10 @@
     >
       <div class="px-12"> </div>
       <div>
-        We Offer Consultation Services to Help You Plan Your Token!
+        Not sure about the process? We can help. <br class="lg:hidden"/>
         <router-link to="/beta-signup" class="mx-8">
-          <button class="bg-white font-normal p-2 rounded-sm text-black">
-            Get In Touch
+          <button class="bg-white font-normal p-2 rounded-sm text-black  mt-4 lg:mt-0">
+            Book a free call
           </button>
         </router-link>
       </div>
