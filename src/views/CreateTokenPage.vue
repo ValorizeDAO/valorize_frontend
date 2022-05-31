@@ -49,7 +49,7 @@ import CreateToken from "../components/CreateToken.vue"
 import { useStore } from "vuex"
 
 export default defineComponent({
-  name: "EditProfilePage",
+  name: "CreateTokenPage",
   props: {},
   components: {
     CreateToken,
@@ -73,13 +73,11 @@ function composeProfileInfo() {
   const fullName = ref(userInfo.name)
   const about = ref(userInfo.about)
   const hasToken = store.getters["authUser/hasToken"]
-  const isAllowedUser = ref(store.state.authUser.user.isAlphaUser)
 
   return {
     fullName,
     about,
     hasToken,
-    isAllowedUser,
   }
 }
 </script>
