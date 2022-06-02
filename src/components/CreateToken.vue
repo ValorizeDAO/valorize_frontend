@@ -744,6 +744,7 @@ function composeDeployGovToken() {
       )
       return { error: false, tx }
     } catch (err: any) {
+      console.error({ error: err })
       return { error: err }
     } finally {
       console.groupEnd()
