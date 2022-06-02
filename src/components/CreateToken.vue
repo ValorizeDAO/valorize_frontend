@@ -693,7 +693,6 @@ function composeDeployGovToken() {
     const deployerAddress = import.meta.env.VITE_DEPLOYER_ADDRESS as string
     const deployerContract = new DeployerFactory(signer).attach(deployerAddress)
     const { tx, error } = await deployContract(deployerContract, contractNum, params)
-    tokenTxHash.value = (tx as ethers.ContractTransaction).hash
     if (error) {
       if (error.code === 4001) {
         metamaskStatus.value = metamaskAuthStatuses[8]
@@ -701,7 +700,9 @@ function composeDeployGovToken() {
         metamaskStatus.value = metamaskAuthStatuses[9]
         errorText.value = error.msg || "Error confirming transaction"
       }
+      return
     }
+    tokenTxHash.value = (tx as ethers.ContractTransaction).hash
     metamaskStatus.value = metamaskAuthStatuses[6]
     await tx?.wait(1)
     const deployedContractAddress = await retrieveContractAddress(
@@ -732,6 +733,7 @@ function composeDeployGovToken() {
     const { byte_code } = await req.json() as { id: number, key: string, byte_code: string }
     console.groupCollapsed("tokenInfo")
     console.log("Deploying " + tokenKeys[type])
+    console.log(deployer.address)
     try {
       const tx = await deployer.deployContract(
         tokenKeys[type],
