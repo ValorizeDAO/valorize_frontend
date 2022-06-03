@@ -247,6 +247,7 @@
           }"
           :disabled="v$.$invalid"
           @click.prevent="submitToken"
+          value="Preview Token"
         >
         <span
           v-if="v$.$anyDirty && v$.$invalid"
