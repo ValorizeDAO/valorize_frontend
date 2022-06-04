@@ -200,7 +200,7 @@
             <transition name="fade">
               <p
                 v-if="!isMaxSupplyValid"
-                class="mt-4"
+                class="mt-4 text-red-900 font-semibold"
               >
                 Should be greater than innitial supply + airdrop supply
               </p>
@@ -241,7 +241,7 @@
       <div class="flex flex-col items-center mt-8">
         <input
           type="submit"
-          class="btn w-48 mt-4 mb-24 bg-purple-50 disabled:cursor-not-allowed"
+          class="btn w-48 mt-4 bg-purple-50 disabled:cursor-not-allowed"
           :class="{
             'bg-gray-300 text-slate-600 border-slate-600': v$.$invalid,
           }"
@@ -249,10 +249,10 @@
           @click.prevent="submitToken"
           value="Preview Token"
         >
-        <span
+        <div
           v-if="v$.$anyDirty && v$.$invalid"
           class="my-4"
-        >All Fields Required</span>
+        ><span>All Fields Required</span> <div v-if="!isMaxSupplyValid" class="font-bold">Invalid Max Supply</div></div>
       </div>
     </form>
     <Modal
@@ -604,7 +604,13 @@ function composeDeployGovToken() {
     }
     const tokenRawData = localStorage.getItem("tokenData") || ""
     if (tokenRawData) {
-      Object.assign(tokenParams, JSON.parse(tokenRawData) as TokenParams)
+      const storedParams = JSON.parse(tokenRawData) as TokenParams
+      Object.assign(tokenParams, storedParams)
+      if(!isValidMaxSupply(tokenParams.maxSupply)) {
+        setTimeout(() => {
+          v$.value.maxSupply.$touch()
+        }, 500)
+      }
     }  
   })
 
@@ -850,14 +856,7 @@ function composeDeployGovToken() {
         required,
       },
       maxSupply: {
-        isValidMaxSupply: (value: any) => {
-          return (
-            value === "0" || (
-              parseInt(getNumbersFromString(value)) >
-              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-              parseInt(getNumbersFromString(tokenParams.airdropSupply))
-            ))
-        },
+        isValidMaxSupply
       },
       timeDelay: {
         hasValue: (value: number) => {
@@ -878,13 +877,20 @@ function composeDeployGovToken() {
       return timedMintTokenValidationParams
     }
   })
-
+  function isValidMaxSupply(value: any) {
+          return (
+            value === "0" || (
+              parseInt(getNumbersFromString(value)) >
+              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+              parseInt(getNumbersFromString(tokenParams.airdropSupply))
+            ))
+        }
   // @ts-ignore
   const v$ = useVuelidate(rules, tokenParams)
   const isMaxSupplyValid = computed(() => {
     return (
       // @ts-ignore
-      (v$.value.maxSupply.$dirty && !v$.value.maxSupply.isValidMaxSupply.$invalid) || !v$.value.maxSupply.$dirty
+      (v$.value.maxSupply.$dirty && !v$.value.maxSupply.$invalid) || !v$.value.maxSupply.$dirty
     )
   })
   return {
