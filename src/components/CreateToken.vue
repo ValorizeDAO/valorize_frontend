@@ -737,12 +737,13 @@ function composeDeployGovToken() {
     console.log("Deploying " + tokenKeys[type])
     console.log(deployer.address)
     try {
+      const { contractParams } = await deployer.getContractByteCodeHash(tokenKeys[type])
       const tx = await deployer.deployContract(
         tokenKeys[type],
         byte_code,
         params,
         ethers.utils.hexZeroPad("0x0", 32),
-        { value: ethers.utils.parseEther("0.3") },
+        { value: contractParams.price },
       )
       return { error: false, tx }
     } catch (err: any) {
