@@ -120,7 +120,7 @@ router.beforeEach(async (to, from, next) => {
       store.commit("authUser/setUser", user)
       next()
     } else {
-      next({ name: "Login" })
+      next({ path: "/login", query: { redirectUri: to.fullPath } })
     }
   } else {
     next()

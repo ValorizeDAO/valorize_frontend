@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form>
+    <form @change="saveTokenParams">
       <h2 class="text-3xl font-black">
         Launch A Token
       </h2>
@@ -199,8 +199,8 @@
             </transition>
             <transition name="fade">
               <p
-                v-if="isMaxSupplyValid"
-                class="mt-4"
+                v-if="!isMaxSupplyValid"
+                class="mt-4 text-red-900 font-semibold"
               >
                 Should be greater than innitial supply + airdrop supply
               </p>
@@ -241,17 +241,18 @@
       <div class="flex flex-col items-center mt-8">
         <input
           type="submit"
-          class="btn w-48 mt-4 mb-24 bg-purple-50 disabled:cursor-not-allowed"
+          class="btn w-48 mt-4 bg-purple-50 disabled:cursor-not-allowed"
           :class="{
             'bg-gray-300 text-slate-600 border-slate-600': v$.$invalid,
           }"
           :disabled="v$.$invalid"
           @click.prevent="submitToken"
+          value="Preview Token"
         >
-        <span
+        <div
           v-if="v$.$anyDirty && v$.$invalid"
           class="my-4"
-        >All Fields Required</span>
+        ><span>All Fields Required</span> <div v-if="!isMaxSupplyValid" class="font-bold">Invalid Max Supply</div></div>
       </div>
     </form>
     <Modal
@@ -386,6 +387,7 @@
                 metamaskStatus === 'TX_ERROR' ||
                 metamaskStatus === 'TX_REJECTED'
             "
+            class="text-center"
           >
             <div
               class="text-center"
@@ -405,12 +407,22 @@
                 Try Again?
               </p>
             </div>
-            <button
-              class="btn text-center"
-              @click="deployToken"
+
+            <div
+              v-if="networkName !== 'Unsupported'"
             >
+              <button
+                class="btn text-center"
+                @click="deployToken"
+              >
               <span class="px-8">Deploy to {{ networkName }}</span>
-            </button>
+              </button>
+              <div>
+                <span>Price: </span>
+                <span>{{contractPrice}} {{ currency }}</span>
+              </div>
+            </div>
+            <div v-else>Please change networks on your wallet to a supported network</div>
           </div>
           <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
             To launch a token, you need a web3 provider such as
@@ -463,25 +475,43 @@
       </div>
     </Modal>
   </div>
+  <button @click="clearForm" class="btn">clear form</button>
 </template>
 <script lang="ts">
-import { ref, reactive, defineComponent, computed } from "vue"
+import { ref, reactive, defineComponent, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
-import { ethers, BigNumber, Signer, providers } from "ethers"
+import { ethers, BigNumber, providers, Contract } from "ethers"
 import { networkInfo, network } from "../services/network"
 import detectEthereumProvider from "@metamask/detect-provider"
 import currency from "currency.js"
 import auth from "../services/authentication"
 import useVuelidate from "@vuelidate/core"
 import { required, minLength } from "@vuelidate/validators"
-import { SimpleTokenFactory } from "../contracts/SimpleTokenFactory"
-import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
-import { TimedMintToken } from "../contracts/TimedMintToken"
-import { SimpleToken } from "../contracts/SimpleToken"
 import Modal from "../components/Modal.vue"
 import SvgLoader from "../components/SvgLoader.vue"
 import { formatAddress } from "../services/formatAddress"
+import { Deployer } from "../contracts/Deployer"
+import { DeployerFactory } from "../contracts/DeployerFactory"
 
+enum tokenTypes {
+  simple,
+  timedMint,
+  creator
+}
+
+type TokenParams = {
+    tokenName: string,
+    tokenSymbol: string,
+    initialSupply: string,
+    vaultAddress: string,
+    airdropSupply: string,
+    adminAddresses: string,
+    minting: string,
+    supplyCap: string,
+    maxSupply: string,
+    timeDelay: number,
+    mintCap: string,
+}
 export default defineComponent({
   name: "CreateToken",
   components: {
@@ -525,7 +555,7 @@ function composeDeployGovToken() {
   const network = ref("")
   const tokenTxHash = ref("")
   const deployedTokenAddress = ref("")
-  const tokenParams = reactive({
+  const emptyTokenParams = {
     tokenName: "",
     tokenSymbol: "",
     initialSupply: "",
@@ -537,10 +567,12 @@ function composeDeployGovToken() {
     maxSupply: "0",
     timeDelay: 0,
     mintCap: "",
-  })
+  }
+  const tokenParams = reactive({ ...emptyTokenParams })
+  const contractPrice = ref("")
   const networks = { ...networkInfo }
   const networkName = computed((): string => {
-    return networks[network.value]?.name || "Unsuported"
+    return networks[network.value]?.name || "Unsupported"
   })
   const isKnownNetwork = computed((): network => {
     return networks[network.value]
@@ -563,6 +595,9 @@ function composeDeployGovToken() {
   const totalSupply = computed(() => {
     return Number(initialSupply.value) + Number(airdropSupply.value)
   })
+  const currency = computed(() => {
+    return networks[network.value]?.currency
+  })
   const parsedAddresses = computed(() => {
     const { adminAddresses } = tokenParams
     const addresses = adminAddresses.split(",")
@@ -572,8 +607,37 @@ function composeDeployGovToken() {
   let ethereum: any = {}
   let provider: providers.Provider
   const decimalsMultiplyer = BigNumber.from("1000000000000000000")
-  function toggleSimpleTokenModal() {
-    checkProvider()
+  const contractKeys: string[] = []
+  onMounted(async () => {
+    const res = await auth.getContractKeys()
+    if (res.ok) {
+      const { smartContractKeys } = await res.json()
+      contractKeys.push(...smartContractKeys)
+    }
+    const tokenRawData = localStorage.getItem("tokenData") || ""
+    if (tokenRawData) {
+      const storedParams = JSON.parse(tokenRawData) as TokenParams
+      Object.assign(tokenParams, storedParams)
+      if(!isValidMaxSupply(tokenParams.maxSupply)) {
+        setTimeout(() => {
+          v$.value.maxSupply.$touch()
+        }, 500)
+      }
+    }  
+  })
+
+  function saveTokenParams() {
+    localStorage.setItem("tokenData", JSON.stringify(tokenParams))
+  }
+
+  function clearForm() {
+    Object.assign(tokenParams, { ...emptyTokenParams })
+    localStorage.removeItem("tokenData")
+  }
+
+  async function toggleSimpleTokenModal() {
+    await checkProvider()
+    getContractParams()
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value
   }
   function expandAddressList() {
@@ -586,18 +650,32 @@ function composeDeployGovToken() {
       ethereum = (window as any).ethereum
       provider = new ethers.providers.Web3Provider(ethereum, "any")
       ethereum.request({ method: "eth_requestAccounts" })
-      const networkInfo = await provider.getNetwork()
-      network.value = networkInfo.chainId.toString()
+      const networkData = await provider.getNetwork()
+      network.value = networkData.chainId.toString()
       provider.on("network", (newNetwork, oldNetwork) => {
         if (oldNetwork) {
+          getContractParams()
           network.value = newNetwork.chainId
         }
       })
+      if (!networkInfo[network.value]) {
+        alert("Unsupported Network, please connect to ethereum, polygon, or arbitrum")
+      }
       metamaskStatus.value = metamaskAuthStatuses[3]
       tokenStatus.value = tokenStatuses[2]
     } else {
       metamaskStatus.value = metamaskAuthStatuses[4]
     }
+  }
+  async function getContractParams() {
+    metamaskStatus.value = metamaskAuthStatuses[1]
+    // @ts-ignore the lies
+    const signer = provider.getSigner()
+    metamaskStatus.value = metamaskAuthStatuses[3]
+    const deployerAddress = import.meta.env.VITE_DEPLOYER_ADDRESS as string
+    const deployerContract = new DeployerFactory(signer).attach(deployerAddress)
+    const { contractParams } = await deployerContract.getContractByteCodeHash(tokenKeys[tokenParams.minting === "false" ? 0 : 1])
+    contractPrice.value = ethers.utils.formatEther(contractParams.price)
   }
   async function deployToken() {
     tokenStatus.value = tokenStatuses[3]
@@ -605,101 +683,126 @@ function composeDeployGovToken() {
     // @ts-ignore the lies
     const signer = provider.getSigner()
     metamaskStatus.value = metamaskAuthStatuses[3]
-    let token: SimpleToken | TimedMintToken | undefined
-    try {
-      metamaskStatus.value = metamaskAuthStatuses[5]
-      if (tokenParams.minting === "false") {
-        token = await deploySimpleToken(signer)
-      } else if (tokenParams.minting === "true") {
-        token = await deployTimedMintToken(signer)
+    let params = ""
+    const encoder = new ethers.utils.AbiCoder()
+    let contractNum:tokenTypes = 0
+    if (tokenParams.minting === "false") {
+      contractNum = 0
+      params = encoder.encode(
+        ["uint", "uint", "address", "string", "string", "address[]"],
+        [
+          BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
+          BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
+          ethers.utils.getAddress(tokenParams.vaultAddress),
+          tokenParams.tokenName,
+          tokenParams.tokenSymbol,
+          parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
+        ])
+    } else if (tokenParams.minting === "true") {
+      contractNum = 1
+      let maxTokenSupply: BigNumber
+      if (tokenParams.supplyCap === "false") {
+        maxTokenSupply = BigNumber.from(0)
       } else {
-        return
+        maxTokenSupply = BigNumber.from(maxSupply.value).mul(decimalsMultiplyer)
       }
-    } catch (err) {
-      metamaskStatus.value = metamaskAuthStatuses[9]
-    }
-    if (token) {
-      metamaskStatus.value = metamaskAuthStatuses[6]
-      const tokenRequest = await storeTokenData()
-      const tokenResponse = await tokenRequest.json()
-      await token.deployed()
-      metamaskStatus.value = metamaskAuthStatuses[7]
-      await router.push({
-        path: "/token-success",
-        query: { tokenId: tokenResponse.token.id },
-      })
-    }
-  }
-
-  async function deploySimpleToken(signer: Signer) {
-    console.groupCollapsed("tokenInfo")
-    console.log("Deploying Simple Token v0.1.0")
-    let simpleToken: SimpleToken | undefined
-    try {
-      simpleToken = await new SimpleTokenFactory(signer).deploy(
-        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
-        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
-        ethers.utils.getAddress(tokenParams.vaultAddress),
-        tokenParams.tokenName,
-        tokenParams.tokenSymbol,
-        parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
-      )
-      tokenTxHash.value = simpleToken.deployTransaction.hash
-      deployedTokenAddress.value = simpleToken.address
-      console.log({ simpleToken })
-      return simpleToken
-    } catch (err: any) {
-      console.error(err)
-      if (err.code === 4001) {
+      params = encoder.encode(
+        ["uint", "uint", "uint", "address", "uint", "uint", "string", "string", "address[]"],
+        [
+          BigNumber.from(initialSupply.value).mul(decimalsMultiplyer), // vault
+          BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer), // airdrop
+          maxTokenSupply, // supplycap
+          ethers.utils.getAddress(tokenParams.vaultAddress), // vault
+          BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), // timeDelay
+          BigNumber.from(mintCap.value).mul(decimalsMultiplyer), // mintCap
+          tokenParams.tokenName,
+          tokenParams.tokenSymbol,
+          parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
+        ])
+    } else { return }
+    const deployerAddress = import.meta.env.VITE_DEPLOYER_ADDRESS as string
+    const deployerContract = new DeployerFactory(signer).attach(deployerAddress)
+    const { tx, error } = await deployContract(deployerContract, contractNum, params)
+    if (error) {
+      if (error.code === 4001) {
         metamaskStatus.value = metamaskAuthStatuses[8]
       } else {
         metamaskStatus.value = metamaskAuthStatuses[9]
-        errorText.value = "Error confirming transaction"
+        let errorMessage = "Error confirming transaction"
+        if ((error.message as string).includes('err: insufficient funds') || 
+          (error.data.message as string).includes('err: insufficient funds')) {
+          errorMessage = `Insufficient funds in your account to deploy a token. Cost is ${contractPrice.value} ${networkInfo[network.value].currency}`
+        }
+        errorText.value = error.msg || errorMessage
       }
       return
+    }
+    tokenTxHash.value = (tx as ethers.ContractTransaction).hash
+    metamaskStatus.value = metamaskAuthStatuses[6]
+    await tx?.wait(1)
+    const deployedContractAddress = await retrieveContractAddress(
+      deployerContract as Contract, tx as ethers.ContractTransaction,
+    )
+    deployedTokenAddress.value = deployedContractAddress || ""
+    const tokenRequest = await storeTokenData()
+    const tokenResponse = await tokenRequest.json()
+    metamaskStatus.value = metamaskAuthStatuses[7]
+    clearForm()
+    await router.push({
+      path: "/token-success",
+      query: { tokenId: tokenResponse.token.id },
+    })
+  }
+  const tokenKeys = ["simple_token_v0.1.0", "timedMint_token_v0.1.0", "creator_token_v0.1.0"]
+  async function deployContract(
+    deployer: Deployer,
+    type: tokenTypes,
+    params: string,
+  ): Promise<{
+    deployedContractAddress?: string,
+    tx?: ethers.ContractTransaction,
+    error: any
+  }> {
+    const req = await auth.getContractBytecode(tokenKeys[type])
+    if (!req.ok) { return { error: { msg: "Error getting bytecode" } } }
+
+    const { byte_code } = await req.json() as { id: number, key: string, byte_code: string }
+    console.groupCollapsed("tokenInfo")
+    console.log("Deploying " + tokenKeys[type])
+    console.log(deployer.address)
+    console.log(ethers.utils.parseEther(contractPrice.value))
+    try {
+      const tx = await deployer.deployContract(
+        tokenKeys[type],
+        byte_code,
+        params,
+        ethers.utils.hexZeroPad("0x0", 32),
+        { value: ethers.utils.parseEther(contractPrice.value) },
+      )
+      return { error: false, tx }
+    } catch (err: any) {
+      console.error({ error: err })
+      return { error: err }
     } finally {
       console.groupEnd()
     }
   }
 
-  async function deployTimedMintToken(signer: Signer) {
-    console.groupCollapsed("tokenInfo")
-    console.log("Deploying Timed Mint Token v0.1.0")
-    let timedMintToken: TimedMintToken | undefined
-    let maxTokenSupply: BigNumber
-    if (tokenParams.supplyCap === "false") {
-      maxTokenSupply = BigNumber.from(0)
-    } else {
-      maxTokenSupply = BigNumber.from(maxSupply.value).mul(decimalsMultiplyer)
+  async function retrieveContractAddress(
+    deployerContract: Contract,
+    createTx: ethers.ContractTransaction,
+  ): Promise<string> {
+    const info = await deployerContract.queryFilter({
+      address: deployerContract.address,
+      topics: [
+        ethers.utils.id("ContractDeployed(address,string,uint256)"),
+      ],
+    }, createTx.blockHash)
+    const event = info.find(e => e.transactionHash === createTx.hash) as ethers.Event
+    if (event) {
+      return event.args?.contractAddress || ""
     }
-    try {
-      timedMintToken = await new TimedMintTokenFactory(signer).deploy(
-        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer), // vault
-        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer), // airdrop
-        maxTokenSupply, // supplycap
-        ethers.utils.getAddress(tokenParams.vaultAddress), // vault
-        BigNumber.from(tokenParams.timeDelay).mul(BigNumber.from(86400)), // timeDelay
-        BigNumber.from(mintCap.value).mul(decimalsMultiplyer), // mintCap
-        tokenParams.tokenName,
-        tokenParams.tokenSymbol,
-        parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
-      )
-      console.log({ timedMintToken })
-      tokenTxHash.value = timedMintToken.deployTransaction.hash
-      deployedTokenAddress.value = timedMintToken.address
-      return timedMintToken
-    } catch (err: any) {
-      console.error(err)
-      if (err.code === 4001) {
-        metamaskStatus.value = metamaskAuthStatuses[8]
-      } else {
-        metamaskStatus.value = metamaskAuthStatuses[9]
-        errorText.value = "Error confirming transaction"
-      }
-      return
-    } finally {
-      console.groupEnd()
-    }
+    return ""
   }
 
   async function storeTokenData() {
@@ -781,14 +884,7 @@ function composeDeployGovToken() {
         required,
       },
       maxSupply: {
-        isValidMaxSupply: (value: any) => {
-          return (
-            value !== "" && (
-              parseInt(getNumbersFromString(value)) >
-              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-              parseInt(getNumbersFromString(tokenParams.airdropSupply))
-            ))
-        },
+        isValidMaxSupply
       },
       timeDelay: {
         hasValue: (value: number) => {
@@ -809,13 +905,20 @@ function composeDeployGovToken() {
       return timedMintTokenValidationParams
     }
   })
-
+  function isValidMaxSupply(value: any) {
+          return (
+            value === "0" || (
+              parseInt(getNumbersFromString(value)) >
+              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+              parseInt(getNumbersFromString(tokenParams.airdropSupply))
+            ))
+        }
   // @ts-ignore
   const v$ = useVuelidate(rules, tokenParams)
   const isMaxSupplyValid = computed(() => {
     return (
       // @ts-ignore
-      v$.value.maxSupply.$dirty && v$.value.maxSupply.isValidMaxSupply.$invalid
+      (v$.value.maxSupply.$dirty && !v$.value.maxSupply.$invalid) || !v$.value.maxSupply.$dirty
     )
   })
   return {
@@ -835,6 +938,7 @@ function composeDeployGovToken() {
     deployToken,
     network,
     networkName,
+    contractPrice,
     v$,
     isMaxSupplyValid,
     metamaskStatus,
@@ -843,6 +947,9 @@ function composeDeployGovToken() {
     blockExplorer,
     isKnownNetwork,
     errorText,
+    saveTokenParams,
+    clearForm,
+    currency
   }
 }
 </script>

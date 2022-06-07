@@ -4,6 +4,13 @@
       <h1 class="font-black text-3xl">
         Register
       </h1>
+      Or
+      <router-link
+        :to="{ path: 'login' }"
+        class="font-black underline"
+      >
+        Login to Your Account
+      </router-link>
       <div class="my-8">
         <form
           @submit.prevent="sendLogin"

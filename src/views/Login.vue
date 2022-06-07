@@ -112,8 +112,8 @@ export default defineComponent({
     const password = ref("")
     const authError = ref(false)
     const authenticating = ref(false)
-    const hasQueryToAddUserWallet =
-      route.query.redirectUri && route.query.registerAddress
+    const hasQueryToAddUserWallet = route.query.registerAddress
+    const hasRedirectUri = route.query.redirectUri
     async function sendLogin() {
       authError.value = false
       authenticating.value = true
@@ -144,11 +144,16 @@ export default defineComponent({
                     route.query.registerAddress.toString(),
                   )
                   .then(() => {
-                    route.query.redirectUri &&
+                    route.query.redirectUri ?
                       router.push(
                         decodeURI(route.query.redirectUri.toString()),
-                      )
+                      ) : router.push("/dashboard")
                   })
+            } else if (hasRedirectUri) {
+               route.query.redirectUri &&
+                router.push(
+                  decodeURI(route.query.redirectUri.toString()),
+                )
             } else {
               router.push("/dashboard")
             }
