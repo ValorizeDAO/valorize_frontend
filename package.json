@@ -31,7 +31,7 @@
     "rollup-plugin-polyfill-node": "^0.8.0",
     "vite-ssr": "^0.10.5",
     "vue": "3",
-    "vue-router": "4",
+    "vue-router": "4.0.13",
     "vuex": "^4.0.2"
   },
   "devDependencies": {
