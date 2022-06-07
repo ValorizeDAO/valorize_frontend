@@ -387,6 +387,7 @@
                 metamaskStatus === 'TX_ERROR' ||
                 metamaskStatus === 'TX_REJECTED'
             "
+            class="text-center"
           >
             <div
               class="text-center"
@@ -407,13 +408,20 @@
               </p>
             </div>
 
-            <button
-              class="btn text-center"
-              @click="deployToken"
+            <div
               v-if="networkName !== 'Unsupported'"
             >
+              <button
+                class="btn text-center"
+                @click="deployToken"
+              >
               <span class="px-8">Deploy to {{ networkName }}</span>
-            </button>
+              </button>
+              <div>
+                <span>Price: </span>
+                <span>{{contractPrice}} {{ currency }}</span>
+              </div>
+            </div>
             <div v-else>Please change networks on your wallet to a supported network</div>
           </div>
           <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
@@ -561,6 +569,7 @@ function composeDeployGovToken() {
     mintCap: "",
   }
   const tokenParams = reactive({ ...emptyTokenParams })
+  const contractPrice = ref("")
   const networks = { ...networkInfo }
   const networkName = computed((): string => {
     return networks[network.value]?.name || "Unsupported"
@@ -585,6 +594,9 @@ function composeDeployGovToken() {
   })
   const totalSupply = computed(() => {
     return Number(initialSupply.value) + Number(airdropSupply.value)
+  })
+  const currency = computed(() => {
+    return networks[network.value].currency
   })
   const parsedAddresses = computed(() => {
     const { adminAddresses } = tokenParams
@@ -623,8 +635,9 @@ function composeDeployGovToken() {
     localStorage.removeItem("tokenData")
   }
 
-  function toggleSimpleTokenModal() {
-    checkProvider()
+  async function toggleSimpleTokenModal() {
+    await checkProvider()
+    getContractParams()
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value
   }
   function expandAddressList() {
@@ -641,6 +654,7 @@ function composeDeployGovToken() {
       network.value = networkData.chainId.toString()
       provider.on("network", (newNetwork, oldNetwork) => {
         if (oldNetwork) {
+          getContractParams()
           network.value = newNetwork.chainId
         }
       })
@@ -653,13 +667,22 @@ function composeDeployGovToken() {
       metamaskStatus.value = metamaskAuthStatuses[4]
     }
   }
+  async function getContractParams() {
+    metamaskStatus.value = metamaskAuthStatuses[1]
+    // @ts-ignore the lies
+    const signer = provider.getSigner()
+    metamaskStatus.value = metamaskAuthStatuses[3]
+    const deployerAddress = import.meta.env.VITE_DEPLOYER_ADDRESS as string
+    const deployerContract = new DeployerFactory(signer).attach(deployerAddress)
+    const { contractParams } = await deployerContract.getContractByteCodeHash(tokenKeys[tokenParams.minting === "false" ? 0 : 1])
+    contractPrice.value = ethers.utils.formatEther(contractParams.price)
+  }
   async function deployToken() {
     tokenStatus.value = tokenStatuses[3]
     metamaskStatus.value = metamaskAuthStatuses[1]
     // @ts-ignore the lies
     const signer = provider.getSigner()
     metamaskStatus.value = metamaskAuthStatuses[3]
-    metamaskStatus.value = metamaskAuthStatuses[5]
     let params = ""
     const encoder = new ethers.utils.AbiCoder()
     let contractNum:tokenTypes = 0
@@ -705,7 +728,12 @@ function composeDeployGovToken() {
         metamaskStatus.value = metamaskAuthStatuses[8]
       } else {
         metamaskStatus.value = metamaskAuthStatuses[9]
-        errorText.value = error.msg || "Error confirming transaction"
+        let errorMessage = "Error confirming transaction"
+        if ((error.message as string).includes('err: insufficient funds') || 
+          (error.data.message as string).includes('err: insufficient funds')) {
+          errorMessage = `Insufficient funds in your account to deploy a token. Cost is ${contractPrice.value} ${networkInfo[network.value].currency}`
+        }
+        errorText.value = error.msg || errorMessage
       }
       return
     }
@@ -742,14 +770,14 @@ function composeDeployGovToken() {
     console.groupCollapsed("tokenInfo")
     console.log("Deploying " + tokenKeys[type])
     console.log(deployer.address)
+    console.log(ethers.utils.parseEther(contractPrice.value))
     try {
-      const { contractParams } = await deployer.getContractByteCodeHash(tokenKeys[type])
       const tx = await deployer.deployContract(
         tokenKeys[type],
         byte_code,
         params,
         ethers.utils.hexZeroPad("0x0", 32),
-        { value: contractParams.price },
+        { value: ethers.utils.parseEther(contractPrice.value) },
       )
       return { error: false, tx }
     } catch (err: any) {
@@ -910,6 +938,7 @@ function composeDeployGovToken() {
     deployToken,
     network,
     networkName,
+    contractPrice,
     v$,
     isMaxSupplyValid,
     metamaskStatus,
@@ -919,7 +948,8 @@ function composeDeployGovToken() {
     isKnownNetwork,
     errorText,
     saveTokenParams,
-    clearForm
+    clearForm,
+    currency
   }
 }
 </script>
