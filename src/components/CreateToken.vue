@@ -596,7 +596,7 @@ function composeDeployGovToken() {
     return Number(initialSupply.value) + Number(airdropSupply.value)
   })
   const currency = computed(() => {
-    return networks[network.value].currency
+    return networks[network.value]?.currency
   })
   const parsedAddresses = computed(() => {
     const { adminAddresses } = tokenParams
