@@ -84,6 +84,16 @@ export default defineComponent({
   cursor: default;
   pointer-events: none;
 }
+.fadeUp-enter-active,
+.fadeUp-leave-active {
+  transition: all .5s ease-in-out;
+  transform: scale(1);
+}
+.fadeUp-enter-from,
+.fadeUp-leave-to {
+  transform: scale(.4);
+  opacity: 0;
+}
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

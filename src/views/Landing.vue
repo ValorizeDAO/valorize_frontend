@@ -323,6 +323,25 @@
       </a>
     </div>
   </section>
+  <div id="unity-nft-trigger" ref="intersection-trigger" class="border border-red-900 py-4"></div>
+  <transition name="fadeUp">
+    <section id="unity-nft" class="fixed bottom-0 z-50" v-show="showBottomModal">
+      <div class="bg-black text-center py-24 text-white font-black h-screen w-screen flex flex-col justify-center items-center">
+        <h2 class="text-4xl">Valorize Unity NFT</h2>
+        <p class="pt-8">Optimists welcome, cynics, you have your space in the majority of society. 
+          Breathe a breath of fresh air in our community.</p>
+        <div class="mt-4 flex justify-center">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 11l7-7 7 7M5 19l7-7 7 7" />
+          </svg>
+        </div>
+        <p>Scroll Up to forget</p>
+        <div class="mt-24">
+          <a href="https://nft.valorize.app" class="p-8 border-2 border-white">Click to find out more</a>
+        </div>
+      </div>
+    </section>
+  </transition>
 </template>
 
 <script lang="ts">
@@ -337,6 +356,7 @@ export default defineComponent({
       isHidden1: true,
       isHidden2: true,
       isHidden3: true,
+      showBottomModal: false
     }
   },
   methods: {
@@ -353,6 +373,15 @@ export default defineComponent({
     open3() {
       this.isHidden3 = !this.isHidden3
     },
+  },
+  mounted() {
+    const observer = new IntersectionObserver((intersectedTarget) => {
+      intersectedTarget.forEach(el => {
+        console.log("intersecting: ", el.isIntersecting)
+        this.showBottomModal = el.isIntersecting
+      })
+    })
+    observer.observe(this.$refs["intersection-trigger"] as HTMLElement)
   },
   setup() {
     const store = useStore()
@@ -655,6 +684,11 @@ h3 {
 }
 .faqSection__answer {
   margin-bottom: 3em;
+}
+
+.fadeIn0 {
+  opacity: 0;
+  animation: fade 1.2s forwards;
 }
 
 .fadeIn1 {
