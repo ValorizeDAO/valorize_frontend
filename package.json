@@ -1,6 +1,6 @@
 {
   "name": "valorize.app",
-  "version": "0.2.1",
+  "version": "0.0.0",
   "scripts": {
     "serve": "vite preview",
     "build": "vue-tsc --noEmit && vite build",
@@ -18,7 +18,7 @@
     "@types/node": "^16.9.4",
     "@vuelidate/core": "^2.0.0-alpha.33",
     "@vuelidate/validators": "^2.0.0-alpha.26",
-    "@vueuse/head": "^0.6.0",
+    "@vueuse/head": "^0.5.0",
     "buffer": "^4.9.2",
     "chart.js": "^3.5.1",
     "currency.js": "^2.0.4",

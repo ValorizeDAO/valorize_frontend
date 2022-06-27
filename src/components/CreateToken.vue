@@ -252,7 +252,14 @@
         <div
           v-if="v$.$anyDirty && v$.$invalid"
           class="my-4"
-        ><span>All Fields Required</span> <div v-if="!isMaxSupplyValid" class="font-bold">Invalid Max Supply</div></div>
+        >
+          <span>All Fields Required</span> <div
+            v-if="!isMaxSupplyValid"
+            class="font-bold"
+          >
+            Invalid Max Supply
+          </div>
+        </div>
       </div>
     </form>
     <Modal
@@ -415,14 +422,16 @@
                 class="btn text-center"
                 @click="deployToken"
               >
-              <span class="px-8">Deploy to {{ networkName }}</span>
+                <span class="px-8">Deploy to {{ networkName }}</span>
               </button>
               <div>
                 <span>Price: </span>
-                <span>{{contractPrice}} {{ currency }}</span>
+                <span>{{ contractPrice }} {{ currency }}</span>
               </div>
             </div>
-            <div v-else>Please change networks on your wallet to a supported network</div>
+            <div v-else>
+              Please change networks on your wallet to a supported network
+            </div>
           </div>
           <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
             To launch a token, you need a web3 provider such as
@@ -475,7 +484,12 @@
       </div>
     </Modal>
   </div>
-  <button @click="clearForm" class="btn">clear form</button>
+  <button
+    @click="clearForm"
+    class="btn"
+  >
+    clear form
+  </button>
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, onMounted } from "vue"
@@ -500,17 +514,17 @@ enum tokenTypes {
 }
 
 type TokenParams = {
-    tokenName: string,
-    tokenSymbol: string,
-    initialSupply: string,
-    vaultAddress: string,
-    airdropSupply: string,
-    adminAddresses: string,
-    minting: string,
-    supplyCap: string,
-    maxSupply: string,
-    timeDelay: number,
-    mintCap: string,
+  tokenName: string,
+  tokenSymbol: string,
+  initialSupply: string,
+  vaultAddress: string,
+  airdropSupply: string,
+  adminAddresses: string,
+  minting: string,
+  supplyCap: string,
+  maxSupply: string,
+  timeDelay: number,
+  mintCap: string,
 }
 export default defineComponent({
   name: "CreateToken",
@@ -618,12 +632,12 @@ function composeDeployGovToken() {
     if (tokenRawData) {
       const storedParams = JSON.parse(tokenRawData) as TokenParams
       Object.assign(tokenParams, storedParams)
-      if(!isValidMaxSupply(tokenParams.maxSupply)) {
+      if (!isValidMaxSupply(tokenParams.maxSupply)) {
         setTimeout(() => {
           v$.value.maxSupply.$touch()
         }, 500)
       }
-    }  
+    }
   })
 
   function saveTokenParams() {
@@ -729,8 +743,8 @@ function composeDeployGovToken() {
       } else {
         metamaskStatus.value = metamaskAuthStatuses[9]
         let errorMessage = "Error confirming transaction"
-        if ((error.message as string).includes('err: insufficient funds') || 
-          (error.data.message as string).includes('err: insufficient funds')) {
+        if ((error.message as string).includes("err: insufficient funds") ||
+          (error.data.message as string).includes("err: insufficient funds")) {
           errorMessage = `Insufficient funds in your account to deploy a token. Cost is ${contractPrice.value} ${networkInfo[network.value].currency}`
         }
         errorText.value = error.msg || errorMessage
@@ -884,7 +898,7 @@ function composeDeployGovToken() {
         required,
       },
       maxSupply: {
-        isValidMaxSupply
+        isValidMaxSupply,
       },
       timeDelay: {
         hasValue: (value: number) => {
@@ -906,13 +920,13 @@ function composeDeployGovToken() {
     }
   })
   function isValidMaxSupply(value: any) {
-          return (
-            value === "0" || (
-              parseInt(getNumbersFromString(value)) >
-              parseInt(getNumbersFromString(tokenParams.initialSupply)) +
-              parseInt(getNumbersFromString(tokenParams.airdropSupply))
-            ))
-        }
+    return (
+      value === "0" || (
+        parseInt(getNumbersFromString(value)) >
+        parseInt(getNumbersFromString(tokenParams.initialSupply)) +
+        parseInt(getNumbersFromString(tokenParams.airdropSupply))
+      ))
+  }
   // @ts-ignore
   const v$ = useVuelidate(rules, tokenParams)
   const isMaxSupplyValid = computed(() => {
@@ -949,7 +963,7 @@ function composeDeployGovToken() {
     errorText,
     saveTokenParams,
     clearForm,
-    currency
+    currency,
   }
 }
 </script>

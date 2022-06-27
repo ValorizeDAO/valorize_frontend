@@ -144,13 +144,14 @@ export default defineComponent({
                     route.query.registerAddress.toString(),
                   )
                   .then(() => {
-                    route.query.redirectUri ?
-                      router.push(
+                    route.query.redirectUri
+                      ? router.push(
                         decodeURI(route.query.redirectUri.toString()),
-                      ) : router.push("/dashboard")
+                      )
+                      : router.push("/dashboard")
                   })
             } else if (hasRedirectUri) {
-               route.query.redirectUri &&
+              route.query.redirectUri &&
                 router.push(
                   decodeURI(route.query.redirectUri.toString()),
                 )
