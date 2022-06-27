@@ -326,7 +326,7 @@
   <div
     id="unity-nft-trigger"
     ref="intersection-trigger"
-    class="border border-red-900 py-4"
+    class="border py-4"
   />
   <transition name="fadeUp">
     <section
