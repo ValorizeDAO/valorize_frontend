@@ -714,9 +714,8 @@ function composeDeployGovToken() {
   }
 
   async function toggleSimpleTokenModal() {
-    await checkProvider()
-    getContractParams()
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value
+    checkProvider()
   }
   function expandAddressList() {
     showExpandedList.value = !showExpandedList.value
@@ -728,11 +727,16 @@ function composeDeployGovToken() {
       ethereum = (window as any).ethereum
       provider = new ethers.providers.Web3Provider(ethereum, "any")
       ethereum.request({ method: "eth_requestAccounts" })
+
       const networkData = await provider.getNetwork()
       network.value = networkData.chainId.toString()
+
+      // @ts-ignore the lies
+      const signer = provider.getSigner()
+      getContractParams(signer)
       provider.on("network", (newNetwork, oldNetwork) => {
         if (oldNetwork) {
-          getContractParams()
+          getContractParams(signer)
           network.value = newNetwork.chainId
         }
       })
@@ -745,10 +749,7 @@ function composeDeployGovToken() {
       metamaskStatus.value = metamaskAuthStatuses[4]
     }
   }
-  async function getContractParams() {
-    metamaskStatus.value = metamaskAuthStatuses[1]
-    // @ts-ignore the lies
-    const signer = provider.getSigner()
+  async function getContractParams(signer: ethers.Signer) {
     metamaskStatus.value = metamaskAuthStatuses[3]
     const deployerAddress = import.meta.env.VITE_DEPLOYER_ADDRESS as string
     const deployerContract = new DeployerFactory(signer).attach(deployerAddress)
