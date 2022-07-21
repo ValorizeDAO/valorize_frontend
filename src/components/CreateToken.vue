@@ -44,12 +44,21 @@
         </label>
       </div>
       <div class="mt-8">
-        <label
-          class="text-l font-black"
-        >Supply For Vault<input
+        <div class="flex">
+          <label
+            class="text-l font-black"
+            for="initial-supply"
+          >Supply For Vault</label>
+          <InfoTooltip class="ml-4">
+            The amount of tokens that will be delivered to the "Vault Address". A standard amount is 10,000,000.
+            Put the total amount without decimals.
+          </InfoTooltip>
+        </div>
+        <input
           v-model="v$.initialSupply.$model"
           name="initialSupply"
           placeholder="5,000,000"
+          id="initial-supply"
           class="
               w-full
               border-b-2 border-black
@@ -57,32 +66,49 @@
               placeholder:font-bold
             "
           type="text"
-        ></label>
+        >
       </div>
       <div class="mt-8">
-        <label class="text-l font-black">
-          Vault Address
-          <input
-            v-model="v$.vaultAddress.$model"
-            name="vaultAddress"
-            placeholder="0x..."
-            class="
+        <div class="flex">
+          <label class="text-l font-black">
+            Vault Address</label>
+          <InfoTooltip class="ml-4">
+            The ETH address that will receive the initial supply for vault.
+            This could be a multisig, or an externally owned account (EOA) that you have access to.
+          </InfoTooltip>
+        </div>
+        <input
+          v-model="v$.vaultAddress.$model"
+          name="vaultAddress"
+          placeholder="0x..."
+          class="
               w-full
               border-b-2 border-black
               bg-transparent
               placeholder:font-bold
             "
-            type="text"
-          ></label>
+          type="text"
+        >
         <span
           v-if="v$.vaultAddress.$dirty && v$.vaultAddress.$invalid"
           id="vaultAddress-error"
         >Please enter a valid Ethereum address</span>
       </div>
       <div class="mt-8">
-        <label
-          class="text-l font-black"
-        >Supply for Airdrop<input
+        <div class="flex">
+          <label
+            class="text-l font-black"
+            for="airdrop-supply"
+          >Supply for Airdrop
+          </label>
+          <InfoTooltip class="ml-4">
+            This supply will be held by the contract and exists in addition to the innitial supply.
+            Once you launch your token, you can distribute all or part of the supply for airdrop. <br>
+            If you don't want to create an airdrop just yet, you can either set apart the supply now, or
+            type '0' and send tokens to the token contract address when you are ready.
+          </InfoTooltip>
+        </div>
+        <input
           v-model="v$.airdropSupply.$model"
           name="airdropSupply"
           placeholder="5,000,000"
@@ -92,14 +118,21 @@
               bg-transparent
               placeholder:font-bold
             "
+          id="airdrop-supply"
           type="text"
-        ></label>
+        >
       </div>
       <div class="mt-8">
-        <label
-          class="text-l font-black"
-          for="admin-addresses"
-        >Administrators' Addresses</label>
+        <div class="flex">
+          <label
+            class="text-l font-black"
+            for="admin-addresses"
+          >Administrators' Addresses</label>
+          <InfoTooltip class="ml-4">
+            These Ethereum addresses will have the ability to create and finish airdrops as well as set up
+            an address that will have a 'minter' role (with the ability to mint more tokens) if applicable.
+          </InfoTooltip>
+        </div>
         <p class="mb-4 text-s">
           Insert list separated by commas
         </p>
@@ -121,12 +154,18 @@
         >Please enter a valid Ethereum addresses separated by commas</span>
       </div>
       <div class="mt-8 flex justify-between">
-        <p
-          class="text-l font-black"
-          for=""
-        >
-          Minting Allowed
-        </p>
+        <div class="flex">
+          <p
+            class="text-l font-black"
+            for=""
+          >
+            Minting Allowed
+          </p>
+          <InfoTooltip class="ml-4">
+            Minting is the process of increasing the total circulating supply of a token. Currently, you have set
+            {{ c(totalSupply) }} tokens to exist, and minting would allow you to increase that number.
+          </InfoTooltip>
+        </div>
         <div>
           <input
             type="radio"
@@ -149,14 +188,25 @@
           ><label for="minting-yes">Yes</label>
         </div>
       </div>
+      <div
+        class="mt-8"
+        v-if="tokenParams.minting === 'false'"
+      >
+        Current total max supply: {{ c(totalSupply) }}
+      </div>
       <transition name="fade">
         <div v-if="tokenParams.minting === 'true'">
           <div>
             <div class="mt-8 flex justify-between">
-              <label
-                class="text-l font-black"
-                for="supplyCap"
-              >Total Supply Cap</label>
+              <div class="flex">
+                <label
+                  class="text-l font-black"
+                  for="supplyCap"
+                >Total Supply Cap</label>
+                <InfoTooltip class="ml-4">
+                  The total supply cap is to guarantee that there will be a maximum number of tokens ever minted.
+                </InfoTooltip>
+              </div>
               <div>
                 <input
                   type="radio"
@@ -207,30 +257,40 @@
             </transition>
           </div>
           <div class="mt-8">
-            <label
-              class="text-l font-black"
-            >Days Between Mints
-              <input
-                v-model="v$.timeDelay.$model"
-                id="time-delay"
-                name="timeDelay"
-                class="w-full border-b-2 border-black bg-transparent"
-                type="number"
-              >
-            </label>
+            <div class="flex">
+              <label
+                class="text-l font-black"
+                for="time-delay"
+              >Mint Period Length</label>
+              <InfoTooltip class="ml-4">
+                How much time must pass before you can call the minting function again.
+              </InfoTooltip>
+            </div>
+            <input
+              v-model="v$.timeDelay.$model"
+              id="time-delay"
+              name="timeDelay"
+              class="w-full border-b-2 border-black bg-transparent"
+              type="number"
+            >
           </div>
           <div class="mt-8">
-            <label
-              class="text-l font-black"
-            >Tokens to Mint Per Mint Period
-              <input
-                v-model="v$.mintCap.$model"
-                id="mint-cap"
-                name="mintCap"
-                class="w-full border-b-2 border-black bg-transparent"
-                type="string"
-              >
-            </label>
+            <div class="flex">
+              <label
+                class="text-l font-black"
+                for="mint-cap"
+              >Max Amount of Tokens to Mint Per Mint Period</label>
+              <InfoTooltip class="ml-4">
+                Each mint period will be able to mint up to but not more than this amount.
+              </InfoTooltip>
+            </div>
+            <input
+              v-model="v$.mintCap.$model"
+              id="mint-cap"
+              name="mintCap"
+              class="w-full border-b-2 border-black bg-transparent"
+              type="string"
+            >
             <p v-if="v$.mintCap.$dirty && v$.mintCap.$invalid">
               Please enter a valid amount of tokens to to mint each
               {{ tokenParams.timeDelay }} days
@@ -239,16 +299,24 @@
         </div>
       </transition>
       <div class="flex flex-col items-center mt-8">
-        <input
-          type="submit"
-          class="btn w-48 mt-4 bg-purple-50 disabled:cursor-not-allowed"
-          :class="{
-            'bg-gray-300 text-slate-600 border-slate-600': v$.$invalid,
-          }"
-          :disabled="v$.$invalid"
-          @click.prevent="submitToken"
-          value="Preview Token"
-        >
+        <div class="flex items-center flex-col-reverse md:flex-row md:self-end justify-self-end">
+          <button
+            @click.prevent="clearForm"
+            class="btn md:mr-8"
+          >
+            clear form
+          </button>
+          <input
+            type="submit"
+            class="btn w-48 my-4 bg-purple-50 disabled:cursor-not-allowed"
+            :class="{
+              'bg-gray-300 text-slate-600 border-slate-600': v$.$invalid,
+            }"
+            :disabled="v$.$invalid"
+            @click.prevent="submitToken"
+            value="Preview Token"
+          >
+        </div>
         <div
           v-if="v$.$anyDirty && v$.$invalid"
           class="my-4"
@@ -484,12 +552,6 @@
       </div>
     </Modal>
   </div>
-  <button
-    @click="clearForm"
-    class="btn"
-  >
-    clear form
-  </button>
 </template>
 <script lang="ts">
 import { ref, reactive, defineComponent, computed, onMounted } from "vue"
@@ -503,6 +565,7 @@ import useVuelidate from "@vuelidate/core"
 import { required, minLength } from "@vuelidate/validators"
 import Modal from "../components/Modal.vue"
 import SvgLoader from "../components/SvgLoader.vue"
+import InfoTooltip from "../components/InfoTooltip.vue"
 import { formatAddress } from "../services/formatAddress"
 import { Deployer } from "../contracts/Deployer"
 import { DeployerFactory } from "../contracts/DeployerFactory"
@@ -531,6 +594,7 @@ export default defineComponent({
   components: {
     Modal,
     SvgLoader,
+    InfoTooltip,
   },
   setup() {
     return {
