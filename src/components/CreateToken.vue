@@ -313,7 +313,7 @@
               'bg-gray-300 text-slate-600 border-slate-600': v$.$invalid,
             }"
             :disabled="v$.$invalid"
-            @click.prevent="submitToken"
+            @click.prevent="() => toggleSimpleTokenModal()"
             value="Preview Token"
           >
         </div>
@@ -494,7 +494,7 @@
               </button>
               <div>
                 <span>Price: </span>
-                <span>{{ contractPrice }} {{ currency }}</span>
+                <span>{{ contractPrice }} {{ currencyActive }}</span>
               </div>
             </div>
             <div v-else>
@@ -673,7 +673,7 @@ function composeDeployGovToken() {
   const totalSupply = computed(() => {
     return Number(initialSupply.value) + Number(airdropSupply.value)
   })
-  const currency = computed(() => {
+  const currencyActive = computed(() => {
     return networks[network.value]?.currency
   })
   const parsedAddresses = computed(() => {
@@ -713,7 +713,7 @@ function composeDeployGovToken() {
     localStorage.removeItem("tokenData")
   }
 
-  async function toggleSimpleTokenModal() {
+  function toggleSimpleTokenModal() {
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value
     checkProvider()
   }
@@ -726,8 +726,9 @@ function composeDeployGovToken() {
     if (hasEthProvider) {
       ethereum = (window as any).ethereum
       provider = new ethers.providers.Web3Provider(ethereum, "any")
-      ethereum.request({ method: "eth_requestAccounts" })
+      await ethereum.request({ method: "eth_requestAccounts" })
 
+      metamaskStatus.value = metamaskAuthStatuses[3]
       const networkData = await provider.getNetwork()
       network.value = networkData.chainId.toString()
 
@@ -736,6 +737,7 @@ function composeDeployGovToken() {
       getContractParams(signer)
       provider.on("network", (newNetwork, oldNetwork) => {
         if (oldNetwork) {
+          metamaskStatus.value = metamaskAuthStatuses[3]
           getContractParams(signer)
           network.value = newNetwork.chainId
         }
@@ -899,9 +901,6 @@ function composeDeployGovToken() {
       contractAddress: deployedTokenAddress.value,
     })
   }
-  function submitToken() {
-    toggleSimpleTokenModal()
-  }
   function getNumbersFromString(str: string) {
     return str.replace(/[^0-9]/g, "")
   }
@@ -1007,7 +1006,6 @@ function composeDeployGovToken() {
     totalSupply,
     mintCap,
     maxSupply,
-    submitToken,
     parsedAddresses,
     showExpandedList,
     expandAddressList,
@@ -1028,7 +1026,7 @@ function composeDeployGovToken() {
     errorText,
     saveTokenParams,
     clearForm,
-    currency,
+    currencyActive,
   }
 }
 </script>
