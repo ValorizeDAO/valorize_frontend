@@ -92,7 +92,6 @@
             sm:pr-6
             sm:flex-row
             sm:justify-center
-            hover:font-bold
           "
         >
           <router-link
