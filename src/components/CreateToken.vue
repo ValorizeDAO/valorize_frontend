@@ -5,42 +5,46 @@
         Launch A Token
       </h2>
       <div class="flex justify-between mt-20">
-        <label
-          class="text-l font-black flex flex-col"
-          for="token-name"
-        >Name</label>
-        <input
-          v-model="v$.tokenName.$model"
-          name="tokenName"
-          id="token-name"
-          placeholder="Token"
-          class="
+        <div class="flex flex-col">
+          <label
+            class="text-l font-black"
+            for="token-name"
+          >Name</label>
+          <input
+            v-model="v$.tokenName.$model"
+            name="tokenName"
+            id="token-name"
+            placeholder="Token"
+            class="
               w-full
               border-b-2 border-black
               bg-transparent
               mt-4
               placeholder:font-bold
             "
-          type="text"
-        >
+            type="text"
+          >
+        </div>
         <div class="mx-4" />
-        <label
-          class="text-l font-black flex flex-col"
-          for=""
-        >Symbol</label>
-        <input
-          v-model="v$.tokenSymbol.$model"
-          name="tokenSymbol"
-          placeholder="TKN"
-          class="
+        <div class="flex flex-col">
+          <label
+            class="text-l font-black flex flex-col"
+            for=""
+          >Symbol</label>
+          <input
+            v-model="v$.tokenSymbol.$model"
+            name="tokenSymbol"
+            placeholder="TKN"
+            class="
               w-full
               border-b-2 border-black
               bg-transparent
               mt-4
               placeholder:font-bold
             "
-          type="text"
-        >
+            type="text"
+          >
+        </div>
       </div>
       <div class="mt-8">
         <div class="flex">
@@ -456,6 +460,9 @@
           <div v-else-if="currentStatus === states.fetchingTokenData">
             Getting contract info
           </div>
+          <div v-else-if="currentStatus === states.fetchingDataFailed">
+            Error getting token data, please refresh the page and try again
+          </div>
           <div v-else-if="currentStatus === states.transactionAwaitingSignature">
             Please Use Your Wallet to Confirm Transaction
           </div>
@@ -731,7 +738,6 @@ function composeDeployGovToken() {
   }
 
   function toggleSimpleTokenModal() {
-    console.log("toggling")
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value
     checkProvider()
   }
@@ -752,7 +758,7 @@ function composeDeployGovToken() {
 
       // @ts-ignore the lies
       const signer = provider.getSigner()
-      await getContractParams(networkData.chainId.toString())
+      if (!(await getContractParams(networkData.chainId.toString()))) return
       provider.on("network", (newNetwork, oldNetwork) => {
         if (oldNetwork) {
           currentStatus.value = states.signerEnabled
@@ -772,12 +778,13 @@ function composeDeployGovToken() {
   async function getContractParams(chainId: string) {
     currentStatus.value = states.fetchingTokenData
     const response = await api.getContractByteCodeHashAndPrice(tokenKeys[tokenParams.minting === "false" ? 0 : 1], chainId)
-    if (!response.ok) {
+    if (response.status !== 200) {
       currentStatus.value = states.fetchingDataFailed
-      return
+      return false
     }
     const result = await response.json()
     contractPrice.value = ethers.utils.formatEther(result.Price.toString())
+    return true
   }
   async function deployToken() {
     tokenStatus.value = tokenStatuses[3]
