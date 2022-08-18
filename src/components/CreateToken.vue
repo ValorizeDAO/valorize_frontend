@@ -7,41 +7,40 @@
       <div class="flex justify-between mt-20">
         <label
           class="text-l font-black flex flex-col"
-          for=""
-        >Name
-          <input
-            v-model="v$.tokenName.$model"
-            name="tokenName"
-            placeholder="Token"
-            class="
+          for="token-name"
+        >Name</label>
+        <input
+          v-model="v$.tokenName.$model"
+          name="tokenName"
+          id="token-name"
+          placeholder="Token"
+          class="
               w-full
               border-b-2 border-black
               bg-transparent
               mt-4
               placeholder:font-bold
             "
-            type="text"
-          >
-        </label>
+          type="text"
+        >
         <div class="mx-4" />
         <label
           class="text-l font-black flex flex-col"
           for=""
-        >Symbol
-          <input
-            v-model="v$.tokenSymbol.$model"
-            name="tokenSymbol"
-            placeholder="TKN"
-            class="
+        >Symbol</label>
+        <input
+          v-model="v$.tokenSymbol.$model"
+          name="tokenSymbol"
+          placeholder="TKN"
+          class="
               w-full
               border-b-2 border-black
               bg-transparent
               mt-4
               placeholder:font-bold
             "
-            type="text"
-          >
-        </label>
+          type="text"
+        >
       </div>
       <div class="mt-8">
         <div class="flex">
@@ -236,15 +235,16 @@
               >
                 <label
                   class="text-l font-black"
+                  for="maxSupply"
                 >Max Supply
-                  <input
-                    v-model="v$.maxSupply.$model"
-                    id="maxSupply"
-                    name="maxSupply"
-                    class="w-full border-b-2 border-black bg-transparent"
-                    type="text"
-                  >
                 </label>
+                <input
+                  v-model="v$.maxSupply.$model"
+                  id="maxSupply"
+                  name="maxSupply"
+                  class="w-full border-b-2 border-black bg-transparent"
+                  type="text"
+                >
               </div>
             </transition>
             <transition name="fade">
@@ -459,7 +459,8 @@
           <div v-else-if="currentStatus === states.transactionAwaitingSignature">
             Please Use Your Wallet to Confirm Transaction
           </div>
-          <div v-else-if="
+          <div
+            v-else-if="
               currentStatus === states.signerEnabled ||
                 currentStatus === states.transactionSignatureRejectedByUser ||
                 currentStatus === states.signedTransactionError
@@ -515,7 +516,8 @@
               class="font-black underline"
             >Brave Browser's built in wallet</a>
           </div>
-          <div v-else-if="currentStatus === states.signedTransactionSent"
+          <div
+            v-else-if="currentStatus === states.signedTransactionSent"
             class="text-center"
           >
             Contract launching, <br>
@@ -532,7 +534,8 @@
               fill="#"
             />
           </div>
-          <div v-else-if="currentStatus === states.transactionMined"
+          <div
+            v-else-if="currentStatus === states.transactionMined"
             class="text-center"
           >
             Success! <br>
@@ -1045,7 +1048,7 @@ function composeDeployGovToken() {
     saveTokenParams,
     clearForm,
     currencyActive,
-    states
+    states,
   }
 }
 </script>

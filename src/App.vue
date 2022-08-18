@@ -47,7 +47,7 @@ export default defineComponent({
   },
   mounted() {
     // check if app is running in production
-    console.log("VALORIZE_APP_DEPLOY_0.2.2")
+    console.log("VALORIZE_APP_DEPLOY_0.2.2-patch-1")
     if (import.meta.env.VITE_ENV !== "dev") {
       console.log(
         `%c${asciiLogo}
