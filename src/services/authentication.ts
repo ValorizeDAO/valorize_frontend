@@ -229,28 +229,4 @@ export default {
       import.meta.env.VITE_BACKEND_URL + "/api/v0/me/tokens", requestOptions,
     )
   },
-
-  async getContractKeys() {
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-      credentials: "include",
-    } as RequestInit
-    return await fetch(
-      import.meta.env.VITE_BACKEND_URL + "/api/v0/me/contracts",
-      requestOptions,
-    )
-  },
-
-  async getContractBytecode(key: string) {
-    const requestOptions = {
-      method: "GET",
-      redirect: "follow",
-      credentials: "include",
-    } as RequestInit
-    return await fetch(
-      import.meta.env.VITE_BACKEND_URL + "/api/v0/me/contracts/" + key,
-      requestOptions,
-    )
-  },
 }
