@@ -25,7 +25,10 @@
         class="h-8"
       >
     </router-link>
-    <div class="sm:flex sm:h-full">
+    <div
+      class="sm:flex sm:h-full"
+      v-if="!checkingAuth"
+    >
       <div class="sm:hidden">
         <button
           @click="triggerBlock"

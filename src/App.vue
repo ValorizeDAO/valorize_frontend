@@ -2,27 +2,6 @@
   <main class="min-h-screen">
     <NavBar />
     <div class="pt-20 min-h-screen w-screen overflow-hidden bg-purple-50">
-      <div
-        v-if="checkingAuth"
-        class="
-          flex
-          items-center
-          justify-center
-          mt-20
-          bg-purple-900
-          absolute
-          top-0
-          left-0
-          w-screen
-          h-screen
-          z-50
-        "
-      >
-        <SvgLoader
-          fill="#fff"
-          class="h-12 mx-auto"
-        />
-      </div>
       <router-view />
     </div>
   </main>

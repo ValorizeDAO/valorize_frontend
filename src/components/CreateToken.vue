@@ -267,16 +267,19 @@
                 for="time-delay"
               >Mint Period Length</label>
               <InfoTooltip class="ml-4">
-                How much time must pass before you can call the minting function again.
+                How many days must pass before you can call the minting function again.
               </InfoTooltip>
             </div>
-            <input
-              v-model="v$.timeDelay.$model"
-              id="time-delay"
-              name="timeDelay"
-              class="w-full border-b-2 border-black bg-transparent"
-              type="number"
-            >
+            <div class="flex justify-between">
+              <input
+                v-model="v$.timeDelay.$model"
+                id="time-delay"
+                name="timeDelay"
+                class="w-[80%] border-b-2 border-black bg-transparent"
+                type="number"
+              >
+              <span class="font-black">Days</span>
+            </div>
           </div>
           <div class="mt-8">
             <div class="flex">
@@ -759,10 +762,13 @@ function composeDeployGovToken() {
       // @ts-ignore the lies
       const signer = provider.getSigner()
       if (!(await getContractParams(networkData.chainId.toString()))) return
-      provider.on("network", (newNetwork, oldNetwork) => {
+      provider.on("network", async (newNetwork, oldNetwork) => {
         if (oldNetwork) {
           currentStatus.value = states.signerEnabled
-          getContractParams(newNetwork.chainId)
+          const success = await getContractParams(newNetwork.chainId)
+          if (success) {
+            currentStatus.value = states.signerEnabled
+          }
           network.value = newNetwork.chainId
         }
       })
@@ -783,6 +789,7 @@ function composeDeployGovToken() {
       return false
     }
     const result = await response.json()
+    console.log({ result })
     contractPrice.value = ethers.utils.formatEther(result.Price.toString())
     return true
   }
@@ -797,16 +804,17 @@ function composeDeployGovToken() {
     let contractNum:tokenTypes = 0
     if (tokenParams.minting === "false") {
       contractNum = 0
+      const data = [
+        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
+        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
+        ethers.utils.getAddress(tokenParams.vaultAddress),
+        tokenParams.tokenName,
+        tokenParams.tokenSymbol,
+        parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
+      ]
       params = encoder.encode(
-        ["uint", "uint", "address", "string", "string", "address[]"],
-        [
-          BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
-          BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
-          ethers.utils.getAddress(tokenParams.vaultAddress),
-          tokenParams.tokenName,
-          tokenParams.tokenSymbol,
-          parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
-        ])
+        ["uint256", "uint256", "address", "string", "string", "address[]"],
+        data)
     } else if (tokenParams.minting === "true") {
       contractNum = 1
       let maxTokenSupply: BigNumber
