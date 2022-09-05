@@ -2,27 +2,6 @@
   <main class="min-h-screen">
     <NavBar />
     <div class="pt-20 min-h-screen w-screen overflow-hidden bg-purple-50">
-      <div
-        v-if="checkingAuth"
-        class="
-          flex
-          items-center
-          justify-center
-          mt-20
-          bg-purple-900
-          absolute
-          top-0
-          left-0
-          w-screen
-          h-screen
-          z-50
-        "
-      >
-        <SvgLoader
-          fill="#fff"
-          class="h-12 mx-auto"
-        />
-      </div>
       <router-view />
     </div>
   </main>
@@ -37,7 +16,7 @@ import asciiLogo from "./assets/ascii-logo"
 
 export default defineComponent({
   name: "App",
-  components: { SvgLoader, NavBar },
+  components: { NavBar },
   computed: {
     ...mapGetters({
       checkingAuth: "authUser/checkingAuth",
@@ -47,7 +26,7 @@ export default defineComponent({
   },
   mounted() {
     // check if app is running in production
-    console.log("VALORIZE_APP_DEPLOY_0.2.1")
+    console.log("VALORIZE_APP_DEPLOY_0.2.2-patch-1")
     if (import.meta.env.VITE_ENV !== "dev") {
       console.log(
         `%c${asciiLogo}

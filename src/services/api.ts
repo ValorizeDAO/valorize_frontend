@@ -78,6 +78,42 @@ class Api {
   get(route: string) {
     return fetch(import.meta.env.VITE_BACKEND_URL + route)
   }
+
+  async getContractByteCodeHashAndPrice(contractKey:string, chainId:string) {
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+      credentials: "include",
+    } as RequestInit
+    return fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/v0/contracts/${contractKey}/price?chainId=${chainId}`,
+      requestOptions,
+    )
+  }
+
+  async getContractKeys() {
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+      credentials: "include",
+    } as RequestInit
+    return await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/v0/contracts",
+      requestOptions,
+    )
+  }
+
+  async getContractBytecode(key: string) {
+    const requestOptions = {
+      method: "GET",
+      redirect: "follow",
+      credentials: "include",
+    } as RequestInit
+    return await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/v0/contracts/" + key,
+      requestOptions,
+    )
+  }
 }
 
 const api = new Api()

@@ -8,7 +8,7 @@ jest.mock("vue-router", () => ({
   useRouter: jest.fn(() => ({ name: "Home" })),
 }))
 
-jest.mock("../../services/authentication", () => ({
+jest.mock("../../services/api", () => ({
   getContractKeys: jest.fn(() => ({
     smartContractKeys: ["1", "2"],
   })),
