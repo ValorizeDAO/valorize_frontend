@@ -16,7 +16,7 @@ import asciiLogo from "./assets/ascii-logo"
 
 export default defineComponent({
   name: "App",
-  components: { SvgLoader, NavBar },
+  components: { NavBar },
   computed: {
     ...mapGetters({
       checkingAuth: "authUser/checkingAuth",
