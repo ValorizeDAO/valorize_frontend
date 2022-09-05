@@ -5,13 +5,15 @@
         Launch A Token
       </h2>
       <div class="flex justify-between mt-20">
-        <label
-          class="text-l font-black flex flex-col"
-          for=""
-        >Name
+        <div class="flex flex-col">
+          <label
+            class="text-l font-black"
+            for="token-name"
+          >Name</label>
           <input
             v-model="v$.tokenName.$model"
             name="tokenName"
+            id="token-name"
             placeholder="Token"
             class="
               w-full
@@ -22,12 +24,13 @@
             "
             type="text"
           >
-        </label>
+        </div>
         <div class="mx-4" />
-        <label
-          class="text-l font-black flex flex-col"
-          for=""
-        >Symbol
+        <div class="flex flex-col">
+          <label
+            class="text-l font-black flex flex-col"
+            for=""
+          >Symbol</label>
           <input
             v-model="v$.tokenSymbol.$model"
             name="tokenSymbol"
@@ -41,7 +44,7 @@
             "
             type="text"
           >
-        </label>
+        </div>
       </div>
       <div class="mt-8">
         <div class="flex">
@@ -236,15 +239,16 @@
               >
                 <label
                   class="text-l font-black"
+                  for="maxSupply"
                 >Max Supply
-                  <input
-                    v-model="v$.maxSupply.$model"
-                    id="maxSupply"
-                    name="maxSupply"
-                    class="w-full border-b-2 border-black bg-transparent"
-                    type="text"
-                  >
                 </label>
+                <input
+                  v-model="v$.maxSupply.$model"
+                  id="maxSupply"
+                  name="maxSupply"
+                  class="w-full border-b-2 border-black bg-transparent"
+                  type="text"
+                >
               </div>
             </transition>
             <transition name="fade">
@@ -263,16 +267,19 @@
                 for="time-delay"
               >Mint Period Length</label>
               <InfoTooltip class="ml-4">
-                How much time must pass before you can call the minting function again.
+                How many days must pass before you can call the minting function again.
               </InfoTooltip>
             </div>
-            <input
-              v-model="v$.timeDelay.$model"
-              id="time-delay"
-              name="timeDelay"
-              class="w-full border-b-2 border-black bg-transparent"
-              type="number"
-            >
+            <div class="flex justify-between">
+              <input
+                v-model="v$.timeDelay.$model"
+                id="time-delay"
+                name="timeDelay"
+                class="w-[80%] border-b-2 border-black bg-transparent"
+                type="number"
+              >
+              <span class="font-black">Days</span>
+            </div>
           </div>
           <div class="mt-8">
             <div class="flex">
@@ -313,7 +320,7 @@
               'bg-gray-300 text-slate-600 border-slate-600': v$.$invalid,
             }"
             :disabled="v$.$invalid"
-            @click.prevent="submitToken"
+            @click.prevent="() => toggleSimpleTokenModal()"
             value="Preview Token"
           >
         </div>
@@ -416,8 +423,8 @@
           </h2>
           <ul class="flex flex-col">
             <div
-              v-for="address in parsedAddresses.slice(0, 3)"
-              :key="address"
+              v-for="(address, i) in parsedAddresses.slice(0, 3)"
+              :key="i"
             >
               <li class="w-100">
                 {{ address }}
@@ -450,23 +457,29 @@
           name="fade"
           mode="out-in"
         >
-          <div v-if="metamaskStatus === 'INIT'">
+          <div v-if="currentStatus == states.init">
             Checking your Web3 Provider
           </div>
-          <div v-else-if="metamaskStatus === 'TX_REQUESTED'">
+          <div v-else-if="currentStatus === states.fetchingTokenData">
+            Getting contract info
+          </div>
+          <div v-else-if="currentStatus === states.fetchingDataFailed">
+            Error getting token data, please refresh the page and try again
+          </div>
+          <div v-else-if="currentStatus === states.transactionAwaitingSignature">
             Please Use Your Wallet to Confirm Transaction
           </div>
           <div
             v-else-if="
-              metamaskStatus === 'SUCCESSFULLY_ENABLED' ||
-                metamaskStatus === 'TX_ERROR' ||
-                metamaskStatus === 'TX_REJECTED'
+              currentStatus === states.signerEnabled ||
+                currentStatus === states.transactionSignatureRejectedByUser ||
+                currentStatus === states.signedTransactionError
             "
             class="text-center"
           >
             <div
               class="text-center"
-              v-if="metamaskStatus === 'TX_ERROR'"
+              v-if="currentStatus === states.signedTransactionError"
             >
               <p>{{ errorText }}</p>
               <p class="mb-2">
@@ -474,7 +487,7 @@
               </p>
             </div>
             <div
-              v-else-if="metamaskStatus === 'TX_REJECTED'"
+              v-else-if="currentStatus === states.transactionSignatureRejectedByUser"
               class="text-center"
             >
               <p>Transaction Rejected By Your Wallet</p>
@@ -494,14 +507,14 @@
               </button>
               <div>
                 <span>Price: </span>
-                <span>{{ contractPrice }} {{ currency }}</span>
+                <span>{{ contractPrice }} {{ currencyActive }}</span>
               </div>
             </div>
             <div v-else>
               Please change networks on your wallet to a supported network
             </div>
           </div>
-          <div v-else-if="metamaskStatus === 'UNAVAILABLE'">
+          <div v-else-if="currentStatus === states.signerNotAvailable">
             To launch a token, you need a web3 provider such as
             <a
               href="https://metamask.io/"
@@ -514,8 +527,8 @@
             >Brave Browser's built in wallet</a>
           </div>
           <div
+            v-else-if="currentStatus === states.signedTransactionSent"
             class="text-center"
-            v-else-if="metamaskStatus === 'TX_APPROVED'"
           >
             Contract launching, <br>
             <a
@@ -532,8 +545,8 @@
             />
           </div>
           <div
+            v-else-if="currentStatus === states.transactionMined"
             class="text-center"
-            v-else-if="metamaskStatus === 'TX_SUCCESS'"
           >
             Success! <br>
             <a
@@ -569,6 +582,7 @@ import InfoTooltip from "../components/InfoTooltip.vue"
 import { formatAddress } from "../services/formatAddress"
 import { Deployer } from "../contracts/Deployer"
 import { DeployerFactory } from "../contracts/DeployerFactory"
+import api from "../services/api"
 
 enum tokenTypes {
   simple,
@@ -609,12 +623,25 @@ export default defineComponent({
     }
   },
 })
-
+enum states {
+  init,
+  fetchingTokenData,
+  fetchingDataFailed,
+  signerRequested,
+  signerNotAvailable,
+  signerEnabled,
+  transactionAwaitingSignature,
+  transactionSignatureRejectedByUser,
+  signedTransactionSent,
+  signedTransactionError,
+  transactionMined,
+}
 function composeDeployGovToken() {
   const router = useRouter()
   const showExpandedList = ref(false)
   const tokenStatuses = ["INIT", "DEPLOYING_TEST", "DEPLOYED_TEST"]
   const tokenStatus = ref(tokenStatuses[0])
+
   const metamaskAuthStatuses = [
     "INIT", // 0
     "REQUESTED", // 1
@@ -628,7 +655,7 @@ function composeDeployGovToken() {
     "TX_ERROR", // 9
   ]
   const errorText = ref("")
-  const metamaskStatus = ref(metamaskAuthStatuses[0])
+  const currentStatus = ref(states.init)
   const simpleTokenModalDisplayed = ref(false)
   const network = ref("")
   const tokenTxHash = ref("")
@@ -673,21 +700,21 @@ function composeDeployGovToken() {
   const totalSupply = computed(() => {
     return Number(initialSupply.value) + Number(airdropSupply.value)
   })
-  const currency = computed(() => {
+  const currencyActive = computed(() => {
     return networks[network.value]?.currency
   })
   const parsedAddresses = computed(() => {
     const { adminAddresses } = tokenParams
     const addresses = adminAddresses.split(",")
     if (addresses.length > 1) return addresses.map((val) => val.trim())
-    return [adminAddresses].map((v) => ethers.utils.getAddress(v))
+    return [adminAddresses]
   })
   let ethereum: any = {}
   let provider: providers.Provider
   const decimalsMultiplyer = BigNumber.from("1000000000000000000")
   const contractKeys: string[] = []
   onMounted(async () => {
-    const res = await auth.getContractKeys()
+    const res = await api.getContractKeys()
     if (res.ok) {
       const { smartContractKeys } = await res.json()
       contractKeys.push(...smartContractKeys)
@@ -713,7 +740,7 @@ function composeDeployGovToken() {
     localStorage.removeItem("tokenData")
   }
 
-  async function toggleSimpleTokenModal() {
+  function toggleSimpleTokenModal() {
     simpleTokenModalDisplayed.value = !simpleTokenModalDisplayed.value
     checkProvider()
   }
@@ -726,57 +753,68 @@ function composeDeployGovToken() {
     if (hasEthProvider) {
       ethereum = (window as any).ethereum
       provider = new ethers.providers.Web3Provider(ethereum, "any")
-      ethereum.request({ method: "eth_requestAccounts" })
+      await ethereum.request({ method: "eth_requestAccounts" })
 
+      currentStatus.value = states.signerEnabled
       const networkData = await provider.getNetwork()
       network.value = networkData.chainId.toString()
 
       // @ts-ignore the lies
       const signer = provider.getSigner()
-      getContractParams(signer)
-      provider.on("network", (newNetwork, oldNetwork) => {
+      if (!(await getContractParams(networkData.chainId.toString()))) return
+      provider.on("network", async (newNetwork, oldNetwork) => {
         if (oldNetwork) {
-          getContractParams(signer)
+          currentStatus.value = states.signerEnabled
+          const success = await getContractParams(newNetwork.chainId)
+          if (success) {
+            currentStatus.value = states.signerEnabled
+          }
           network.value = newNetwork.chainId
         }
       })
       if (!networkInfo[network.value]) {
         alert("Unsupported Network, please connect to ethereum, polygon, or arbitrum")
       }
-      metamaskStatus.value = metamaskAuthStatuses[3]
+      currentStatus.value = states.signerEnabled
       tokenStatus.value = tokenStatuses[2]
     } else {
-      metamaskStatus.value = metamaskAuthStatuses[4]
+      currentStatus.value = states.signerNotAvailable
     }
   }
-  async function getContractParams(signer: ethers.Signer) {
-    metamaskStatus.value = metamaskAuthStatuses[3]
-    const deployerAddress = import.meta.env.VITE_DEPLOYER_ADDRESS as string
-    const deployerContract = new DeployerFactory(signer).attach(deployerAddress)
-    const { contractParams } = await deployerContract.getContractByteCodeHash(tokenKeys[tokenParams.minting === "false" ? 0 : 1])
-    contractPrice.value = ethers.utils.formatEther(contractParams.price)
+  async function getContractParams(chainId: string) {
+    currentStatus.value = states.fetchingTokenData
+    const response = await api.getContractByteCodeHashAndPrice(tokenKeys[tokenParams.minting === "false" ? 0 : 1], chainId)
+    if (response.status !== 200) {
+      currentStatus.value = states.fetchingDataFailed
+      return false
+    }
+    const result = await response.json()
+    console.log({ result })
+    contractPrice.value = ethers.utils.formatEther(result.Price.toString())
+    return true
   }
   async function deployToken() {
     tokenStatus.value = tokenStatuses[3]
-    metamaskStatus.value = metamaskAuthStatuses[1]
+    currentStatus.value = states.signerRequested
     // @ts-ignore the lies
     const signer = provider.getSigner()
-    metamaskStatus.value = metamaskAuthStatuses[3]
+    currentStatus.value = states.signerEnabled
     let params = ""
     const encoder = new ethers.utils.AbiCoder()
     let contractNum:tokenTypes = 0
     if (tokenParams.minting === "false") {
       contractNum = 0
+      const data = [
+        BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
+        BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
+        ethers.utils.getAddress(tokenParams.vaultAddress),
+        tokenParams.tokenName,
+        tokenParams.tokenSymbol,
+        parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
+      ]
       params = encoder.encode(
-        ["uint", "uint", "address", "string", "string", "address[]"],
-        [
-          BigNumber.from(initialSupply.value).mul(decimalsMultiplyer),
-          BigNumber.from(airdropSupply.value).mul(decimalsMultiplyer),
-          ethers.utils.getAddress(tokenParams.vaultAddress),
-          tokenParams.tokenName,
-          tokenParams.tokenSymbol,
-          parsedAddresses.value.map((v) => ethers.utils.getAddress(v)),
-        ])
+        ["uint256", "uint256", "address", "string", "string", "address[]"],
+        data)
     } else if (tokenParams.minting === "true") {
       contractNum = 1
       let maxTokenSupply: BigNumber
@@ -804,9 +842,9 @@ function composeDeployGovToken() {
     const { tx, error } = await deployContract(deployerContract, contractNum, params)
     if (error) {
       if (error.code === 4001) {
-        metamaskStatus.value = metamaskAuthStatuses[8]
+        currentStatus.value = states.transactionSignatureRejectedByUser
       } else {
-        metamaskStatus.value = metamaskAuthStatuses[9]
+        currentStatus.value = states.signedTransactionError
         let errorMessage = "Error confirming transaction"
         if ((error.message as string).includes("err: insufficient funds") ||
           (error.data.message as string).includes("err: insufficient funds")) {
@@ -817,7 +855,7 @@ function composeDeployGovToken() {
       return
     }
     tokenTxHash.value = (tx as ethers.ContractTransaction).hash
-    metamaskStatus.value = metamaskAuthStatuses[6]
+    currentStatus.value = states.signedTransactionSent
     await tx?.wait(1)
     const deployedContractAddress = await retrieveContractAddress(
       deployerContract as Contract, tx as ethers.ContractTransaction,
@@ -825,7 +863,7 @@ function composeDeployGovToken() {
     deployedTokenAddress.value = deployedContractAddress || ""
     const tokenRequest = await storeTokenData()
     const tokenResponse = await tokenRequest.json()
-    metamaskStatus.value = metamaskAuthStatuses[7]
+    currentStatus.value = states.signedTransactionSent
     clearForm()
     await router.push({
       path: "/token-success",
@@ -842,7 +880,7 @@ function composeDeployGovToken() {
     tx?: ethers.ContractTransaction,
     error: any
   }> {
-    const req = await auth.getContractBytecode(tokenKeys[type])
+    const req = await api.getContractBytecode(tokenKeys[type])
     if (!req.ok) { return { error: { msg: "Error getting bytecode" } } }
 
     const { byte_code } = await req.json() as { id: number, key: string, byte_code: string }
@@ -898,9 +936,6 @@ function composeDeployGovToken() {
       txHash: tokenTxHash.value,
       contractAddress: deployedTokenAddress.value,
     })
-  }
-  function submitToken() {
-    toggleSimpleTokenModal()
   }
   function getNumbersFromString(str: string) {
     return str.replace(/[^0-9]/g, "")
@@ -1007,7 +1042,6 @@ function composeDeployGovToken() {
     totalSupply,
     mintCap,
     maxSupply,
-    submitToken,
     parsedAddresses,
     showExpandedList,
     expandAddressList,
@@ -1020,7 +1054,7 @@ function composeDeployGovToken() {
     contractPrice,
     v$,
     isMaxSupplyValid,
-    metamaskStatus,
+    currentStatus,
     tokenTxHash,
     deployedTokenAddress,
     blockExplorer,
@@ -1028,7 +1062,8 @@ function composeDeployGovToken() {
     errorText,
     saveTokenParams,
     clearForm,
-    currency,
+    currencyActive,
+    states,
   }
 }
 </script>
