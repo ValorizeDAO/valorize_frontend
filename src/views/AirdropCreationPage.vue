@@ -66,6 +66,14 @@
         {{ c(formatEther(tokenData.airdropSupply)) }} ({{ tokenData.symbol }})
         Available for Airdrop
       </div>
+      <AdminList
+        class="px-16 pt-8 font-black"
+        :admins="props.state.tokenAdmins"
+      >
+        <template #title>
+          <span class="text-xl font-black">Administrators</span>
+        </template>
+      </AdminList>
       <transition
         name="fade"
         mode="out-in"
@@ -96,7 +104,8 @@
               v-else-if="airdropStatus === 'ERROR'"
               class="my-4 text-red-900 font-black text-center"
             >
-              There was an error with the request, please try again.
+              There was an error with the request, please try again. <br>
+              {{ metamaskError }}
             </div>
           </transition>
           <div
@@ -278,6 +287,7 @@ import dateFormat from "dateformat"
 import { getProviderAndSigner } from "../services/getProviderInfo"
 import { ref, computed, onMounted } from "vue"
 import SvgLoader from "../components/SvgLoader.vue"
+import AdminList from "../components/AdminList.vue"
 
 const props = defineProps<{
   state: any;
@@ -460,14 +470,15 @@ async function saveAirdropInfo() {
         transitionState()
       } catch (err: any) {
         transitionState(false)
-        switch (err.code) {
-        case 4001:
-          metamaskError.value = "You need to approve the transaction"
-          break
-        case "UNPREDICTABLE_GAS_LIMIT":
+        if (err?.message.match(/is missing role/) || err.message === "UNPREDICTABLE_GAS_LIMIT") {
           metamaskError.value = `Your account: ${formatAddress(
             await signer.getAddress(),
           )} is not an administrator account, please switch to an account with administrator privileges`
+          return
+        }
+        switch (err.code) {
+        case 4001:
+          metamaskError.value = "You need to approve the transaction"
           break
         default:
           console.error(err)
