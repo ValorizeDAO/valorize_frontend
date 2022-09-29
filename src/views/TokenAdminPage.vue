@@ -144,19 +144,11 @@
       </div>
     </div>
     <div class="border-b-2 border-black pb-2 mt-8">
-      <div class="flex justify-between">
-        <span class="text-2xl font-black">Administrators</span>
-        <!-- <button class="btn">Add New Administrators</button> -->
-      </div>
-      <div class="mt-4">
-        <div
-          class="text-xl"
-          v-for="admin in tokenAdmins"
-          :key="admin.address"
-        >
-          {{ admin.address }}
-        </div>
-      </div>
+      <AdminList :admins="tokenAdmins">
+        <template #title>
+          <span class="text-2xl font-black">Administrators</span>
+        </template>
+      </AdminList>
     </div>
   </div>
   <div class="mx-auto flex-col mt-24 max-w-2xl">
@@ -177,7 +169,7 @@ import currency from "currency.js"
 import { ethers, BigNumber } from "ethers"
 import { formatAddress } from "../services/formatAddress"
 import { TimedMintTokenFactory } from "../contracts/TimedMintTokenFactory"
-import SvgLoader from "../components/SvgLoader.vue"
+import AdminList from "../components/AdminList.vue"
 import { computed, ref } from "vue"
 const props = defineProps<{
   state: any;
