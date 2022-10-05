@@ -67,6 +67,9 @@ export default {
     }
     throw new Error("Logout failed")
   },
+  async resetPassword(authToken: string, newPassword: string) {
+    console.log("fetching new password")
+  },
   async uploadPicture(file: File): Promise<Response> {
     const formdata = new FormData()
     formdata.append("picture", file, "user_picture.png")
