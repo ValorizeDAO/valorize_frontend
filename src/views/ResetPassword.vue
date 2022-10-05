@@ -45,7 +45,7 @@
             <input
               type="submit"
               class="btn bg-purple-300 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors duration-300"
-              :disabled="password !== password2"
+              :disabled="!enteredPasswordsMatch"
             >
           </div>
         </form>
@@ -56,12 +56,16 @@
 <script setup lang="ts">
 import { ref } from "@vue/reactivity"
 import { onMounted } from "@vue/runtime-core"
+import { computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import authentication from "../services/authentication"
 const router = useRouter()
 const route = useRoute()
 const password = ref("")
 const password2 = ref("")
+const enteredPasswordsMatch = computed(() => {
+  return (!!password.value.length && !!password2.value.length && password.value === password2.value)
+})
 let credential = ""
 onMounted(() => {
   route.query.credential || router.push("/")
