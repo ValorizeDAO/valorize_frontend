@@ -9,17 +9,23 @@
       </h1>
       <div class="divider" />
       <h2 class="heroSection__supportCopy">
-        Launch a Token, turn your <em>discord</em> into a DAO.
+        Launch a Token, turn your <em>community</em> into a DAO.
       </h2>
       <h2 class="heroSection__supportCopy text-center mt-8">
         It is easier than you think.
       </h2>
-      <div class="p-8 mx-auto flex justify-center">
+      <div class="p-8 mx-auto flex flex-col items-center justify-center">
         <router-link
-          to="register"
+          to="/beta-signup"
           class="cta_button text-center font-bold text-2xl"
         >
-          Sign Up
+          Book a Free Call
+        </router-link>
+        <router-link
+          to="/beta-signup"
+          class="text-center font-bold text-xl mt-4 border-b-2 px-2 border-black"
+        >
+          Or Signup
         </router-link>
       </div>
     </div>
