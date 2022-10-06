@@ -96,7 +96,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicRoutes = ["Landing", "Login", "Register", "Show Profile", "Join Beta", "Claim Airdrop"]
+  const publicRoutes = ["Landing", "Login", "Register", "Show Profile", "Join Beta", "Claim Airdrop", "Reset Password"]
   let { name } = to
   const { username } = to.params
   name = name?.toString() || ""

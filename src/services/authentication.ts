@@ -68,7 +68,20 @@ export default {
     throw new Error("Logout failed")
   },
   async resetPassword(authToken: string, newPassword: string) {
-    console.log("fetching new password")
+    const formdata: FormData = new FormData()
+    formdata.append("credential", authToken)
+    formdata.append("password", newPassword)
+
+    const requestOptions = {
+      method: "POST",
+      body: formdata,
+      credentials: "include",
+    } as RequestInit
+
+    return await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/reset-password",
+      requestOptions,
+    )
   },
   async uploadPicture(file: File): Promise<Response> {
     const formdata = new FormData()

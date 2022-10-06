@@ -41,12 +41,15 @@
             id="password2"
             v-model="password2"
           >
-          <div class="flex justify-center mt-8">
+          <div class="flex flex-col items-center mt-8">
             <input
               type="submit"
               class="btn bg-purple-300 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors duration-300"
               :disabled="!enteredPasswordsMatch"
             >
+            <div class="max-w-xl text-red-800 mt-4">
+              {{ errorText }}
+            </div>
           </div>
         </form>
       </div>
@@ -63,6 +66,7 @@ const router = useRouter()
 const route = useRoute()
 const password = ref("")
 const password2 = ref("")
+const errorText = ref("")
 const enteredPasswordsMatch = computed(() => {
   return (!!password.value.length && !!password2.value.length && password.value === password2.value)
 })
@@ -71,7 +75,13 @@ onMounted(() => {
   route.query.credential || router.push("/")
   credential = route.query.credential as string
 })
-function resetPassword() {
-  authentication.resetPassword(credential, password.value)
+async function resetPassword() {
+  const res = await authentication.resetPassword(credential, password.value)
+  if (res.ok) {
+    router.push("/edit-profile")
+  } else {
+    const data = await res.json() as { error: string }
+    errorText.value = data.error === "token invalid" ? "Error authenticating, the link might be expired" : data.error
+  }
 }
 </script>
