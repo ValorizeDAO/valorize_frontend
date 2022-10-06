@@ -7,14 +7,14 @@
     <div class="px-12" />
     <div>
       Not sure about the process? We can help. <br class="lg:hidden">
-      <router-link
-        to="/beta-signup"
+      <a
+        :href="callSignupUrl"
         class="mx-8"
       >
         <button class="bg-white font-normal p-2 rounded-sm text-black  mt-4 lg:mt-0">
           Book a free call
         </button>
-      </router-link>
+      </a>
     </div>
     <button
       class="px-8"
@@ -56,13 +56,13 @@
         md:bg-paper-light
       "
     >
-      <CreateToken />
+      <CreateToken @tokenUpdated="(e) => tokenInfo = e" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue"
+import { computed, defineComponent, onMounted, ref } from "vue"
 import CreateToken from "../components/CreateToken.vue"
 import { useStore } from "vuex"
 
@@ -88,14 +88,21 @@ export default defineComponent({
 function composeProfileInfo() {
   const store = useStore()
   const userInfo = store.getters["authUser/user"]
+  const tokenInfo = ref({})
   const fullName = ref(userInfo.name)
   const about = ref(userInfo.about)
   const hasToken = store.getters["authUser/hasToken"]
+
+  const callSignupUrl = computed(() => {
+    return `https://z097733a167.typeform.com/to/RNBCAQwg#email=${userInfo.email}&token_data=${JSON.stringify(tokenInfo.value)}`
+  })
 
   return {
     fullName,
     about,
     hasToken,
+    tokenInfo,
+    callSignupUrl,
   }
 }
 </script>

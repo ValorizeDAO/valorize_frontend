@@ -76,6 +76,12 @@
           >
             Sign Up
           </router-link>
+          <router-link
+            to="/beta-signup"
+            class="cta_button text-center font-bold"
+          >
+            Book a Free Call
+          </router-link>
         </div>
         <div
           v-else
