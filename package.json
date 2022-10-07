@@ -1,6 +1,6 @@
 {
   "name": "valorize.app",
-  "version": "0.2.2-patch-1",
+  "version": "0.2.3",
   "scripts": {
     "serve": "vite preview",
     "build": "vue-tsc --noEmit && vite build",
