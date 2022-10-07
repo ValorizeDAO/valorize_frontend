@@ -22,7 +22,6 @@
     "buffer": "^4.9.2",
     "chart.js": "^3.5.1",
     "currency.js": "^2.0.4",
-    "cypress": "^8.5.0",
     "dateformat": "^5.0.3",
     "ethers": "^5.4.6",
     "js-confetti": "^0.10.2",

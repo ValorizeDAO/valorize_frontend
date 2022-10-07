@@ -572,6 +572,7 @@ import { useRouter } from "vue-router"
 import { ethers, BigNumber, providers, Contract } from "ethers"
 import { networkInfo, network } from "../services/network"
 import detectEthereumProvider from "@metamask/detect-provider"
+import { TokenParams } from "../models/Token"
 import currency from "currency.js"
 import auth from "../services/authentication"
 import useVuelidate from "@vuelidate/core"
@@ -590,19 +591,6 @@ enum tokenTypes {
   creator
 }
 
-type TokenParams = {
-  tokenName: string,
-  tokenSymbol: string,
-  initialSupply: string,
-  vaultAddress: string,
-  airdropSupply: string,
-  adminAddresses: string,
-  minting: string,
-  supplyCap: string,
-  maxSupply: string,
-  timeDelay: number,
-  mintCap: string,
-}
 export default defineComponent({
   name: "CreateToken",
   components: {

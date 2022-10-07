@@ -56,15 +56,16 @@
         md:bg-paper-light
       "
     >
-      <CreateToken @tokenUpdated="(e) => tokenInfo = e" />
+      <CreateToken @tokenUpdated="onTokenUpdated" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onMounted, ref } from "vue"
+import { computed, defineComponent, onMounted, Ref, ref } from "vue"
 import CreateToken from "../components/CreateToken.vue"
 import { useStore } from "vuex"
+import { TokenParams, isTokenParams } from "../models/Token"
 
 export default defineComponent({
   name: "CreateTokenPage",
@@ -88,7 +89,7 @@ export default defineComponent({
 function composeProfileInfo() {
   const store = useStore()
   const userInfo = store.getters["authUser/user"]
-  const tokenInfo = ref({})
+  const tokenInfo = ref({}) as Ref<TokenParams>
   const fullName = ref(userInfo.name)
   const about = ref(userInfo.about)
   const hasToken = store.getters["authUser/hasToken"]
@@ -97,12 +98,19 @@ function composeProfileInfo() {
     return `https://z097733a167.typeform.com/to/RNBCAQwg#email=${userInfo.email}&token_data=${JSON.stringify(tokenInfo.value)}`
   })
 
+  function onTokenUpdated(e:unknown) {
+    if (isTokenParams(e)) {
+      tokenInfo.value = e as TokenParams
+    }
+  }
+
   return {
     fullName,
     about,
     hasToken,
     tokenInfo,
     callSignupUrl,
+    onTokenUpdated,
   }
 }
 </script>
