@@ -4,6 +4,7 @@ import Landing from "../views/Landing.vue"
 import Dashboard from "../views/Dashboard.vue"
 import Login from "../views/Login.vue"
 import Register from "../views/Register.vue"
+import ResetPassword from "../views/ResetPassword.vue"
 import EditProfilePage from "../views/EditProfilePage.vue"
 import CreateTokenPage from "../views/CreateTokenPage.vue"
 import TokenAdminPage from "../views/TokenAdminPage.vue"
@@ -35,6 +36,11 @@ const routes = [
     path: "/register",
     name: "Register",
     component: Register,
+  },
+  {
+    path: "/reset-password",
+    name: "Reset Password",
+    component: ResetPassword,
   },
   {
     path: "/beta-signup",
@@ -90,7 +96,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  const publicRoutes = ["Landing", "Login", "Register", "Show Profile", "Join Beta", "Claim Airdrop"]
+  const publicRoutes = ["Landing", "Login", "Register", "Show Profile", "Join Beta", "Claim Airdrop", "Reset Password"]
   let { name } = to
   const { username } = to.params
   name = name?.toString() || ""
