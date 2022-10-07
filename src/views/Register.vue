@@ -201,7 +201,11 @@ export default defineComponent({
           route.query.redirectUri &&
             (await router.push(decodeURI(route.query.redirectUri.toString())))
         } else {
-          await router.push({ path: "/dashboard" })
+          await router.push(
+            route.query.redirectUri
+              ? decodeURI(route.query.redirectUri.toString())
+              : { path: "/dashboard" },
+          )
         }
       } else {
         status.value = requestStatuses[3]

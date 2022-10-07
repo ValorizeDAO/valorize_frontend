@@ -567,11 +567,12 @@
   </div>
 </template>
 <script lang="ts">
-import { ref, reactive, defineComponent, computed, onMounted } from "vue"
+import { ref, reactive, defineComponent, computed, onMounted, SetupContext } from "vue"
 import { useRouter } from "vue-router"
 import { ethers, BigNumber, providers, Contract } from "ethers"
 import { networkInfo, network } from "../services/network"
 import detectEthereumProvider from "@metamask/detect-provider"
+import { TokenParams } from "../models/Token"
 import currency from "currency.js"
 import auth from "../services/authentication"
 import useVuelidate from "@vuelidate/core"
@@ -590,19 +591,6 @@ enum tokenTypes {
   creator
 }
 
-type TokenParams = {
-  tokenName: string,
-  tokenSymbol: string,
-  initialSupply: string,
-  vaultAddress: string,
-  airdropSupply: string,
-  adminAddresses: string,
-  minting: string,
-  supplyCap: string,
-  maxSupply: string,
-  timeDelay: number,
-  mintCap: string,
-}
 export default defineComponent({
   name: "CreateToken",
   components: {
@@ -610,9 +598,10 @@ export default defineComponent({
     SvgLoader,
     InfoTooltip,
   },
-  setup() {
+  emits: ["tokenUpdated"],
+  setup(props, ctx) {
     return {
-      ...composeDeployGovToken(),
+      ...composeDeployGovToken(ctx),
       formatAddress,
       c: (value: string | number) =>
         currency(Number(value), {
@@ -636,7 +625,7 @@ enum states {
   signedTransactionError,
   transactionMined,
 }
-function composeDeployGovToken() {
+function composeDeployGovToken(ctx: SetupContext<"tokenUpdated"[]>) {
   const router = useRouter()
   const showExpandedList = ref(false)
   const tokenStatuses = ["INIT", "DEPLOYING_TEST", "DEPLOYED_TEST"]
@@ -722,6 +711,7 @@ function composeDeployGovToken() {
     const tokenRawData = localStorage.getItem("tokenData") || ""
     if (tokenRawData) {
       const storedParams = JSON.parse(tokenRawData) as TokenParams
+      ctx.emit("tokenUpdated", storedParams)
       Object.assign(tokenParams, storedParams)
       if (!isValidMaxSupply(tokenParams.maxSupply)) {
         setTimeout(() => {
@@ -733,6 +723,7 @@ function composeDeployGovToken() {
 
   function saveTokenParams() {
     localStorage.setItem("tokenData", JSON.stringify(tokenParams))
+    ctx.emit("tokenUpdated", tokenParams)
   }
 
   function clearForm() {

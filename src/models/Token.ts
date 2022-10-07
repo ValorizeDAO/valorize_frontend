@@ -29,3 +29,49 @@ export const emptyToken: Token = {
   updated_at: null,
   deleted_at: null,
 }
+
+export type TokenParams = {
+  tokenName: string,
+  tokenSymbol: string,
+  initialSupply: string,
+  vaultAddress: string,
+  airdropSupply: string,
+  adminAddresses: string,
+  minting: string,
+  supplyCap: string,
+  maxSupply: string,
+  timeDelay: number,
+  mintCap: string,
+}
+
+export const emptyTokenParams = {
+  tokenName: "",
+  tokenSymbol: "",
+  initialSupply: "",
+  vaultAddress: "",
+  airdropSupply: "",
+  adminAddresses: "",
+  minting: "",
+  supplyCap: "",
+  maxSupply: "",
+  timeDelay: 0,
+  mintCap: "",
+}
+
+export function isTokenParams(obj: any): obj is TokenParams {
+  return (
+    typeof obj === "object" &&
+      obj !== null &&
+      "tokenName" in obj &&
+      "tokenSymbol" in obj &&
+      "initialSupply" in obj &&
+      "vaultAddress" in obj &&
+      "airdropSupply" in obj &&
+      "adminAddresses" in obj &&
+      "minting" in obj &&
+      "supplyCap" in obj &&
+      "maxSupply" in obj &&
+      "timeDelay" in obj &&
+      "mintCap" in obj
+  )
+}
