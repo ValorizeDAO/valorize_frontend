@@ -9,7 +9,7 @@
       </h1>
       <div class="divider" />
       <h2 class="heroSection__supportCopy">
-        Launch a Token, turn your <em>community</em> into a DAO.
+        Create a Cryptocurrency, grow your <em>community</em>.
       </h2>
       <h2 class="heroSection__supportCopy text-center mt-8">
         It is easier than you think.
@@ -22,7 +22,7 @@
           Book a Free Call
         </router-link>
         <router-link
-          to="/beta-signup"
+          to="/register"
           class="text-center font-bold text-xl mt-4 border-b-2 px-2 border-black"
         >
           Or Signup
@@ -89,7 +89,7 @@
 
     <div class="describeSection__heading--right">
       <h2 class="text-4xl font-black">
-        Create rewards, aridrops, and more.
+        Create rewards, airdrops, and more.
       </h2>
       <h3 class="text-2xl mt-4">
         We have easy to use tools to manage and distribute your tokens
