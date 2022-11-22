@@ -15,10 +15,16 @@ export const networkInfo: networks = {
     currency: "ETH",
   },
   3: {
-    name: "Ropsten Testnet",
+    name: "Ropsten Testnet [DEPRECATED]",
     blockExplorer: "https://ropsten.etherscan.io/",
     rpcUrl: "https://ropsten.infura.io/v3/" + import.meta.env.VITE_INFURA_KEY,
     currency: "rETH",
+  },
+  5: {
+    name: "Goerli Testnet",
+    blockExplorer: "https://goerli.etherscan.io/",
+    rpcUrl: "https://goerli.infura.io/v3/" + import.meta.env.VITE_INFURA_KEY,
+    currency: "gETH",
   },
   137: {
     name: "Polygon",
